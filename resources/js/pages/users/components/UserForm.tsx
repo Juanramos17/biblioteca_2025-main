@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +20,7 @@ interface UserFormProps {
     perPage?: string;
 }
 
+
 // Field error display component
 function FieldInfo({ field }: { field: AnyFieldApi }) {
     return (
@@ -37,7 +40,8 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 export function UserForm({ initialData, page, perPage }: UserFormProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
-
+    const [shown, setType] = useState(true);
+    
     // TanStack Form setup
     const form = useForm({
         defaultValues: {
@@ -49,7 +53,7 @@ export function UserForm({ initialData, page, perPage }: UserFormProps) {
             const options = {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ["users"] });
-
+                    
                     // Construct URL with page parameters
                     let url = "/users";
                     if (page) {
@@ -58,15 +62,15 @@ export function UserForm({ initialData, page, perPage }: UserFormProps) {
                             url += `&per_page=${perPage}`;
                         }
                     }
-
+                    
                     router.visit(url);
                 },
                 onError: (errors: Record<string, string>) => {
                     if (Object.keys(errors).length === 0) {
                         toast.error(
                             initialData
-                                ? t("messages.users.error.update")
-                                : t("messages.users.error.create")
+                            ? t("messages.users.error.update")
+                            : t("messages.users.error.create")
                         );
                     }
                 },
@@ -161,10 +165,13 @@ export function UserForm({ initialData, page, perPage }: UserFormProps) {
                 </form.Field>
             </div>
 
+
             {/* Password field */}
             <div>
+                
                 <form.Field
                     name="password"
+                    
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
@@ -178,25 +185,35 @@ export function UserForm({ initialData, page, perPage }: UserFormProps) {
                         },
                     }}
                 >
+                    
                     {(field) => (
+                        
+                        
                         <>
                             <Label htmlFor={field.name}>
                                 {initialData
                                     ? t("ui.users.fields.password_optional")
                                     : t("ui.users.fields.password")}
                             </Label>
-                            <Input
-                                id={field.name}
-                                name={field.name}
-                                type="password"
-                                value={field.state.value}
-                                onChange={(e) => field.handleChange(e.target.value)}
-                                onBlur={field.handleBlur}
-                                placeholder={t("ui.users.placeholders.password")}
-                                disabled={form.state.isSubmitting}
-                                autoComplete="off"
-                                required={false}
-                            />
+                            <div className="relative" >
+                                <Input
+                                    id={field.name}
+                                    name={field.name}
+                                    type= {shown ? "password" : "text"}  
+                                    value={field.state.value}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    onBlur={field.handleBlur}
+                                    placeholder={t("ui.users.placeholders.password")}
+                                    disabled={form.state.isSubmitting}
+                                    autoComplete="off"
+                                    required={false}
+                                />
+                                
+                                <button type="submit" onClick={()=> setType(!shown)} className="absolute inset-y-0 right-3 flex items-center ">
+                                    {shown ? <EyeOff size={18} /> : <Eye size={18} />} 
+                                </button>
+
+                            </div>
                             <FieldInfo field={field} />
                         </>
                     )}
