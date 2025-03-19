@@ -10,6 +10,43 @@ return [
             'documentation' => 'Documentation',
         ],
     ],
+    'roles' => [
+        'principal' => 'Principal Rol',
+        'roles' => 'Roles',
+        'select' => 'Select a role',
+        'admin' => 'Admin',
+        'user' => 'User',
+        'info' => 'The role determines the users overall access level',
+    ],
+    'permissions' => [
+        'users' => [
+            'users' => 'Users',
+            'see' => 'View users',
+            'create' => 'Create users',
+            'edit' => 'Edit users',
+            'delete' => 'Delete users',
+        ],
+        'products' => [
+            'products' => 'Products',
+            'see' => 'View products',
+            'create' => 'Create products',
+            'edit' => 'Edit products',
+            'delete' => 'Delete products',
+        ],
+        'reports' => [
+            'reports' => 'Reports',
+            'see' => 'View reports',
+            'export' => 'Export reports',
+            'print' => 'Print reports',
+        ],
+        'settings' => [
+            'settings' => 'Settings',
+            'access' => 'Access to the settings',
+            'modify' => 'Modify settings',
+        ],
+        
+
+    ],
     'user_menu' => [
         'settings' => 'Settings',
         'logout' => 'Log out',

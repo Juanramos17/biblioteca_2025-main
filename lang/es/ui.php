@@ -11,6 +11,41 @@ return [
             'documentation' => 'Documentación',
         ],
     ],
+    'roles' => [
+    'principal' => 'Rol principal',
+    'select' => 'Selecciona un rol',
+    'admin' => 'Administrador',
+    'user' => 'Usuario',
+    'info' => 'El rol determina el nivel de acceso general del usuario',
+],
+'permissions' => [
+    'users' => [
+        'users' => 'Usuarios',
+        'see' => 'Ver usuarios',
+        'create' => 'Crear usuarios',
+        'edit' => 'Editar usuarios',
+        'delete' => 'Eliminar usuarios',
+    ],
+    'products' => [
+        'products' => 'Productos',
+        'see' => 'Ver productos',
+        'create' => 'Crear productos',
+        'edit' => 'Editar productos',
+        'delete' => 'Eliminar productos',
+    ],
+    'reports' => [
+        'reports' => 'Reportes',
+        'see' => 'Ver reportes',
+        'export' => 'Exportar reportes',
+        'print' => 'Imprimir reportes',
+    ],
+    'settings' => [
+        'settings' => 'Configuraciones',
+        'access' => 'Acceso a las configuraciones',
+        'modify' => 'Modificar configuraciones',
+    ],
+],
+
     'user_menu' => [
         'settings' => 'Configuración',
         'logout' => 'Cerrar sesión',
