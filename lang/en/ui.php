@@ -53,6 +53,9 @@ return [
             'confirm_password_placeholder' => 'Confirm password',
             'save_button' => 'Save password',
             'saved_message' => 'Saved',
+        ],'tabs' => [
+            'basic' => 'Basic Information',
+            'roles' => 'Roles and Permissions',
         ],
         'appearance' => [
             'title' => 'Appearance settings',

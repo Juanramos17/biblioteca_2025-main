@@ -13,8 +13,8 @@ export default function CreateUser() {
         <div className="max-w-xl">
           <Tabs defaultValue="account" className="w-[400px]">
             <TabsList>
-              <TabsTrigger value="account">Account</TabsTrigger>
-              <TabsTrigger value="password">Password</TabsTrigger>
+              <TabsTrigger value="account">{t("ui.settings.tabs.basic")}</TabsTrigger>
+              <TabsTrigger value="password">{t("ui.settings.tabs.roles")}</TabsTrigger>
             </TabsList>
             <TabsContent value="account"><UserForm /></TabsContent>
             <TabsContent value="password">Change your password here.</TabsContent>

@@ -55,6 +55,10 @@ return [
             'save_button' => 'Guardar contraseña',
             'saved_message' => 'Guardado',
         ],
+        'tabs' => [
+            'basic' => 'Información básica',
+            'roles' => 'Roles y permisos',
+        ],
         'appearance' => [
             'title' => 'Configuración de apariencia',
             'description' => 'Actualiza la configuración de apariencia de tu cuenta',
