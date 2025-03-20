@@ -34,46 +34,13 @@ import {
 export function RolesForm() {
   const { t } = useTranslations();
 
-  const [permissions, setPermissions] = useState({
-    users: { see: false, create: false, edit: false, delete: false },
-    products: { see: false, create: false, edit: false, delete: false },
-    reports: { see: false, export: false, print: false },
-    settings: { access: false, modify: false },
-  });
-
-  const handleRoleChange = (selectedRole: string) => {
-
-    if (selectedRole === 'admin') {
-      setPermissions({
-        users: { see: true, create: true, edit: true, delete: true },
-        products: { see: true, create: true, edit: true, delete: true },
-        reports: { see: true, export: true, print: true },
-        settings: { access: true, modify: true },
-      });
-    } else if (selectedRole === 'user') {
-      setPermissions({
-        users: { see: true, create: false, edit: false, delete: false },
-        products: { see: true, create: false, edit: false, delete: false },
-        reports: { see: true, export: false, print: false },
-        settings: { access: false, modify: false },
-      });
-    } else {
-      setPermissions({
-        users: { see: false, create: false, edit: false, delete: false },
-        products: { see: false, create: false, edit: false, delete: false },
-        reports: { see: false, export: false, print: false },
-        settings: { access: false, modify: false },
-      });
-    }
-  };
-
   return (
     <div>
       <div className='flex ml-4 m-5'>
         <Shield size={17} className='text-blue-500'/>
         <p className='ml-2 text-sm'>{t('ui.roles.principal')}</p>
       </div>
-          <Select onValueChange={handleRoleChange}>
+          <Select>
             <SelectTrigger className="w-full max-w-[770px] m-4 bg-muted mb-5">
               <SelectValue placeholder={t('ui.roles.select')}  className=''/>
             </SelectTrigger>
@@ -102,25 +69,25 @@ export function RolesForm() {
               {t('ui.permissions.users.users')}
             </CardTitle>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.users.see} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.users.see')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.users.create} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.users.create')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.users.edit} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.users.edit')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.users.delete} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.users.delete')}
               </label>
@@ -133,25 +100,25 @@ export function RolesForm() {
           <CardHeader>
             <CardTitle>{t('ui.permissions.products.products')}</CardTitle>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.products.see} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.products.see')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.products.create} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.products.create')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.products.edit} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.products.edit')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.products.delete} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.products.delete')}
               </label>
@@ -164,19 +131,19 @@ export function RolesForm() {
           <CardHeader>
             <CardTitle>{t('ui.permissions.reports.reports')}</CardTitle>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.reports.see} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.reports.see')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.reports.export} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.reports.export')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.reports.print} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.reports.print')}
               </label>
@@ -189,13 +156,13 @@ export function RolesForm() {
           <CardHeader>
             <CardTitle>{t('ui.permissions.settings.settings')}</CardTitle>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.settings.access} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.settings.access')}
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox checked={permissions.settings.modify} className='border-blue-500'/>
+              <Checkbox className='border-blue-500'/>
               <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {t('ui.permissions.settings.modify')}
               </label>

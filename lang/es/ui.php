@@ -13,6 +13,7 @@ return [
     ],
     'roles' => [
     'principal' => 'Rol principal',
+    'roles' => 'Roles',
     'select' => 'Selecciona un rol',
     'admin' => 'Administrador',
     'user' => 'Usuario',

@@ -31,6 +31,7 @@ class PermissionSeeder extends Seeder
             'parent_id' => $user_permission->id,
         ]);
 
+
         Cache::forever(key: 'permissions', value: Permission::whereNull('parent_id')->with('children')->get());
     }
 }
