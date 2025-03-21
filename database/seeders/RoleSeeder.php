@@ -12,10 +12,19 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
+        Role::truncate(); // Borra todos los roles
         $rol = Role::create([
             'name' => 'admin',
             'display_name' => 'Administrador',
             'description' => 'Administrador de la aplicación',
+            'guard_name' => 'web',
+            'system' => true,
+        ]);
+
+        $rol = Role::create([
+            'name' => 'user',
+            'display_name' => 'Usuario',
+            'description' => 'Usuario de la aplicación',
             'guard_name' => 'web',
             'system' => true,
         ]);
