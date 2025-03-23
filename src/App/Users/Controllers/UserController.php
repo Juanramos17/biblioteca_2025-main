@@ -59,10 +59,18 @@ class UserController extends Controller
 
     public function edit(Request $request, User $user)
     {
+        $roles = Role::pluck('name')->toArray();
+
+        $permissions = Permission::pluck('name')->toArray();
+
+        $categories = array_values(array_unique(array_map(fn($p) => explode('.', $p)[0], $permissions)));
         return Inertia::render('users/Edit', [
             'user' => $user,
             'page' => $request->query('page'),
             'perPage' => $request->query('perPage'),
+            "roles" => $roles,
+            "permissions" => $permissions,
+            "categories" => $categories
         ]);
     }
 

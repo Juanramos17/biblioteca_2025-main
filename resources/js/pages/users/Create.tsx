@@ -2,7 +2,6 @@ import { UserForm } from "@/pages/users/components/UserForm";
 import { User } from "lucide-react";
 import { UserLayout } from "@/layouts/users/UserLayout";
 import { useTranslations } from "@/hooks/use-translations";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CardHeader } from "@/components/ui/card";
 
 

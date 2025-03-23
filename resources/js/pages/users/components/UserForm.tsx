@@ -125,16 +125,14 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
 
     const handlePermissionChange = (permission: string, checked: boolean) => {
         console.log("Permiso actual:", permission);
-        console.log("Estado de permisos antes de actualizar:", selectedPermissions);
-    
+        
         setSelectedPermissions((prev) =>
             checked ? [...prev, permission] : prev.filter((perm) => perm !== permission)
         );
         
-        // Ten en cuenta que el siguiente log mostrará el estado anterior, no el actualizado:
-        console.log("Permisos seleccionados después de intentar actualizar:", selectedPermissions);
     };
     
+    console.log("Estado de permisos:", selectedPermissions);
 
     const iconMap: Record<string, React.ReactNode> = {
         users: <Users size={17} className="text-blue-500 mr-3 mb-3" />,
@@ -336,7 +334,7 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
                         {iconMap[category]}
                         {t(`ui.permissions.${category}.${category}`)}
                         </CardTitle>
-                        
+
                         {permissions
                         .filter((perm) => perm.startsWith(`${category}.`))
                         .map((perm) => (
