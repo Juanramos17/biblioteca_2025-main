@@ -21,21 +21,21 @@ return [
     'permissions' => [
         'users' => [
             'users' => 'Users',
-            'see' => 'View users',
+            'view' => 'View users',
             'create' => 'Create users',
             'edit' => 'Edit users',
             'delete' => 'Delete users',
         ],
-        'products' => [
-            'products' => 'Products',
-            'see' => 'View products',
+        'product' => [
+            'product' => 'Products',
+            'view' => 'View products',
             'create' => 'Create products',
             'edit' => 'Edit products',
             'delete' => 'Delete products',
         ],
-        'reports' => [
-            'reports' => 'Reports',
-            'see' => 'View reports',
+        'report' => [
+            'report' => 'Reports',
+            'view' => 'View reports',
             'export' => 'Export reports',
             'print' => 'Print reports',
         ],

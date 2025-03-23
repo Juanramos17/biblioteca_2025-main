@@ -1,5 +1,4 @@
 import { UserForm } from "@/pages/users/components/UserForm";
-import { Permissions } from "@/pages/users/components/Permissions";
 import { User } from "lucide-react";
 import { UserLayout } from "@/layouts/users/UserLayout";
 import { useTranslations } from "@/hooks/use-translations";
@@ -7,8 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CardHeader } from "@/components/ui/card";
 
 
+interface CreateUserProps {
+  roles?: string[];          
+  permissions?: string[]; 
+  categories?: string[]; 
+}
 
-export default function CreateUser() {
+
+export default function CreateUser({ roles, permissions, categories }: CreateUserProps) {
   const { t } = useTranslations();
 
   return (
@@ -25,14 +30,7 @@ export default function CreateUser() {
           </CardHeader>
 
 
-          <Tabs defaultValue="account" className="flex flex-col">
-            <TabsList className="rounded-none">
-              <TabsTrigger value="account">{t("ui.settings.tabs.basic")}</TabsTrigger>
-              <TabsTrigger value="password">{t("ui.settings.tabs.roles")}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="account"><UserForm /></TabsContent>
-            <TabsContent value="password"><Permissions /></TabsContent>
-          </Tabs>
+          <UserForm roles={roles} permissions={permissions} categories={categories}/>
         </div>
       </div>
 

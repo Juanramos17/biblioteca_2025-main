@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, User, Mail, Lock, X, Save } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, X, Save, Package, FileText, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,29 @@ import { toast } from "sonner";
 import { useTranslations } from "@/hooks/use-translations";
 import { useForm } from "@tanstack/react-form";
 import type { AnyFieldApi } from "@tanstack/react-form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+import { Shield, Users } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select";
+  import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+  } from "@/components/ui/card";
+
+  import { Checkbox } from "@/components/ui/checkbox";
+import { FormItem } from "@/components/ui/form";
 
 
 interface UserFormProps {
@@ -19,6 +42,9 @@ interface UserFormProps {
     };
     page?: string;
     perPage?: string;
+    roles?: string[];          
+    permissions?: string[]; 
+    categories?: string[]; 
 }
 
 
@@ -38,7 +64,7 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export function UserForm({ initialData, page, perPage }: UserFormProps) {
+export function UserForm({ initialData, page, perPage, roles = [], permissions =[], categories = [] }: UserFormProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const [shown, setType] = useState(true);
@@ -49,6 +75,8 @@ export function UserForm({ initialData, page, perPage }: UserFormProps) {
             name: initialData?.name ?? "",
             email: initialData?.email ?? "",
             password: "",
+            
+              select: "", 
         },
         onSubmit: async ({ value }) => {
             const options = {
@@ -93,9 +121,38 @@ export function UserForm({ initialData, page, perPage }: UserFormProps) {
         form.handleSubmit();
     };
 
+    const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+
+    const handlePermissionChange = (permission: string, checked: boolean) => {
+        console.log("Permiso actual:", permission);
+        console.log("Estado de permisos antes de actualizar:", selectedPermissions);
+    
+        setSelectedPermissions((prev) =>
+            checked ? [...prev, permission] : prev.filter((perm) => perm !== permission)
+        );
+        
+        // Ten en cuenta que el siguiente log mostrará el estado anterior, no el actualizado:
+        console.log("Permisos seleccionados después de intentar actualizar:", selectedPermissions);
+    };
+    
+
+    const iconMap: Record<string, React.ReactNode> = {
+        users: <Users size={17} className="text-blue-500 mr-3 mb-3" />,
+        product: <Package size={17} className="text-blue-500 mr-3 mb-3" />,
+        report: <FileText size={17} className="text-blue-500 mr-3 mb-3" />,
+        settings: <Settings size={17} className="text-blue-500 mr-3 mb-3" />,
+    };
+    
+
     return (
+        
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            {/* Name field */}
+            <Tabs defaultValue="account" className="flex flex-col">
+            <TabsList className="rounded-none">
+              <TabsTrigger value="account">{t("ui.settings.tabs.basic")}</TabsTrigger>
+              <TabsTrigger value="password">{t("ui.settings.tabs.roles")}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="account">{/* Name field */}
             <div className='pl-4 pr-4'>
                 <form.Field
                     name="name"
@@ -226,6 +283,85 @@ export function UserForm({ initialData, page, perPage }: UserFormProps) {
                     )}
                 </form.Field>
             </div>
+            </TabsContent>
+            <TabsContent value="password">
+            <FormItem>
+                <form.Field name="select">
+
+                    {(field) => (
+                    <div>
+                        <div className="flex ml-4 m-5">
+                        <Shield size={17} className="text-blue-500" />
+                        <p className="ml-2 text-sm">{t('ui.roles.principal')}</p>
+                        </div>
+
+                        <Select value={field.state.value} onValueChange={(value) => field.handleChange(value)}>
+                        <SelectTrigger className="w-full max-w-[770px] m-4 bg-muted mb-5">
+                            <SelectValue placeholder={t('ui.roles.select')} className="" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                            <SelectGroup>
+
+                            <SelectLabel>{t('ui.roles.roles')}</SelectLabel>
+
+                            {roles.map((role, index) => (
+                                <SelectItem key={index} value={role.toLowerCase()}>
+                                {t(`ui.roles.${role.toLowerCase()}`) || role} 
+                                </SelectItem>
+                            ))}
+
+                            </SelectGroup>
+                            
+                        </SelectContent>
+                        <p className="ml-5 text-gray-500 text-sm mt-0">{t('ui.roles.info')}</p>
+                        </Select>
+                    </div>
+                    )}
+
+                </form.Field>
+                </FormItem>
+
+            <div className='flex ml-5 mt-3'>
+                <Shield size={17} className='mt-0.5 text-blue-500 mr-2'/>
+                <h2>Permisos Específicos</h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mt-4">
+            {categories.map((category) => (
+                <FormItem key={category}>
+                    <Card className="m-4 bg-muted">
+                    <CardHeader>
+                        <CardTitle className="flex">
+                        {iconMap[category]}
+                        {t(`ui.permissions.${category}.${category}`)}
+                        </CardTitle>
+                        
+                        {permissions
+                        .filter((perm) => perm.startsWith(`${category}.`))
+                        .map((perm) => (
+                            <div key={perm} className="flex items-center space-x-2">
+                            <Checkbox
+                                value={perm}
+                                checked={selectedPermissions.includes(perm)}
+                                onCheckedChange={(checked) =>
+                                handlePermissionChange(perm, !!checked)
+                                }
+                                className="border-blue-500"
+                            />
+                            <label className="text-sm font-medium">
+                                {t(`ui.permissions.${category}.${perm.split(".")[1]}`)}
+                            </label>
+                            </div>
+                        ))}
+                    </CardHeader>
+                    </Card>
+                </FormItem>
+                ))}
+            </div>
+        </TabsContent>
+          </Tabs>
+            
 
             {/* Form buttons */}
             <div className="flex justify-between gap-4 bg-muted h-20 p-5 rounded-b-lg">
@@ -267,3 +403,4 @@ export function UserForm({ initialData, page, perPage }: UserFormProps) {
         </form>
     );
 }
+

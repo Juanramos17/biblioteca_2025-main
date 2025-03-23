@@ -22,21 +22,21 @@ return [
 'permissions' => [
     'users' => [
         'users' => 'Usuarios',
-        'see' => 'Ver usuarios',
+        'view' => 'Ver usuarios',
         'create' => 'Crear usuarios',
         'edit' => 'Editar usuarios',
         'delete' => 'Eliminar usuarios',
     ],
-    'products' => [
-        'products' => 'Productos',
-        'see' => 'Ver productos',
+    'product' => [
+        'product' => 'Productos',
+        'view' => 'Ver productos',
         'create' => 'Crear productos',
         'edit' => 'Editar productos',
         'delete' => 'Eliminar productos',
     ],
-    'reports' => [
-        'reports' => 'Reportes',
-        'see' => 'Ver reportes',
+    'report' => [
+        'report' => 'Reportes',
+        'view' => 'Ver reportes',
         'export' => 'Exportar reportes',
         'print' => 'Imprimir reportes',
     ],

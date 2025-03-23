@@ -3,7 +3,7 @@
 namespace App\Users\Controllers;
 
 use App\Core\Controllers\Controller;
-
+use Domain\Permissions\Models\Permission;
 use Domain\Users\Actions\UserDestroyAction;
 use Domain\Users\Actions\UserIndexAction;
 use Domain\Users\Actions\UserStoreAction;
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Domain\Roles\Models\Role;
 
 class UserController extends Controller
 {
@@ -23,9 +24,20 @@ class UserController extends Controller
     }
 
     public function create()
-    {
-        return Inertia::render('users/Create');
-    }
+{
+    $roles = Role::pluck('name')->toArray();
+
+    $permissions = Permission::pluck('name')->toArray();
+
+    $categories = array_values(array_unique(array_map(fn($p) => explode('.', $p)[0], $permissions)));
+
+    return Inertia::render('users/Create', [
+        "roles" => $roles,
+        "permissions" => $permissions,
+        "categories" => $categories
+    ]);
+}
+
 
     public function store(Request $request, UserStoreAction $action)
     {
