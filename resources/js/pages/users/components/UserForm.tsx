@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, User, Mail, Lock, X, Save, Package, FileText, Settings } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, X, Save, PackageOpen, FileText, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -143,9 +143,9 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
     //Array con los permisos que se seleccionan
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
-
     function handlePermissionChange (permission: string, checked: boolean) {
         console.log("Permiso actual:", permission);
+
         
         setSelectedPermissions((prev) =>
             checked ? [...prev, permission] : prev.filter((perm) => perm !== permission)
@@ -169,7 +169,7 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
 
     const iconMap: Record<string, React.ReactNode> = {
         users: <Users size={17} className="text-blue-500 mr-3 mb-3" />,
-        product: <Package size={17} className="text-blue-500 mr-3 mb-3" />,
+        product: <PackageOpen size={17} className="text-blue-500 mr-3 mb-3" />,
         report: <FileText size={17} className="text-blue-500 mr-3 mb-3" />,
         settings: <Settings size={17} className="text-blue-500 mr-3 mb-3" />,
     };
