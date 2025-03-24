@@ -69,6 +69,7 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
     const queryClient = useQueryClient();
     const [shown, setType] = useState(true);
     
+    //Al cargar la pagina los permisos que tiene el usuario se cargan
     useEffect(() => {
         setSelectedPermissions(userPermissions);
     }, []); 
@@ -139,20 +140,11 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
         "report.view"
     ];
     
-    const handleRoleChange = (value: string) => {
-        if (value === "admin") {
-            setSelectedPermissions(permissions); 
-        } else if (value === "user") {
-            setSelectedPermissions(userPerm);
-        } else {
-            setSelectedPermissions([]); 
-        }
-    };
-    
-    
+    //Array con los permisos que se seleccionan
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
-    const handlePermissionChange = (permission: string, checked: boolean) => {
+
+    function handlePermissionChange (permission: string, checked: boolean) {
         console.log("Permiso actual:", permission);
         
         setSelectedPermissions((prev) =>
@@ -160,6 +152,18 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
         );
         
     };
+
+    // Cambia los permisos segun el rol seleccionado
+    function handleRoleChange(value:string) {
+        if (value === "admin") {
+          setSelectedPermissions(permissions); 
+        } else if (value === "user") {
+          setSelectedPermissions(userPerm);
+        } else {
+          setSelectedPermissions([]);
+        }
+      }
+    
     
     console.log("Estado de permisos:", selectedPermissions);
 
@@ -300,7 +304,7 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
                                     required={false}
                                 />
                                 
-                                <button type="submit" onClick={()=> setType(!shown)} className="absolute inset-y-0 right-3 flex items-center ">
+                                <button type='button' onClick={()=> setType(!shown)} className="absolute inset-y-0 right-3 flex items-center ">
                                     {shown ? <EyeOff size={18} /> : <Eye size={18} />} 
                                 </button>
 
