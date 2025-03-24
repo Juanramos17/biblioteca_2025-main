@@ -16,9 +16,10 @@ interface EditUserProps extends PageProps {
   roles?: string[];          
   permissions?: string[]; 
   categories?: string[];
+  userPermissions?: string[];
 }
 
-export default function EditUser({ user, page, perPage, roles, permissions, categories }: EditUserProps) {
+export default function EditUser({ user, page, perPage, roles, permissions, categories, userPermissions }: EditUserProps) {
   const { t } = useTranslations();
 
   return (
@@ -30,12 +31,12 @@ export default function EditUser({ user, page, perPage, roles, permissions, cate
     <CardHeader className="w-full flex justify-start bg-muted p-4 rounded-t-lg">
       <div className="flex space-x-2">
         <User size={20} className="text-blue-500" />
-        <h2 className="font-bold text-xl">Crear Nuevo Usuario</h2>
+        <h2 className="font-bold text-xl">{t("ui.info.edit")}</h2>
       </div>
-        <p className="text-gray-500 text-sm mb-3">Ingresa la información para crear un nuevo usuario en el sistema</p>
+        <p className="text-gray-500 text-sm mb-3">{t("ui.info.info")}</p>
     </CardHeader>
 
-    <UserForm initialData={user} page={page} perPage={perPage} roles={roles} permissions={permissions} categories={categories}/>
+    <UserForm initialData={user} page={page} perPage={perPage} roles={roles} permissions={permissions} categories={categories} userPermissions={userPermissions}/>
   </div>
 </div>
 

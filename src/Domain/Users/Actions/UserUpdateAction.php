@@ -19,6 +19,10 @@ class UserUpdateAction
             $updateData['password'] = Hash::make($data['password']);
         }
 
+        $selectedPermissions = $data['permissions'];
+
+        $user->syncPermissions($selectedPermissions);
+
         $user->update($updateData);
 
         return UserResource::fromModel($user->fresh());

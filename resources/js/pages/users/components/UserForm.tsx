@@ -10,6 +10,7 @@ import { useTranslations } from "@/hooks/use-translations";
 import { useForm } from "@tanstack/react-form";
 import type { AnyFieldApi } from "@tanstack/react-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useEffect } from 'react';
 
 import { Shield, Users } from "lucide-react";
 import {
@@ -23,15 +24,13 @@ import {
   } from "@/components/ui/select";
   import {
     Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
   } from "@/components/ui/card";
 
   import { Checkbox } from "@/components/ui/checkbox";
 import { FormItem } from "@/components/ui/form";
+import { set } from 'lodash';
 
 
 interface UserFormProps {
@@ -45,6 +44,7 @@ interface UserFormProps {
     roles?: string[];          
     permissions?: string[]; 
     categories?: string[]; 
+    userPermissions?: string[]; 
 }
 
 
@@ -64,21 +64,30 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export function UserForm({ initialData, page, perPage, roles = [], permissions =[], categories = [] }: UserFormProps) {
+export function UserForm({ initialData, page, perPage, roles = [], permissions =[], categories = [], userPermissions = [] }: UserFormProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const [shown, setType] = useState(true);
     
+    useEffect(() => {
+        setSelectedPermissions(userPermissions);
+    }, []); 
+
     // TanStack Form setup
     const form = useForm({
         defaultValues: {
             name: initialData?.name ?? "",
             email: initialData?.email ?? "",
             password: "",
-            
-              select: "", 
+            select: "", 
         },
         onSubmit: async ({ value }) => {
+
+            const data = {
+                ...value,
+                permissions: selectedPermissions,
+            };
+
             const options = {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -107,9 +116,9 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
 
             // Submit with Inertia
             if (initialData) {
-                router.put(`/users/${initialData.id}`, value, options);
+                router.put(`/users/${initialData.id}`, data, options);
             } else {
-                router.post("/users", value, options);
+                router.post("/users", data, options);
             }
         },
     });
@@ -121,6 +130,26 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
         form.handleSubmit();
     };
 
+
+    console.log("Permisos de usuario:", userPermissions);
+    
+    const userPerm = [
+        "users.view",
+        "product.view",
+        "report.view"
+    ];
+    
+    const handleRoleChange = (value: string) => {
+        if (value === "admin") {
+            setSelectedPermissions(permissions); 
+        } else if (value === "user") {
+            setSelectedPermissions(userPerm);
+        } else {
+            setSelectedPermissions([]); 
+        }
+    };
+    
+    
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
     const handlePermissionChange = (permission: string, checked: boolean) => {
@@ -293,7 +322,7 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
                         <p className="ml-2 text-sm">{t('ui.roles.principal')}</p>
                         </div>
 
-                        <Select value={field.state.value} onValueChange={(value) => field.handleChange(value)}>
+                        <Select value={field.state.value} onValueChange={(value) => {field.handleChange(value); handleRoleChange(value);}}>
                         <SelectTrigger className="w-full max-w-[770px] m-4 bg-muted mb-5">
                             <SelectValue placeholder={t('ui.roles.select')} className="" />
                         </SelectTrigger>

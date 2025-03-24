@@ -18,35 +18,39 @@ return [
     'admin' => 'Administrador',
     'user' => 'Usuario',
     'info' => 'El rol determina el nivel de acceso general del usuario',
-],
-'permissions' => [
-    'users' => [
-        'users' => 'Usuarios',
-        'view' => 'Ver usuarios',
-        'create' => 'Crear usuarios',
-        'edit' => 'Editar usuarios',
-        'delete' => 'Eliminar usuarios',
     ],
-    'product' => [
-        'product' => 'Productos',
-        'view' => 'Ver productos',
-        'create' => 'Crear productos',
-        'edit' => 'Editar productos',
-        'delete' => 'Eliminar productos',
+    'permissions' => [
+        'users' => [
+            'users' => 'Usuarios',
+            'view' => 'Ver usuarios',
+            'create' => 'Crear usuarios',
+            'edit' => 'Editar usuarios',
+            'delete' => 'Eliminar usuarios',
+        ],
+        'product' => [
+            'product' => 'Productos',
+            'view' => 'Ver productos',
+            'create' => 'Crear productos',
+            'edit' => 'Editar productos',
+            'delete' => 'Eliminar productos',
+        ],
+        'report' => [
+            'report' => 'Reportes',
+            'view' => 'Ver reportes',
+            'export' => 'Exportar reportes',
+            'print' => 'Imprimir reportes',
+        ],
+        'settings' => [
+            'settings' => 'Configuraciones',
+            'access' => 'Acceso a las configuraciones',
+            'modify' => 'Modificar configuraciones',
+        ],
     ],
-    'report' => [
-        'report' => 'Reportes',
-        'view' => 'Ver reportes',
-        'export' => 'Exportar reportes',
-        'print' => 'Imprimir reportes',
+    'info' => [
+        'create' => 'Crear Nuevo Usuario',
+        'edit' => 'Editar Usuario',
+        'info' => 'Ingresa la información para crear un nuevo usuario en el sistema',
     ],
-    'settings' => [
-        'settings' => 'Configuraciones',
-        'access' => 'Acceso a las configuraciones',
-        'modify' => 'Modificar configuraciones',
-    ],
-],
-
     'user_menu' => [
         'settings' => 'Configuración',
         'logout' => 'Cerrar sesión',

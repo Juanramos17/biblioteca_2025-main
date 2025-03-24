@@ -47,6 +47,11 @@ return [
         
 
     ],
+    'info' => [
+    'create' => 'Create New User',
+    'edit' => 'Edit User',
+    'info' => 'Enter the information to create a new user in the system',
+    ],
     'user_menu' => [
         'settings' => 'Settings',
         'logout' => 'Log out',

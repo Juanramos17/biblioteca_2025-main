@@ -45,6 +45,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
+            "permissions" => ['nullable'],
         ]);
 
         if ($validator->fails()) {
@@ -64,13 +65,20 @@ class UserController extends Controller
         $permissions = Permission::pluck('name')->toArray();
 
         $categories = array_values(array_unique(array_map(fn($p) => explode('.', $p)[0], $permissions)));
+
+        $userPermissions = $user->permissions->pluck('id')->toArray(); // IDs de permisos del usuario
+        $userPerm = Permission::whereIn('id', $userPermissions)->pluck('name')->toArray();
+
+        
+
         return Inertia::render('users/Edit', [
             'user' => $user,
             'page' => $request->query('page'),
             'perPage' => $request->query('perPage'),
             "roles" => $roles,
             "permissions" => $permissions,
-            "categories" => $categories
+            "categories" => $categories,
+            "userPermissions" => $userPerm
         ]);
     }
 
@@ -86,6 +94,7 @@ class UserController extends Controller
                 Rule::unique('users')->ignore($user->id),
             ],
             'password' => ['nullable', 'string', 'min:8'],
+            'permissions' => ['nullable'],
         ]);
 
         if ($validator->fails()) {
