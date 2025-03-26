@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::resource('users', \App\Users\Controllers\UserController::class);
+    Route::resource('floors', \App\Floor\Controllers\FloorsController::class);
 });
 
 require __DIR__.'/settings.php';

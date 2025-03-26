@@ -131,9 +131,6 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
         form.handleSubmit();
     };
 
-
-    console.log("Permisos de usuario:", userPermissions);
-    
     const userPerm = [
         "users.view",
         "product.view",
@@ -144,7 +141,6 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
     function handlePermissionChange (permission: string, checked: boolean) {
-        console.log("Permiso actual:", permission);
 
         
         setSelectedPermissions((prev) =>
@@ -163,6 +159,8 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
           setSelectedPermissions([]);
         }
       }
+
+      console.log(permissions);
     
     
     console.log("Estado de permisos:", selectedPermissions);

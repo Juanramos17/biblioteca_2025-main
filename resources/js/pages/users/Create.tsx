@@ -18,7 +18,7 @@ export default function CreateUser({ roles, permissions, categories }: CreateUse
   return (
     <UserLayout title={t("ui.users.create")}>
       <div className="flex flex-col items-center w-full">
-        <div className="w-[1000px] flex flex-col bg-muted/50 rounded-lg">
+        <div className="w-[800px] flex flex-col bg-muted/50 rounded-lg">
 
           <CardHeader className="w-full flex justify-start bg-muted p-4 rounded-t-lg">
             <div className="flex space-x-2">

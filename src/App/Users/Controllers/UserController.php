@@ -66,7 +66,7 @@ class UserController extends Controller
 
         $categories = array_values(array_unique(array_map(fn($p) => explode('.', $p)[0], $permissions)));
 
-        $userPermissions = $user->permissions->pluck('id')->toArray(); // IDs de permisos del usuario
+        $userPermissions = $user->permissions->pluck('id')->toArray(); 
         $userPerm = Permission::whereIn('id', $userPermissions)->pluck('name')->toArray();
 
         
