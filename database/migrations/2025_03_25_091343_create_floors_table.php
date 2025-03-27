@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('floors', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('name');
+            $table->unsignedInteger('name')->unique();
             $table->string('ubication');
             $table->unsignedInteger('n_zones');
             $table->timestamps();

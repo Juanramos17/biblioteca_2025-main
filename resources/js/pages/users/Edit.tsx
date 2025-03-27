@@ -21,7 +21,6 @@ interface EditUserProps extends PageProps {
 
 export default function EditUser({ user, page, perPage, roles, permissions, categories, userPermissions }: EditUserProps) {
   const { t } = useTranslations();
-
   return (
 
 <UserLayout title={t("ui.users.edit")}>

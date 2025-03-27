@@ -6,6 +6,7 @@ return [
         'items' => [
             'dashboard' => 'Dashboard',
             'users' => 'Users',
+            'floors' => 'Floors',
             'repository' => 'Repository',
             'documentation' => 'Documentation',
         ],
@@ -18,6 +19,23 @@ return [
         'user' => 'User',
         'info' => 'The role determines the users overall access level',
     ],
+    'genres' => [
+        'principal' => 'Main Genre',
+        'roles' => 'Genres',
+        'select' => 'Select a genre',
+        'fiction' => 'Fiction',
+        'mystery' => 'Mystery',
+        'thriller' => 'Thriller',
+        'scienceFiction' => 'Science Fiction',
+        'fantasy' => 'Fantasy',
+        'romance' => 'Romance',
+        'historical' => 'Historical',
+        'nonFiction' => 'Non-Fiction',
+        'biography' => 'Biography',
+        'horror' => 'Horror',
+        'info' => 'Select a genre to categorize the content',
+    ],
+
     'permissions' => [
         'users' => [
             'users' => 'Users',
@@ -148,6 +166,31 @@ return [
         'per_page' => 'Per page',
         'no_results' => 'No results',
     ],
+        'floors' => [
+        'floor' => 'Floor',
+        'nZonas' => 'Number of Zones',
+        'ocupedZones' => 'Occupied Zones',
+        'freeZones' => 'Free Zones',
+        'floorZones' => 'Floor Zones',
+        'noZones' => 'There are no zones on this floor',
+        'title' => 'Floors',
+        'create' => 'Create Floor',
+        'edit' => 'Edit Floor',
+        'delete' => 'Delete Floor',
+        'locations' => [
+            'buildingALeftWing' => 'Building A, Left Wing',
+            'buildingARightWing' => 'Building A, Right Wing',
+            'buildingBLeftWing' => 'Building B, Left Wing',
+            'buildingBRightWing' => 'Building B, Right Wing',
+            'buildingCCenter' => 'Building C, Center',
+            'buildingDWestWing' => 'Building D, West Wing',
+            'buildingEEastWing' => 'Building E, East Wing',
+            'buildingFUpperDeck' => 'Building F, Upper Deck',
+            'buildingGLowerDeck' => 'Building G, Lower Deck',
+            'info' => 'Select a building location',
+        ],
+    ],
+
     'users' => [
         'title' => 'Users',
         'create' => 'Create User',

@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RoleSeeder::class,
             FloorSeeder::class,
+            GenreSeeder::class,
+            ZoneSeeder::class,
         ]);
 
         //migrar pulse database

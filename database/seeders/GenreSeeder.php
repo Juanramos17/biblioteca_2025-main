@@ -13,6 +13,7 @@ class GenreSeeder extends Seeder
      */
     public function run(): void
     {
+        Genre::truncate();
          $genres = [
             'Fiction',
             'Mystery',

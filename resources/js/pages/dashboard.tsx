@@ -1,5 +1,5 @@
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
-import { Users, User } from 'lucide-react';
+import { Users, User, Building2 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -50,6 +50,13 @@ export default function Dashboard() {
                             </div>
                         </div>
                     }
+                />
+
+                <DashboardCard
+                    title="Pisos"
+                    description="Gestiona los pisos de la biblioteca"
+                    href="/floors"
+                    icon={Building2}
                 />
 
             </div>

@@ -24,13 +24,7 @@ class FloorFactory extends Factory
      */
     public function definition(): array
     {
-        // Lista de nombres de pisos comunes
-        $floorNames = [
-            'First Floor', 'Second Floor', 'Third Floor', 'Fourth Floor', 'Fifth Floor',
-            'Sixth Floor', 'Seventh Floor', 'Eighth Floor', 'Ninth Floor', 'Tenth Floor'
-        ];
-
-        // Lista de ubicaciones posibles
+       
         $locations = [
             'Building A, Left Wing', 'Building A, Right Wing', 'Building B, Left Wing', 
             'Building B, Right Wing', 'Building C, Center', 'Building D, West Wing',
@@ -38,9 +32,9 @@ class FloorFactory extends Factory
         ];
 
         return [
-            'name' => fake()->randomElement($floorNames), // Selecciona un nombre de piso aleatorio
-            'ubication' => fake()->randomElement($locations), // Selecciona una ubicación aleatoria
-            'n_zones' => fake()->numberBetween(1, 10), // Número aleatorio de zonas entre 1 y 10
+            'name' => fake()->unique()->numberBetween(1, 20),
+            'ubication' => fake()->randomElement($locations), 
+            'n_zones' => fake()->numberBetween(1, 10), 
         ];
     }
 }

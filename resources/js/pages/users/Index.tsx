@@ -4,7 +4,6 @@ import { TableSkeleton } from "@/components/stack-table/TableSkeleton";
 import { UserLayout } from "@/layouts/users/UserLayout";
 import { User, useDeleteUser, useUsers } from "@/hooks/users/useUsers";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { useDebounce } from "@/hooks/use-debounce";
 import { useState, useMemo } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { useTranslations } from "@/hooks/use-translations";
