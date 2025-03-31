@@ -1,12 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "../../lib/axios";
 
-export interface Zone {
+export interface Bookshelf {
   id: string;
-  name: number;
+  enumeration: number;
   category: string;
-  n_bookshelves: number;
-  floor_name: string;
+  n_books: number;
+  n_shelves: number;
+  zone_name: string;
   created_at: string;
 }
 
@@ -44,17 +45,17 @@ export interface PaginatedResponse<T> {
   };
 }
 
-interface UseZonesParams {
+interface UseBookshelfParams {
   search?: string;
   page?: number;
   perPage?: number;
 }
 
-export function useZones({ search, page = 1, perPage = 10 }: UseZonesParams = {}) {
+export function useBookshelves({ search, page = 1, perPage = 10 }: UseBookshelfParams = {}) {
   return useQuery({
     queryKey: ["zones", { search, page, perPage }],
     queryFn: async () => {
-      const { data: apiResponse } = await axios.get<ApiPaginatedResponse<Zone>>("/api/zones", {
+      const { data: apiResponse } = await axios.get<ApiPaginatedResponse<Bookshelf>>("/api/zones", {
         params: {
           search,
           page,
@@ -77,7 +78,7 @@ export function useZones({ search, page = 1, perPage = 10 }: UseZonesParams = {}
           to: apiResponse.to,
           total: apiResponse.total
         }
-      } as PaginatedResponse<Zone>;
+      } as PaginatedResponse<Bookshelf>;
     },
   });
 }
@@ -110,10 +111,10 @@ export function useUpdateUser(userId: string) {
   });
 }
 
-export function useDeleteZone() {
+export function useDeleteBookshelf() {
   return useMutation({
-    mutationFn: async (zoneId: string) => {
-      await axios.delete(`/api/zones/${zoneId}`, {
+    mutationFn: async (bookshelfId: string) => {
+      await axios.delete(`/api/bookshelves/${bookshelfId}`, {
         headers: {
           'Accept': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'

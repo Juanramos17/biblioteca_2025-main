@@ -3,7 +3,7 @@ import { ZoneLayout } from "@/layouts/zones/ZoneLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableSkeleton } from "@/components/stack-table/TableSkeleton";
-import { Zone, useZones, useDeleteZone } from "@/hooks/zones/useZones";
+import { Bookshelf, useBookshelves, useDeleteBookshelf } from "@/hooks/bookshelves/useBookshelves";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Link, usePage } from "@inertiajs/react";
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { ColumnDef, Row } from "@tanstack/react-table";
 
 
-export default function ZonesIndex() {
+export default function BookshelvesIndex() {
   const { t } = useTranslations();
   const { url } = usePage();
 
@@ -36,14 +36,14 @@ export default function ZonesIndex() {
     filters.email ? `email:${filters.email}` : null
   ].filter(Boolean).join(' ');
 
-  const { data: zones, isLoading, isError, refetch } = useZones({
+  const { data: zones, isLoading, isError, refetch } = useBookshelves({
     search: combinedSearch,
     page: currentPage,
     perPage: perPage,
   });
 
 
-  const deleteUserMutation = useDeleteZone();
+  const deleteUserMutation = useDeleteBookshelf();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -65,48 +65,48 @@ export default function ZonesIndex() {
   };
 
   const columns = useMemo(() => ([
-    createTextColumn<Zone>({
-      id: "name",
+    createTextColumn<Bookshelf>({
+      id: "enumeration",
       header: t("ui.floors.columns.name") || "Floors' number",
-      accessorKey: "name",
+      accessorKey: "enumeration",
     }),
-    createTextColumn<Zone>({
-      id: "floor_name",
+    createTextColumn<Bookshelf>({
+      id: "zone_name",
       header: t("ui.floors.columns.name") || "Floors' number",
-      accessorKey: "floor_name",
+      accessorKey: "zone_name",
     }),
-    createTextColumn<Zone>({
+    createTextColumn<Bookshelf>({
       id: "category",
       header: t("ui.floors.columns.ubication") || "Ubication",
       accessorKey: "category",
     }),
-    createTextColumn<Zone>({
-      id: "n_bookshelves",
+    createTextColumn<Bookshelf>({
+      id: "n_books",
       header: t("ui.floors.columns.ubication") || "n_zones",
-      accessorKey: "n_bookshelves",
+      accessorKey: "n_books",
     }),
-    createTextColumn<Zone>({
+    createTextColumn<Bookshelf>({
       id: "count",
       header: t("ui.floors.columns.ubication") || "n_zones",
       accessorKey: "count",
     }),
-    createDateColumn<Zone>({
+    createDateColumn<Bookshelf>({
       id: "created_at",
       header: t("ui.floors.columns.created_at") || "Created At",
       accessorKey: "created_at",
     }),
-    createActionsColumn<Zone>({
+    createActionsColumn<Bookshelf>({
       id: "actions",
       header: t("ui.floors.columns.actions") || "Actions",
-      renderActions: (zone) => (
+      renderActions: (bookshelf) => (
         <>
-          <Link href={`/zones/${zone.id}/edit?page=${currentPage}&perPage=${perPage}`}>
+          <Link href={`/bookshelves/${bookshelf.id}/edit?page=${currentPage}&perPage=${perPage}`}>
             <Button variant="outline" size="icon" title={t("ui.users.buttons.edit") || "Edit user"}>
               <PencilIcon className="h-4 w-4" />
             </Button>
           </Link>
           <DeleteDialog
-            id={zone.id}
+            id={bookshelf.id}
             onDelete={handleDeleteUser}
             title={t("ui.users.delete.title") || "Delete user"}
             description={t("ui.users.delete.description") || "Are you sure you want to delete this zone? This action cannot be undone."}
@@ -119,7 +119,7 @@ export default function ZonesIndex() {
         </>
       ),
     }),
-  ] as ColumnDef<Zone>[]), [t, handleDeleteUser]);
+  ] as ColumnDef<Bookshelf>[]), [t, handleDeleteUser]);
 
   return (
     <ZoneLayout title={t("ui.zones.title")}>
@@ -127,7 +127,7 @@ export default function ZonesIndex() {
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
                       <h1 className="text-3xl font-bold">{t('ui.floors.title')}</h1>
-                      <Link href="/zones/create">
+                      <Link href="/bookshelf/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
                               {t('ui.floors.buttons.new')}

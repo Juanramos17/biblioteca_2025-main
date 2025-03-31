@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('bookshelves', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('name');
             $table->unsignedInteger('enumeration');
+            $table->unsignedInteger('n_shelves');
             $table->string('category');
             $table->unsignedInteger('n_books');
             $table->foreignUuid('zone_id')->constrained('zones')->cascadeOnDelete();

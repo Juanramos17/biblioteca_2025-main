@@ -29,6 +29,11 @@ const mainNavItems = (t: (key: string) => string): NavItem[] => [
         url: '/zones',
         icon: Building2,
     },
+    {
+        title: t('ui.navigation.items.bookshelves'),
+        url: '/bookshelves',
+        icon: Building2,
+    },
 ];
 
 const footerNavItems = (t: (key: string) => string): NavItem[] => [

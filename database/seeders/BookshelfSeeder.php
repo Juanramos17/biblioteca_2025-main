@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Domain\Bookshelves\Model\Bookshelve;
+use Domain\Bookshelves\Model\Bookshelf;
 
-class BookshelveSeeder extends Seeder
+class BookshelfSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,9 +13,9 @@ class BookshelveSeeder extends Seeder
     public function run(): void
     {
         // Limpiar la tabla de zonas antes de insertar datos
-        Bookshelve::truncate();
+        Bookshelf::truncate();
 
         // Crear 10 zonas utilizando el factory
-        Bookshelve::factory()->count(10)->create();
+        Bookshelf::factory()->count(10)->create();
     }
 }

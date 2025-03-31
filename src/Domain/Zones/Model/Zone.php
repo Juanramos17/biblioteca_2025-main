@@ -30,6 +30,6 @@ class Zone extends Model
 
     function bookshelves()
     {
-        return $this->hasMany('Domain\Bookshelves\Model\Bookshelve');
+        return $this->hasMany('Domain\Bookshelves\Model\Bookshelf');
     }
 }
