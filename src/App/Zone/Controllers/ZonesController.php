@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Floor\Controllers;
+namespace App\Zone\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -8,32 +8,33 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Core\Controllers\Controller;
 use Domain\Floors\Model\Floor;
+use Domain\Zones\Model\Zone;
 use Domain\Genres\Model\Genre;
-use Domain\Floors\Actions\FloorStoreAction;
-use Domain\Floors\Actions\FloorUpdateAction;
+use Domain\Zones\Actions\ZoneStoreAction;
+use Domain\Zones\Actions\ZoneUpdateAction;
 
-class FloorsController extends Controller
+class ZonesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $floors = Floor::withCount('zones')->orderBy('name')->get();
+        $zones = Zone::withCount('bookshelves')->orderBy('name')->get();
 
-        $results = $floors->map(function ($floor) {
+        $results = $zones->map(function ($zone) {
             return [
-                'id' => $floor->id,
-                'name' => $floor->name,
-                'ubication' => $floor->ubication,
-                'n_zones' => $floor->n_zones,
-                'count' => $floor->zones_count,
-                'zones' => $floor->zones,
+                'id' => $zone->id,
+                'name' => $zone->name,
+                'category' => $zone->category,
+                'n_bookshelves' => $zone->n_bookshelves,
+                'count' => $zone->bookshelves_count,
+                'bookshelves' => $zone->bookshelves,
             ];
         })->toArray();
 
 
-        return Inertia::render('floors/Index', ["floors" => $results]);
+        return Inertia::render('zones/Index', ["zones" => $results]);
     }
 
     /**
@@ -42,19 +43,21 @@ class FloorsController extends Controller
     public function create()
     {
         $genres = Genre::all();
+        $floors = Floor::all();
 
-        return Inertia::render('floors/Create', ["genres" => $genres]);
+        return Inertia::render('zones/Create', ["genres" => $genres, "floors"=>$floors]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, FloorStoreAction $action)
+    public function store(Request $request, ZoneStoreAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1', 'unique:floors'],
-            'ubication' => ['required', 'string', 'max:255'],
-            'n_zones' => ['required', 'int', 'min:1'],
+            'name' => ['required', 'int', 'min:1'],
+            'category' => ['required'],
+            'n_bookshelves' => ['required', 'int', 'min:1'],
+            'floor_id'=>['required'],
         ]);
 
         if ($validator->fails()) {
@@ -64,8 +67,8 @@ class FloorsController extends Controller
 
         $action($validator->validated());
 
-        return redirect()->route('floors.index')
-            ->with('success', __('messages.floors.created'));
+        return redirect()->route('zones.index')
+            ->with('success', __('messages.zones.created'));
     }
 
     /**
@@ -79,33 +82,39 @@ class FloorsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Floor $floor)
+    public function edit(Request $request, Zone $zone)
     {
-        return Inertia::render('floors/Edit', [
-            'initialData' => $floor,
+        $genres = Genre::all();
+        $floors = Floor::all();
+
+        return Inertia::render('zones/Edit', [
+            'initialData' => $zone,
             'page' => $request->query('page'),
             'perPage' => $request->query('perPage'),
+            "genres" => $genres, 
+            "floors"=>$floors
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Floor $floor, FloorUpdateAction $action)
+    public function update(Request $request, Zone $zone, ZoneUpdateAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1', 'unique:floors'],
-            'ubication' => ['required', 'string', 'max:255'],
-            'n_zones' => ['required', 'int', 'min:1'],
+            'name' => ['required', 'int', 'min:1'],
+            'category' => ['required'],
+            'n_bookshelves' => ['required', 'int', 'min:1'],
+            'floor_id'=>['required'],
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
 
-        $action($floor, $validator->validated());
+        $action($zone, $validator->validated());
 
-        $redirectUrl = route('floors.index');
+        $redirectUrl = route('zones.index');
         
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');

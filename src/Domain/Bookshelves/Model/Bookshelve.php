@@ -2,10 +2,15 @@
 
 namespace Domain\Bookshelves\Model;
 
+use Database\Factories\BookshelveFactory;
+use Database\Factories\ZoneFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Bookshelve extends Model
 {
+    use HasUuids, HasFactory;
     protected $fillable = [
         'id',
         'name',
@@ -14,6 +19,12 @@ class Bookshelve extends Model
         'n_books',
         'zone_id',
     ];
+
+    protected static function newFactory()
+    {
+        return BookshelveFactory::new();
+    }
+
 
     function zone()
     {

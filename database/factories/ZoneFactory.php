@@ -20,7 +20,7 @@ class ZoneFactory extends Factory
         $floor = Floor::inRandomOrder()->first();
 
         return [
-            'name' => fake()->word(),
+            'name' => fake()->numberBetween(1,10),
             'category' => $categoryName,
             'n_bookshelves' => fake()->numberBetween(1, 10),
             'floor_id' => $floor->id,

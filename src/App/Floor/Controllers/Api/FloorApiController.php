@@ -27,22 +27,7 @@ class FloorApiController extends Controller
 
     public function store(Request $request, FloorStoreAction $action)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'level' => ['required', 'integer', 'min:1'],
-            'building_id' => ['required', 'exists:buildings,id'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $floor = $action($validator->validated());
-
-        return response()->json([
-            'message' => __('messages.floors.created'),
-            'floor' => $floor
-        ]);
+       
     }
 
     public function update(Request $request, Floor $floor, FloorUpdateAction $action)

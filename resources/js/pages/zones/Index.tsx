@@ -1,9 +1,9 @@
-import { FloorLayout } from "@/layouts/floors/FloorLayout";
+import { ZoneLayout } from "@/layouts/zones/ZoneLayout";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableSkeleton } from "@/components/stack-table/TableSkeleton";
-import { Floor, useFloors, useDeleteFloor } from "@/hooks/floors/useFloors";
+import { Zone, useZones, useDeleteZone } from "@/hooks/zones/useZones";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Link, usePage } from "@inertiajs/react";
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { ColumnDef, Row } from "@tanstack/react-table";
 
 
-export default function FloorsIndex() {
+export default function ZonesIndex() {
   const { t } = useTranslations();
   const { url } = usePage();
 
@@ -36,14 +36,14 @@ export default function FloorsIndex() {
     filters.email ? `email:${filters.email}` : null
   ].filter(Boolean).join(' ');
 
-  const { data: floors, isLoading, isError, refetch } = useFloors({
+  const { data: zones, isLoading, isError, refetch } = useZones({
     search: combinedSearch,
     page: currentPage,
     perPage: perPage,
   });
 
 
-  const deleteUserMutation = useDeleteFloor();
+  const deleteUserMutation = useDeleteZone();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -65,46 +65,46 @@ export default function FloorsIndex() {
   };
 
   const columns = useMemo(() => ([
-    createTextColumn<Floor>({
+    createTextColumn<Zone>({
       id: "name",
       header: t("ui.floors.columns.name") || "Floors' number",
       accessorKey: "name",
     }),
-    createTextColumn<Floor>({
-      id: "ubication",
+    createTextColumn<Zone>({
+      id: "category",
       header: t("ui.floors.columns.ubication") || "Ubication",
-      accessorKey: "ubication",
+      accessorKey: "category",
     }),
-    createTextColumn<Floor>({
-      id: "n_zones",
+    createTextColumn<Zone>({
+      id: "n_bookshelves",
       header: t("ui.floors.columns.ubication") || "n_zones",
-      accessorKey: "n_zones",
+      accessorKey: "n_bookshelves",
     }),
-    createTextColumn<Floor>({
+    createTextColumn<Zone>({
       id: "count",
-      header: t("ui.floors.columns.ubication") || "Count",
+      header: t("ui.floors.columns.ubication") || "n_zones",
       accessorKey: "count",
     }),
-    createDateColumn<Floor>({
+    createDateColumn<Zone>({
       id: "created_at",
       header: t("ui.floors.columns.created_at") || "Created At",
       accessorKey: "created_at",
     }),
-    createActionsColumn<Floor>({
+    createActionsColumn<Zone>({
       id: "actions",
       header: t("ui.floors.columns.actions") || "Actions",
-      renderActions: (floor) => (
+      renderActions: (zone) => (
         <>
-          <Link href={`/floors/${floor.id}/edit?page=${currentPage}&perPage=${perPage}`}>
+          <Link href={`/zones/${zone.id}/edit?page=${currentPage}&perPage=${perPage}`}>
             <Button variant="outline" size="icon" title={t("ui.users.buttons.edit") || "Edit user"}>
               <PencilIcon className="h-4 w-4" />
             </Button>
           </Link>
           <DeleteDialog
-            id={floor.id}
+            id={zone.id}
             onDelete={handleDeleteUser}
             title={t("ui.users.delete.title") || "Delete user"}
-            description={t("ui.users.delete.description") || "Are you sure you want to delete this floor? This action cannot be undone."}
+            description={t("ui.users.delete.description") || "Are you sure you want to delete this zone? This action cannot be undone."}
             trigger={
               <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" title={t("ui.users.buttons.delete") || "Delete user"}>
                 <TrashIcon className="h-4 w-4" />
@@ -114,15 +114,15 @@ export default function FloorsIndex() {
         </>
       ),
     }),
-  ] as ColumnDef<Floor>[]), [t, handleDeleteUser]);
+  ] as ColumnDef<Zone>[]), [t, handleDeleteUser]);
 
   return (
-    <FloorLayout title={t("ui.floors.title")}>
+    <ZoneLayout title={t("ui.zones.title")}>
         <div className="p-6">
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
                       <h1 className="text-3xl font-bold">{t('ui.floors.title')}</h1>
-                      <Link href="/floors/create">
+                      <Link href="/zones/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
                               {t('ui.floors.buttons.new')}
@@ -175,7 +175,7 @@ export default function FloorsIndex() {
                           <div>
                               <Table
                                   data={
-                                      floors ?? {
+                                      zones ?? {
                                           data: [],
                                           meta: {
                                               current_page: 1,
@@ -198,6 +198,6 @@ export default function FloorsIndex() {
                   </div>
               </div>
           </div>
-    </FloorLayout>
+    </ZoneLayout>
   );
 }

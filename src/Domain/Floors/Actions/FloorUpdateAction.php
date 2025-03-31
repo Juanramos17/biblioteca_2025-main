@@ -12,11 +12,11 @@ class FloorUpdateAction
     {
         $updateData = [
             'name' => $data['name'],
-            'ubication' => $data['email'],
+            'ubication' => $data['ubication'],
             'n_zones' => $data['n_zones'],
         ];
 
-       
+        $floor->update($updateData);
 
         return FloorResource::fromModel($floor->fresh());
     }

@@ -59,6 +59,13 @@ export default function Dashboard() {
                     icon={Building2}
                 />
 
+                <DashboardCard
+                    title="Zonas"
+                    description="Gestiona las zonas de la biblioteca"
+                    href="/zones"
+                    icon={Building2}
+                />
+
             </div>
         </AppLayout>
     );
