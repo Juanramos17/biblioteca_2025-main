@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Floor\Controllers\Api;
+namespace App\Bookshelf\Controllers\Api;
 
 use App\Core\Controllers\Controller;
 use Domain\Bookshelves\Model\Bookshelf;
-use Domain\Floors\Actions\FloorDestroyAction;
-use Domain\Floors\Actions\FloorIndexAction;
-use Domain\Floors\Actions\FloorStoreAction;
 use Domain\Floors\Actions\FloorUpdateAction;
 use Domain\Floors\Model\Floor;
-use Domain\Zones\Actions\BookshelfDestroyAction;
-use Domain\Zones\Actions\BookshelfIndexAction;
-use Domain\Zones\Actions\BookshelfStoreAction;
+use Domain\Bookshelves\Actions\BookshelfDestroyAction;
+use Domain\Bookshelves\Actions\BookshelfIndexAction;
+use Domain\Bookshelves\Actions\BookshelfStoreAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -26,7 +23,6 @@ class BookshelfApiController extends Controller
 
     public function show(Bookshelf $bookshelf)
     {
-        return response()->json(['bookshelf' => $bookshelf]);
     }
 
     public function store(Request $request, BookshelfStoreAction $bookshelf)

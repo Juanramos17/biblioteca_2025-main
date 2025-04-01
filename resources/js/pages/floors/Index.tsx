@@ -59,7 +59,7 @@ export default function FloorsIndex() {
       await deleteUserMutation.mutateAsync(id);
       refetch();
     } catch (error) {
-      toast.error(t("ui.users.deleted_error") || "Error deleting floor");
+      toast.error(t("ui.floors.deleted_error") || "Error deleting floor");
       console.error("Error deleting floor:", error);
     }
   };
@@ -77,12 +77,12 @@ export default function FloorsIndex() {
     }),
     createTextColumn<Floor>({
       id: "n_zones",
-      header: t("ui.floors.columns.ubication") || "n_zones",
+      header: t("ui.floors.columns.nZones") || "Zones' number",
       accessorKey: "n_zones",
     }),
     createTextColumn<Floor>({
       id: "count",
-      header: t("ui.floors.columns.ubication") || "Count",
+      header: t("ui.floors.columns.ocupedZones") || "Count",
       accessorKey: "count",
     }),
     createDateColumn<Floor>({
@@ -103,10 +103,10 @@ export default function FloorsIndex() {
           <DeleteDialog
             id={floor.id}
             onDelete={handleDeleteUser}
-            title={t("ui.users.delete.title") || "Delete user"}
-            description={t("ui.users.delete.description") || "Are you sure you want to delete this floor? This action cannot be undone."}
+            title={t("ui.floors.delete") || "Delete Floor"}
+            description={t("ui.floors.description") || "Are you sure you want to delete this floor? This action cannot be undone."}
             trigger={
-              <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" title={t("ui.users.buttons.delete") || "Delete user"}>
+              <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" title={t("ui.floors.buttons.delete") || "Delete floor"}>
                 <TrashIcon className="h-4 w-4" />
               </Button>
             }

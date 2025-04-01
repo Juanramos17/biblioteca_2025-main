@@ -6,7 +6,8 @@ export interface Bookshelf {
   enumeration: number;
   category: string;
   n_books: number;
-  n_shelves: number;
+  shelves: number;
+  count: number;
   zone_name: string;
   created_at: string;
 }
@@ -53,9 +54,9 @@ interface UseBookshelfParams {
 
 export function useBookshelves({ search, page = 1, perPage = 10 }: UseBookshelfParams = {}) {
   return useQuery({
-    queryKey: ["zones", { search, page, perPage }],
+    queryKey: ["bookshelves", { search, page, perPage }],
     queryFn: async () => {
-      const { data: apiResponse } = await axios.get<ApiPaginatedResponse<Bookshelf>>("/api/zones", {
+      const { data: apiResponse } = await axios.get<ApiPaginatedResponse<Bookshelf>>("/api/bookshelves", {
         params: {
           search,
           page,

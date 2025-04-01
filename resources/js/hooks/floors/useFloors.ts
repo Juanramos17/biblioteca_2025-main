@@ -5,6 +5,7 @@ export interface Floor {
   id: string;
   name: string;
   ubication: string;
+  count: number;
   n_zones: number;
   created_at: string;
 }

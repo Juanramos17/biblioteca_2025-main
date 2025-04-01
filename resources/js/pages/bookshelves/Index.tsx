@@ -14,6 +14,7 @@ import { DeleteDialog } from "@/components/stack-table/DeleteDialog";
 import { FiltersTable, FilterConfig } from "@/components/stack-table/FiltersTable";
 import { toast } from "sonner";
 import { ColumnDef, Row } from "@tanstack/react-table";
+import { BookshelfLayout } from "@/layouts/bookshelves/Bookshelf";
 
 
 export default function BookshelvesIndex() {
@@ -67,27 +68,32 @@ export default function BookshelvesIndex() {
   const columns = useMemo(() => ([
     createTextColumn<Bookshelf>({
       id: "enumeration",
-      header: t("ui.floors.columns.name") || "Floors' number",
+      header: t("ui.bookshelves.columns.enumeration") || "Bookshelves' enum",
       accessorKey: "enumeration",
     }),
     createTextColumn<Bookshelf>({
       id: "zone_name",
-      header: t("ui.floors.columns.name") || "Floors' number",
+      header: t("ui.bookshelves.columns.zone") || "Zones' number",
       accessorKey: "zone_name",
     }),
     createTextColumn<Bookshelf>({
       id: "category",
-      header: t("ui.floors.columns.ubication") || "Ubication",
+      header: t("ui.bookshelves.columns.category") || "Category",
       accessorKey: "category",
     }),
     createTextColumn<Bookshelf>({
+      id: "shelves",
+      header: t("ui.bookshelves.columns.shelves") || "Shelves",
+      accessorKey: "shelves",
+    }),
+    createTextColumn<Bookshelf>({
       id: "n_books",
-      header: t("ui.floors.columns.ubication") || "n_zones",
+      header: t("ui.bookshelves.columns.books") || "Books' number",
       accessorKey: "n_books",
     }),
     createTextColumn<Bookshelf>({
       id: "count",
-      header: t("ui.floors.columns.ubication") || "n_zones",
+      header: t("ui.bookshelves.columns.count") || "Count",
       accessorKey: "count",
     }),
     createDateColumn<Bookshelf>({
@@ -108,8 +114,8 @@ export default function BookshelvesIndex() {
           <DeleteDialog
             id={bookshelf.id}
             onDelete={handleDeleteUser}
-            title={t("ui.users.delete.title") || "Delete user"}
-            description={t("ui.users.delete.description") || "Are you sure you want to delete this zone? This action cannot be undone."}
+            title={t("ui.bookshelves.delete") || "Delete bookshelf"}
+            description={t("ui.bookshelves.description") || "Are you sure you want to delete this bookshelf? This action cannot be undone."}
             trigger={
               <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" title={t("ui.users.buttons.delete") || "Delete user"}>
                 <TrashIcon className="h-4 w-4" />
@@ -122,15 +128,15 @@ export default function BookshelvesIndex() {
   ] as ColumnDef<Bookshelf>[]), [t, handleDeleteUser]);
 
   return (
-    <ZoneLayout title={t("ui.zones.title")}>
+    <BookshelfLayout title={t("ui.bookshelves.title")}>
         <div className="p-6">
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                      <h1 className="text-3xl font-bold">{t('ui.floors.title')}</h1>
+                      <h1 className="text-3xl font-bold">{t('ui.bookshelves.title')}</h1>
                       <Link href="/bookshelf/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
-                              {t('ui.floors.buttons.new')}
+                              {t('ui.bookshelves.buttons.new')}
                           </Button>
                       </Link>
                   </div>
@@ -203,6 +209,6 @@ export default function BookshelvesIndex() {
                   </div>
               </div>
           </div>
-    </ZoneLayout>
+    </BookshelfLayout>
   );
 }

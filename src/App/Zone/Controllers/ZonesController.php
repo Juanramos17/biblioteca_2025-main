@@ -29,7 +29,6 @@ class ZonesController extends Controller
                 'category' => $zone->category,
                 'n_bookshelves' => $zone->n_bookshelves,
                 'count' => $zone->bookshelves_count,
-                'bookshelves' => $zone->bookshelves,
             ];
         })->toArray();
 
@@ -43,9 +42,14 @@ class ZonesController extends Controller
     public function create()
     {
         $genres = Genre::all();
-        $floors = Floor::all();
 
-        return Inertia::render('zones/Create', ["genres" => $genres, "floors"=>$floors]);
+        $floors = Floor::with(['zones' => function ($query) {
+            $query->select('id', 'floor_id', 'category'); 
+        }])->orderBy('name')->get();
+           
+        $zones = Zone::all()->pluck('name');
+
+        return Inertia::render('zones/Create', ["genres" => $genres, "floors"=>$floors, "zones" => $zones]);
     }
 
     /**
@@ -54,8 +58,21 @@ class ZonesController extends Controller
     public function store(Request $request, ZoneStoreAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1'],
-            'category' => ['required'],
+            'name' => [
+                'required',
+                'int',
+                'min:1',
+                Rule::unique('zones')->where(function ($query) use ($request) {
+                    return $query->where('floor_id', $request->floor_id); 
+                }),
+            ],
+            'category' => [
+                'required',
+                Rule::unique('zones')->where(function ($query) use ($request) {
+                    return $query->where('floor_id', $request->floor_id); 
+                }),
+        
+                ],
             'n_bookshelves' => ['required', 'int', 'min:1'],
             'floor_id'=>['required'],
         ]);
@@ -85,7 +102,15 @@ class ZonesController extends Controller
     public function edit(Request $request, Zone $zone)
     {
         $genres = Genre::all();
-        $floors = Floor::all();
+
+        // Obtener el ID de la categoría de la zona que estamos editando
+        $categoryToExclude = $zone->category; // Suponiendo que la categoría de la zona se guarda en 'category'
+    
+        // Recuperamos los pisos con las zonas, excluyendo la categoría que estamos editando
+        $floors = Floor::with(['zones' => function ($query) use ($categoryToExclude) {
+            $query->select('id', 'floor_id', 'category')
+                  ->where('category', '!=', $categoryToExclude); // Excluir la categoría de la zona que estamos editando
+        }])->orderBy('name')->get();
 
         return Inertia::render('zones/Edit', [
             'initialData' => $zone,
@@ -102,7 +127,14 @@ class ZonesController extends Controller
     public function update(Request $request, Zone $zone, ZoneUpdateAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1'],
+            'name' => [
+                'required',
+                'int',
+                'min:1',
+                Rule::unique('zones')->where(function ($query) use ($request) {
+                    return $query->where('floor_id', $request->floor_id);
+                })->ignore($request->route('zone')),
+            ],
             'category' => ['required'],
             'n_bookshelves' => ['required', 'int', 'min:1'],
             'floor_id'=>['required'],

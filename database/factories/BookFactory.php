@@ -24,7 +24,7 @@ class BookFactory extends Factory
             'publisher' => fake()->company(),
             'author' => fake()->name(),
             'genre' => $genre ? $genre->name : fake()->word(),  // Si existe un género, usarlo, si no, generar uno aleatorio.
-            'bookshelve_id' => $bookshelf->id,  // Relacionando el libro con un estante aleatorio
+            'bookshelf_id' => $bookshelf->id,  // Relacionando el libro con un estante aleatorio
         ];
     }
 }

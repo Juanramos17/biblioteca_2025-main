@@ -41,9 +41,9 @@ class FloorsController extends Controller
      */
     public function create()
     {
-        $genres = Genre::all();
+        $floors = Floor::all()->pluck('name');
 
-        return Inertia::render('floors/Create', ["genres" => $genres]);
+        return Inertia::render('floors/Create', ["floors" => $floors]);
     }
 
     /**
@@ -52,9 +52,9 @@ class FloorsController extends Controller
     public function store(Request $request, FloorStoreAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1', 'unique:floors'],
+            'name' => ['required', 'integer', 'min:1', 'unique:floors,name'],
             'ubication' => ['required', 'string', 'max:255'],
-            'n_zones' => ['required', 'int', 'min:1'],
+            'n_zones' => ['required', 'integer', 'min:1'],
         ]);
 
         if ($validator->fails()) {
@@ -81,10 +81,13 @@ class FloorsController extends Controller
      */
     public function edit(Request $request, Floor $floor)
     {
+        $floors = Floor::where('name', '!=', $floor->name)->pluck('name');
+
         return Inertia::render('floors/Edit', [
             'initialData' => $floor,
             'page' => $request->query('page'),
             'perPage' => $request->query('perPage'),
+            'floors' => $floors,
         ]);
     }
 
@@ -94,7 +97,12 @@ class FloorsController extends Controller
     public function update(Request $request, Floor $floor, FloorUpdateAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1', 'unique:floors'],
+            'name' => [
+                'required',
+                'int',
+                'min:1',
+                Rule::unique('floors')->ignore($floor->id),  
+            ],
             'ubication' => ['required', 'string', 'max:255'],
             'n_zones' => ['required', 'int', 'min:1'],
         ]);

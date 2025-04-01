@@ -21,7 +21,7 @@ class BookshelvesController extends Controller
      */
     public function index()
     {
-        $bookshelves = Bookshelf::withCount('books')->orderBy('title')->get();
+        $bookshelves = Bookshelf::withCount('books')->orderBy('enumeration')->get();
 
         $results = $bookshelves->map(function ($bookshelf) {
             return [
@@ -30,7 +30,6 @@ class BookshelvesController extends Controller
                 'category' => $bookshelf->category,
                 'n_books' => $bookshelf->n_books,
                 'count' => $bookshelf->books_count,
-                'books' => $bookshelf->books,
             ];
         })->toArray();
 

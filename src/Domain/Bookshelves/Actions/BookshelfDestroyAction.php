@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Zones\Actions;
+namespace Domain\Bookshelves\Actions;
 
 use Domain\Bookshelves\Model\Bookshelf;
 

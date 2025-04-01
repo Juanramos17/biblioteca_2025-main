@@ -18,6 +18,7 @@ class Floor extends Model
         'name',
         'ubication',
         'n_zones',
+        
     ];
     protected static function newFactory()
     {

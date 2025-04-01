@@ -6,6 +6,7 @@ export interface Zone {
   name: number;
   category: string;
   n_bookshelves: number;
+  count: number;
   floor_name: string;
   created_at: string;
 }

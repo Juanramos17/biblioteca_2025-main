@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Zones\Data\Resources;
+namespace Domain\Bookshelves\Data\Resources;
 
 use Domain\Bookshelves\Model\Bookshelf;
 use Domain\Floors\Model\Floor;
@@ -14,6 +14,7 @@ class BookshelfResource extends Data
         public readonly string $zone_name,
         public readonly int $enumeration,
         public readonly string $category,
+        public readonly int $shelves,
         public readonly int $n_books,
         public readonly int $count,
         public readonly string $created_at,
@@ -23,7 +24,7 @@ class BookshelfResource extends Data
 
     public static function fromModel(Bookshelf $bookshelf): self
     {
-        $zone = Zone::find($bookshelf->zone_id);  // Suponiendo que floor_name es un ID
+        $zone = Zone::find($bookshelf->zone_id); 
         $zoneName = $zone ? $zone->name : '';
 
         return new self(
@@ -31,6 +32,7 @@ class BookshelfResource extends Data
             enumeration: $bookshelf->enumeration,
             zone_name:$zoneName,
             category: $bookshelf->category,
+            shelves: $bookshelf->n_shelves,
             n_books: $bookshelf->n_books,
             count: $bookshelf->books()->count(),
             created_at: $zone->created_at->format('Y-m-d H:i:s'),

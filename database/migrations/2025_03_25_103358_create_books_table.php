@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('publisher');
             $table->string('author');
             $table->string('genre');
-            $table->foreignUuid('bookshelve_id')->constrained('bookshelves')->cascadeOnDelete();
+            $table->foreignUuid('bookshelf_id')->constrained('bookshelves')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -22,7 +22,6 @@ class ZoneApiController extends Controller
 
     public function show(Zone $zone)
     {
-        return response()->json(['zone' => $zone]);
     }
 
     public function store(Request $request, ZoneStoreAction $action)

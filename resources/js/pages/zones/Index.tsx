@@ -67,7 +67,7 @@ export default function ZonesIndex() {
   const columns = useMemo(() => ([
     createTextColumn<Zone>({
       id: "name",
-      header: t("ui.floors.columns.name") || "Floors' number",
+      header: t("ui.zones.columns.name") || "Zones' number",
       accessorKey: "name",
     }),
     createTextColumn<Zone>({
@@ -77,17 +77,17 @@ export default function ZonesIndex() {
     }),
     createTextColumn<Zone>({
       id: "category",
-      header: t("ui.floors.columns.ubication") || "Ubication",
+      header: t("ui.zones.columns.category") || "Category",
       accessorKey: "category",
     }),
     createTextColumn<Zone>({
       id: "n_bookshelves",
-      header: t("ui.floors.columns.ubication") || "n_zones",
+      header: t("ui.zones.columns.bookshelves") || "Bookshelves' number",
       accessorKey: "n_bookshelves",
     }),
     createTextColumn<Zone>({
       id: "count",
-      header: t("ui.floors.columns.ubication") || "n_zones",
+      header: t("ui.zones.columns.nBookshelves") || "Bookshelves' number",
       accessorKey: "count",
     }),
     createDateColumn<Zone>({
@@ -108,8 +108,8 @@ export default function ZonesIndex() {
           <DeleteDialog
             id={zone.id}
             onDelete={handleDeleteUser}
-            title={t("ui.users.delete.title") || "Delete user"}
-            description={t("ui.users.delete.description") || "Are you sure you want to delete this zone? This action cannot be undone."}
+            title={t("ui.zones.delete") || "Delete zone"}
+            description={t("ui.zones.description") || "Are you sure you want to delete this zone? This action cannot be undone."}
             trigger={
               <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" title={t("ui.users.buttons.delete") || "Delete user"}>
                 <TrashIcon className="h-4 w-4" />
@@ -126,11 +126,11 @@ export default function ZonesIndex() {
         <div className="p-6">
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                      <h1 className="text-3xl font-bold">{t('ui.floors.title')}</h1>
+                      <h1 className="text-3xl font-bold">{t('ui.zones.title')}</h1>
                       <Link href="/zones/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
-                              {t('ui.floors.buttons.new')}
+                              {t('ui.zones.buttons.new')}
                           </Button>
                       </Link>
                   </div>

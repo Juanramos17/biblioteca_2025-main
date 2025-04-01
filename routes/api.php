@@ -1,6 +1,6 @@
 <?php
 
-use App\Floor\Controllers\Api\BookshelfApiController;
+use App\Bookshelf\Controllers\Api\BookshelfApiController;
 use App\Users\Controllers\Api\UserApiController;
 use App\Floor\Controllers\Api\FloorApiController;
 use App\Zone\Controllers\Api\ZoneApiController;

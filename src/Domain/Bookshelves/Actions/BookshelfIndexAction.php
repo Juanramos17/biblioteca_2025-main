@@ -1,9 +1,9 @@
 <?php
 
-namespace Domain\Zones\Actions;
+namespace Domain\Bookshelves\Actions;
 
 use Domain\Bookshelves\Model\Bookshelf;
-use Domain\Zones\Data\Resources\BookshelfResource;
+use Domain\Bookshelves\Data\Resources\BookshelfResource;
 
 class BookshelfIndexAction
 {

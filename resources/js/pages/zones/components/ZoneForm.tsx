@@ -8,6 +8,7 @@ import { useForm } from "@tanstack/react-form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslations } from "@/hooks/use-translations";
 import { Grid, Save, X, List, Layers } from "lucide-react";
+import { useState } from "react";
 
 interface ZoneProps {
     initialData?: {
@@ -18,7 +19,8 @@ interface ZoneProps {
         floor_id: string;
     };
     genres: { id: string; name: string }[];
-    floors: { id: string; name: string }[];
+    floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string}[] }[];
+    zones: number[];
     page?: string;
     perPage?: string;
 }
@@ -33,7 +35,7 @@ function FieldInfo({ field }: { field: any }) {
     );
 }
 
-export default function ZoneForm({ initialData, genres, floors, page, perPage }: ZoneProps) {
+export default function ZoneForm({ initialData, genres, floors, zones, page, perPage }: ZoneProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const form = useForm({
@@ -69,26 +71,47 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
         },
     });
 
+    console.log(floors);
+
+    const [selectedFloor, setSelectedFloor] = useState<string>();
+
+    const selectedFloorCategories = selectedFloor 
+    ? floors.find(floor => floor.id === selectedFloor)?.zones.map(zone => zone.category) || [] : [];
+
+
     return (
         <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }} className="space-y-4" noValidate>
             <div className='pl-4 pr-4'>
                 <form.Field
-                    name="name"
-                    validators={{
-                        onChangeAsync: async ({ value }) => {
-                            await new Promise((resolve) => setTimeout(resolve, 500));
-                            const numValue = Number(value);
-                            return isNaN(numValue) || numValue < 1
-                                ? t("ui.validation.required", { attribute: t("ui.bookshelves.fields.name").toLowerCase() })
-                                : undefined;
-                        },
-                    }}
+                     name="name"
+                     validators={{
+                         onChangeAsync: async ({ value }) => {
+                             await new Promise((resolve) => setTimeout(resolve, 500));
+                     
+                             if (value === null || value === undefined || value.toString().trim() === "") {
+                                 return t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() });
+                             }
+                     
+                             const numValue = Number(value);
+                     
+                             if (isNaN(numValue)) {
+                                 return t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() });
+                             }
+                     
+                             if (numValue < 1) {
+                                 return t("ui.validation.min.numeric", { attribute: t("ui.zones.fields.name").toLowerCase(), min: "1" });
+                             }
+                     
+                     
+                             return undefined;
+                         },
+                     }}
                 >
                     {(field) => (
                         <>
                             <div className="flex m-1 align-center ">
                                 <List size={16} className='mr-2 text-gray-500 '/>
-                                <Label htmlFor={field.name}>{t("ui.bookshelves.fields.name")}</Label>
+                                <Label htmlFor={field.name}>{t("ui.zones.fields.name")}</Label>
                             </div>
                             <Input
                                 id={field.name}
@@ -96,7 +119,7 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
                                 value={field.state.value}
                                 onChange={(e) => field.handleChange(Number(e.target.value))}
                                 onBlur={field.handleBlur}
-                                placeholder={t("ui.bookshelves.placeholders.name")}
+                                placeholder={t("ui.zones.placeholders.name")}
                                 disabled={form.state.isSubmitting}
                                 autoComplete="off"
                                 required={false}
@@ -110,41 +133,52 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
 
 
             <div className='pl-4 pr-4'>
-                <form.Field
-                    name="category"
-                    validators={{
-                        onChangeAsync: async ({ value }) => {
-                            await new Promise((resolve) => setTimeout(resolve, 500));
-                            return !value
-                                ? t("ui.validation.required", { attribute: t("ui.bookshelves.fields.category").toLowerCase() })
-                                : undefined;
-                        },
-                    }}
-                >
-                    {(field) => (
-                        <>
-                            <div className="flex m-1 align-center">
-                                <Layers size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t("ui.bookshelves.fields.category")}</Label>
-                            </div>
-                            <Select value={field.state.value} onValueChange={field.handleChange}>
-                                <SelectTrigger className="w-full max-w-[770px] bg-muted">
-                                    <SelectValue placeholder={t("ui.bookshelves.placeholders.category")} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        {genres.map((genre) => (
-                                            <SelectItem key={genre.id} value={genre.name}>{genre.name}</SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                            <FieldInfo field={field} />
-                        </>
-                    )}
-                </form.Field>
+            <form.Field
+    name="category"
+    validators={{
+        onChangeAsync: async ({ value }) => {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            return !value
+                ? t("ui.validation.required", { attribute: t("ui.zones.fields.category").toLowerCase() })
+                : undefined;
+        },
+    }}
+>
+    {(field) => (
+        <>
+            <div className="flex m-1 align-center">
+                <Layers size={16} className="mr-2 text-gray-500" />
+                <Label htmlFor={field.name}>{t("ui.zones.fields.category")}</Label>
             </div>
-
+            <Select 
+                value={field.state.value} 
+                onValueChange={(value) => {
+                    field.handleChange(value); 
+                }}
+            >
+                <SelectTrigger className="w-full max-w-[770px] bg-muted">
+                    <SelectValue placeholder={t("ui.zones.placeholders.category")} />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        {genres.map((genre) => (
+                            <SelectItem
+                                key={genre.id}
+                                value={genre.name}
+                                disabled={selectedFloorCategories.includes(genre.name)}
+                            >
+                                {genre.name}
+                            </SelectItem>
+                        ))}
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+            <FieldInfo field={field} />
+        </>
+    )}
+</form.Field>
+            </div>
+            
             <div className='pl-4 pr-4'>
                 <form.Field
                     name="n_bookshelves"
@@ -153,7 +187,7 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
                             await new Promise((resolve) => setTimeout(resolve, 500));
                             const numValue = Number(value);
                             return isNaN(numValue) || numValue < 1
-                                ? t("ui.validation.required", { attribute: t("ui.bookshelves.fields.n_bookshelves").toLowerCase() })
+                                ? t("ui.validation.required", { attribute: t("ui.zones.fields.bookshelves").toLowerCase() })
                                 : undefined;
                         },
                     }}
@@ -162,7 +196,7 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
                         <>
                             <div className="flex m-1 align-center">
                                 <Grid size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t("ui.bookshelves.fields.n_bookshelves")}</Label>
+                                <Label htmlFor={field.name}>{t("ui.zones.fields.bookshelves")}</Label>
                             </div>
                             <Input
                                 id={field.name}
@@ -170,7 +204,7 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
                                 value={field.state.value}
                                 onChange={(e) => field.handleChange(Number(e.target.value))}
                                 onBlur={field.handleBlur}
-                                placeholder={t("ui.bookshelves.placeholders.n_bookshelves")}
+                                placeholder={t("ui.zones.placeholders.bookshelves")}
                                 disabled={form.state.isSubmitting}
                                 autoComplete="off"
                                 required
@@ -187,30 +221,38 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
                 <form.Field
                     name="floor_id"
                     validators={{
-                        onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.bookshelves.fields.floor").toLowerCase() }),
+                        onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.zones.fields.floor").toLowerCase() }),
                     }}
                 >
                     {(field) => (
                         <>
-                            <div className="flex m-1 align-center">
+                              <div className="flex m-1 align-center">
                                 <Layers size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t("ui.bookshelves.fields.floor")}</Label>
+                                <Label htmlFor={field.name}>{t("ui.zones.fields.floor")}</Label>
                             </div>
-                            <Select value={field.state.value} onValueChange={field.handleChange}>
+                            <Select value={field.state.value} onValueChange={(value) => {field.handleChange(value); 
+                                setSelectedFloor(value); }}
+>
                                 <SelectTrigger className="w-full max-w-[770px] bg-muted">
-                                    <SelectValue placeholder={t("ui.bookshelves.placeholders.floor")} />
+                                    <SelectValue placeholder={t("ui.zones.placeholders.floor")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         {floors.map((floor) => (
-                                            <SelectItem key={floor.id} value={floor.id}>{floor.name}</SelectItem>
+                                            <SelectItem 
+                                                key={floor.id} 
+                                                value={floor.id} 
+                                                disabled={floor.n_zones == floor.zones_count}  
+                                            >
+                                                {t("ui.floors.floor")} {floor.name}
+                                            </SelectItem>
                                         ))}
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
                             <FieldInfo field={field} />
-                        </>
-                    )}
+                                        </>
+                                    )}
                 </form.Field>
             </div>
 
@@ -232,7 +274,7 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
                     disabled={form.state.isSubmitting}
                 >
                     <X />
-                    {t("ui.users.buttons.cancel")}
+                    {t("ui.zones.buttons.cancel")}
                 </Button>
 
                 <form.Subscribe
@@ -242,10 +284,10 @@ export default function ZoneForm({ initialData, genres, floors, page, perPage }:
                         <Button type="submit" disabled={!canSubmit} className='bg-blue-500 text-white'>
                             <Save />
                             {isSubmitting
-                                ? t("ui.users.buttons.saving")
+                                ? t("ui.zones.buttons.saving")
                                 : initialData
-                                    ? t("ui.users.buttons.update")
-                                    : t("ui.users.buttons.save")}
+                                    ? t("ui.zones.buttons.update")
+                                    : t("ui.zones.buttons.save")}
                                     
                         </Button>
                     )}

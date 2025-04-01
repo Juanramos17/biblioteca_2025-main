@@ -16,12 +16,14 @@ class BookshelfFactory extends Factory
         
         $zone = Zone::inRandomOrder()->first();
         
+        $shelves = fake()->numberBetween(1, 100);
+
         return [
             'id' => fake()->uuid(),
             'enumeration' => fake()->numberBetween(1, 100),
-            'n_shelves' => fake()->numberBetween(1, 100),
+            'n_shelves' => $shelves,
             'category' => $zone->category,
-            'n_books' => fake()->numberBetween(0, 500),
+            'n_books' => $shelves * 10,
             'zone_id' => $zone->id,
         ];
     }

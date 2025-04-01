@@ -10,7 +10,7 @@ class ZoneResource extends Data
 {
     public function __construct(
         public readonly string $id,
-        public readonly string $floor_name,
+        public readonly int $floor_name,
         public readonly int $name,
         public readonly string $category,
         public readonly int $n_bookshelves,
@@ -22,13 +22,12 @@ class ZoneResource extends Data
 
     public static function fromModel(Zone $zone): self
     {
-        $floor = Floor::find($zone->floor_id);  // Suponiendo que floor_name es un ID
-        $floorName = $floor ? $floor->name : '';
+        $floor = Floor::find($zone->floor_id); 
 
         return new self(
             id: $zone->id,
             name: $zone->name,
-            floor_name:$floorName,
+            floor_name:$floor->name,
             category: $zone->category,
             n_bookshelves: $zone->n_bookshelves,
             count: $zone->bookshelves()->count(),
