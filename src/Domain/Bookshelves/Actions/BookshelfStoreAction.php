@@ -10,10 +10,11 @@ class BookshelfStoreAction
     public function __invoke(array $data): BookshelfResource
     {
         $bookshelf = Bookshelf::create([
-            'name' => $data['name'],
+            'enumeration' => $data['enumeration'],
             'category' => $data['category'],
-            'n_bookshelves' => $data['n_bookshelves'],
-            'floor_id' => $data['floor_id'],
+            'n_books' => $data['books'],
+            'n_shelves' => $data['shelves'],
+            'zone_id' => $data['zone_id'],
         ]);
 
         

@@ -20,10 +20,10 @@ class BookshelfFactory extends Factory
 
         return [
             'id' => fake()->uuid(),
-            'enumeration' => fake()->numberBetween(1, 100),
+            'enumeration' => fake()->numberBetween(1, 10),
             'n_shelves' => $shelves,
             'category' => $zone->category,
-            'n_books' => $shelves * 10,
+            'n_books' => $shelves * 30,
             'zone_id' => $zone->id,
         ];
     }

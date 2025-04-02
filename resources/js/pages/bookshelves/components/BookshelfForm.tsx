@@ -1,5 +1,5 @@
 import { FloorLayout } from "@/layouts/floors/FloorLayout";
-import { Eye, EyeOff, User, Mail, Lock, X, Save, PackageOpen, FileText, Settings, Grid, MapPin, Building2 } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, X, Save, PackageOpen, FileText, Settings, Grid, MapPin, Building2, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,17 +19,21 @@ import {
     SelectValue,
   } from "@/components/ui/select";
 import { floor } from "lodash";
+import { useState } from "react";
 
 interface FloorProps {
     initialData?: {
         id: string;
-        name: number;
-        ubication: string;
-        n_zones: number;
+        enumeration: number;
+        category: string;
+        n_shelves: number;
+        zone_id: string;
     };
-    floors?: number[];
+    floor_id?: string;
+    floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string}[] }[];  
+    zones: { id: string; name: string, n_bookshelves:number,floor:{id:string, name:number}, bookshelves_count:number, category:string, bookshelves:{category:string, zone_id:string, id:string}[] }[];
     page?: string;
-    perPage?: string;      
+    perPage?: string;  
 }
 
 
@@ -50,24 +54,35 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export default function FloorForm({ floors, initialData, page, perPage }: FloorProps) {
+export default function FloorForm({ zones, floors,floor_id, initialData, page, perPage }: FloorProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const form = useForm({
             defaultValues: {
-                name: initialData?.name ?? "",
-                ubication: initialData?.ubication ?? "",
-                n_zones: initialData?.n_zones ?? "",
+                enumeration: initialData?.enumeration ?? "",
+                category: initialData?.category ?? "",
+                shelves: initialData?.n_shelves ?? "",
+                zone_id: initialData?.zone_id ?? "",
+                floor_id: floor_id ?? "",
+                
                  
             },
             onSubmit: async ({ value }) => {
-    
+                    const data = {
+                        ...value,
+                        category: zones.find((zone) => zone.id === value.zone_id)?.category || '', 
+                        books: Number(value.shelves) * 20,
+                    };
+                
+                    console.log(data);
+               
                 const options = {
+
                     onSuccess: () => {
-                        queryClient.invalidateQueries({ queryKey: ["floors"] });
+                        queryClient.invalidateQueries({ queryKey: ["bookshelves"] });
                         
                         // Construct URL with page parameters
-                        let url = "/floors";
+                        let url = "/bookshelves";
                         if (page) {
                             url += `?page=${page}`;
                             if (perPage) {
@@ -88,13 +103,12 @@ export default function FloorForm({ floors, initialData, page, perPage }: FloorP
                     },
                 };
 
-                console.log(value);
     
                 // Submit with Inertia
                 if (initialData) {
-                    router.put(`/floors/${initialData.id}`, value, options);
+                    router.put(`/bookshelves/${initialData.id}`, data, options);
                 } else {
-                    router.post("/floors", value, options);
+                    router.post("/bookshelves", data, options);
                 }
             },
         });
@@ -107,19 +121,16 @@ export default function FloorForm({ floors, initialData, page, perPage }: FloorP
             form.handleSubmit();
         };
 
-        const ubicaciones = [
-            'Building A, Left Wing', 'Building A, Right Wing', 'Building B, Left Wing', 
-            'Building B, Right Wing', 'Building C, Center', 'Building D, West Wing',
-            'Building E, East Wing', 'Building F, Upper Deck', 'Building G, Lower Deck'
-        ];
+        const [selectedFloor, setSelectedFloor] = useState<string>(floor_id??"");
+        
 
-        console.log(floors);
+        console.log(initialData);
     
     return (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className='pl-4 pr-4'>
                 <form.Field
-                    name="name"
+                    name="enumeration"
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
@@ -136,12 +147,6 @@ export default function FloorForm({ floors, initialData, page, perPage }: FloorP
                     
                             if (numValue < 1) {
                                 return t("ui.validation.min.numeric", { attribute: t("ui.floors.fields.name").toLowerCase(), min: "1" });
-                            }
-                    
-                            const isUnique = !(floors ?? []).includes(numValue);
-                    
-                            if (!isUnique) {
-                                return t("ui.validation.unique", { attribute: t("ui.floors.fields.name").toLowerCase() });
                             }
                     
                             return undefined;
@@ -170,90 +175,128 @@ export default function FloorForm({ floors, initialData, page, perPage }: FloorP
                 </form.Field>
             </div>
 
-            {/* Email field */}
             <div className='pl-4 pr-4'>
-            <form.Field
-                name="ubication"
-                validators={{
-                    onChangeAsync: async ({ value }) => {
-                        await new Promise((resolve) => setTimeout(resolve, 500));
-                        return !value
-                            ? t("ui.validation.required", { attribute: t("ui.floors.fields.ubication").toLowerCase() })
-                            : undefined;
-                    },
-                }}
->
-              {(field) => (
-                  <>
-                        <div className="flex m-1 align-center ">
-                            <MapPin size={16} className="mr-2 text-gray-500" />
-                            <Label htmlFor={field.name}>{t("ui.floors.fields.ubication")}</Label>
-                        </div>
-
-                        <Select value={field.state.value} onValueChange={field.handleChange}>
-                            <SelectTrigger className="w-full max-w-[770px] m-4 bg-muted mb-5">
-                                <SelectValue placeholder={t("ui.floors.placeholders.ubication")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>{t("ui.floors.fields.ubication")}</SelectLabel>
-
-                                        {ubicaciones.map((ubicacion, index) => (
-                                        <SelectItem key={index} value={ubicacion}>
-                                            {ubicacion}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                        <FieldInfo field={field} />
-                    </>
-                )}
-            </form.Field>
+                <form.Field
+                    name="floor_id"
+                        validators={{
+                            onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.zones.fields.floor").toLowerCase() }),
+                        }}
+                    >
+                        {(field) => (
+                            <>
+                           <div className="flex m-1 align-center">
+                                <MapPin size={16} className="mr-2 text-gray-500" />
+                                <Label htmlFor={field.name}>{t("ui.zones.fields.floor")}</Label>
+                            </div>
+                                <Select value={field.state.value} onValueChange={(value) => {field.handleChange(value);setSelectedFloor(value);}}
+            >
+                                <SelectTrigger className="w-full max-w-[770px] bg-muted">
+                                    <SelectValue placeholder={t("ui.zones.placeholders.floor")} />
+                                </SelectTrigger>
+                                 <SelectContent>
+                                    <SelectGroup>
+                                        {floors.map((floor) => (
+                                            <SelectItem 
+                                                 key={floor.id} 
+                                                 value={floor.id} 
+                                                 disabled={floor.n_zones == floor.zones_count}  
+                                             >
+                                                {t("ui.floors.floor")} {floor.name}
+                                             </SelectItem>
+                                          ))}
+                                    </SelectGroup>
+                                   </SelectContent>
+                               </Select>
+                             <FieldInfo field={field} />
+                                          </>
+                                       )}
+                  </form.Field>
             </div>
 
-
-            {/* Password field */}
             <div className='pl-4 pr-4'>
-                
                 <form.Field
-                    name="n_zones"
-                    
+                    name="zone_id"
+                    validators={{
+                        onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() }),
+                    }}
+                >
+                    {(field) => (
+                        <>
+                            <div className="flex m-1 align-center">
+                                <MapPin size={16} className="mr-2 text-gray-500" />
+                                <Label htmlFor={field.name}>{t("ui.zones.fields.name")}</Label>
+                            </div>
+                            <Select 
+                                value={field.state.value} 
+                                defaultValue={initialData?.zone_id}
+                                onValueChange={(value) => field.handleChange(value)}
+                                disabled={selectedFloor==""} 
+                            >
+                                <SelectTrigger className="w-full max-w-[770px] bg-muted">
+                                    <SelectValue placeholder={t("ui.zones.placeholders.name")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {zones
+                                            .filter(zone => zone.floor.id === selectedFloor) 
+                                            .map((zone) => (
+                                                <SelectItem 
+                                                    key={zone.id} 
+                                                    value={zone.id} 
+                                                    disabled={zone.n_bookshelves <= zone.bookshelves_count}  
+                                                >
+                                                    {t("ui.zones.zone")} {zone.category}
+                                                </SelectItem>
+                                            ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <FieldInfo field={field} />
+                        </>
+                    )}
+                </form.Field>
+            </div>
+
+            <div className='pl-4 pr-4'>
+                <form.Field
+                    name="shelves"
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
+                            if (value === null || value === undefined || value.toString().trim() === "") {
+                                return t("ui.validation.required", { attribute: t("ui.floors.fields.name").toLowerCase() });
+                            }
+                    
                             const numValue = Number(value);
-
-                            return isNaN(numValue) || numValue < 1
-                                ? t("ui.validation.required", { attribute: t("ui.floors.fields.zones").toLowerCase() })
-                                : undefined;
+                    
+                            if (isNaN(numValue)) {
+                                return t("ui.validation.required", { attribute: t("ui.floors.fields.name").toLowerCase() });
+                            }
+                    
+                            if (numValue < 1) {
+                                return t("ui.validation.min.numeric", { attribute: t("ui.floors.fields.name").toLowerCase(), min: "1" });
+                            }
                         },
                     }}
                 >
-                    
                     {(field) => (
-                        
                         <>
-                        <div className="flex m-1 align-center ">
-                    <Grid size={16} className="mr-2 text-gray-500" />
-                    <Label htmlFor={field.name}>{t("ui.floors.fields.zones")}</Label>
-                </div>
-
-                <div className="relative">
-                    <Input
-                        id={field.name}
-                        name={field.name}
-                        type="number"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : "")}
-                        onBlur={field.handleBlur}
-                        placeholder={t("ui.floors.placeholders.zones")}
-                        disabled={form.state.isSubmitting}
-                        autoComplete="off"
-                        required={false}
-                        min={1}
-                    />
-                </div>
+                            <div className="flex m-1 align-center">
+                                <Grid size={16} className="mr-2 text-gray-500" />
+                                <Label htmlFor={field.name}>{t("ui.zones.fields.bookshelves")}</Label>
+                            </div>
+                            <Input
+                                id={field.name}
+                                type="number"
+                                value={field.state.value}
+                                onChange={(e) => field.handleChange(Number(e.target.value))}
+                                onBlur={field.handleBlur}
+                                placeholder={t("ui.zones.placeholders.bookshelves")}
+                                disabled={form.state.isSubmitting}
+                                autoComplete="off"
+                                required
+                                min={1}
+                            />
                             <FieldInfo field={field} />
                         </>
                     )}

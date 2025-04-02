@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'messages' => [
+        'zones' => [
+            'error' => 'El numero de la zona en ese piso esta ya en uso. Introduzca otra.',
+        ]
+        ],
     'navigation' => [
         'menu' => 'Navigation Menu',
         'items' => [
@@ -248,5 +253,7 @@ return [
             'previous' => 'Previous',
             'next' => 'Next',
         ],
+        
     ],
+    
 ];

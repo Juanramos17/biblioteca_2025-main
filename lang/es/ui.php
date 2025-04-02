@@ -2,6 +2,11 @@
 
 
 return [
+    'messages' => [
+        'zones' => [
+            'error' => 'El numero de la zona en ese piso esta ya en uso. Introduzca otra.',
+        ]
+        ],
     'navigation' => [
         'menu' => 'Menú de Navegación',
         'items' => [
@@ -274,12 +279,11 @@ return [
     ],
    'bookshelves' => [
         'bookshelves' => 'Estanterias',
-        'freeZones' => 'Zonas Libres',
-        'floorZones' => 'Zonas del Piso',
-        'title' => 'Librerias',
-        'create' => 'Crear Nueva Libreria',
-        'edit' => 'Editar Libreria',
-        'delete' => 'Eliminar Libreria',
+        'bookshelf' => 'Estanteria',
+        'title' => 'Estanterias',
+        'create' => 'Crear Nueva Estanteria',
+        'edit' => 'Editar Estanteria',
+        'delete' => 'Eliminar Estanteria',
         'description' => 'Esta acción no se puede deshacer. Se eliminará permanentemente la estanteria del sistema.',
         'deleted_error' => 'Error al eliminar la zona',
         'info' => 'Introduzca la información de la nueva zona',
@@ -289,8 +293,7 @@ return [
             'ubication' => 'Ubicacion del piso',
         ],
         'placeholders' => [
-            'name' => 'Numero de la zona',
-            'category' => 'Categoria de la zona',
+            'name' => 'Numero de la estanteria',
             'bookshelves' => 'Numero de estanterias maximas de la zona',
             'floor' => 'Numero del piso en el que estara la zona',
             'search' => 'Buscar zonas...',

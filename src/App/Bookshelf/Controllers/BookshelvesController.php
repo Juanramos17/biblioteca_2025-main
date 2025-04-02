@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Core\Controllers\Controller;
+use Domain\Bookshelves\Actions\BookshelfStoreAction;
+use Domain\Bookshelves\Actions\BookshelfUpdateAction;
 use Domain\Bookshelves\Model\Bookshelf;
 use Domain\Floors\Model\Floor;
 use Domain\Zones\Model\Zone;
@@ -43,21 +45,51 @@ class BookshelvesController extends Controller
     public function create()
     {
         $genres = Genre::all();
-        $floors = Floor::all();
 
-        return Inertia::render('zones/Create', ["genres" => $genres, "floors"=>$floors]);
+        $floors = Floor::withCount('zones') 
+            ->with(['zones' => function ($query) {
+                $query->select('id', 'floor_id', 'category');
+            }])
+            ->orderBy('name')
+            ->get();
+
+        $zones = Zone::withCount('bookshelves') 
+            ->with([
+                'bookshelves' => function ($query) {
+                    $query->select('id', 'zone_id', 'category'); 
+                },
+                'floor' => function ($query) { 
+                    $query->select('id', 'name');
+        }
+    ])
+    ->orderBy('category')
+    ->get();
+
+        return Inertia::render('bookshelves/Create', [
+            "genres" => $genres,
+            "zones" => $zones,
+            "floors" => $floors
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, ZoneStoreAction $action)
+    public function store(Request $request, BookshelfStoreAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1'],
-            'category' => ['required'],
-            'n_bookshelves' => ['required', 'int', 'min:1'],
-            'floor_id'=>['required'],
+            'enumeration' => [
+                'required',
+                'integer',
+                'min:1',
+                Rule::unique('bookshelves')->where(function ($query) use ($request) {
+                    return $query->where('zone_id', $request->zone_id);
+                })
+            ],
+            'category' => ['required', 'string', 'max:255'], 
+            'shelves' => ['required', 'integer', 'min:0'], 
+            'books' => ['required', 'integer', 'min:0'], 
+            'zone_id' => ['required', 'exists:zones,id'], 
         ]);
 
         if ($validator->fails()) {
@@ -82,39 +114,70 @@ class BookshelvesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Zone $zone)
+    public function edit(Request $request, Bookshelf $bookshelf)
     {
         $genres = Genre::all();
-        $floors = Floor::all();
 
-        return Inertia::render('zones/Edit', [
-            'initialData' => $zone,
+        $floors = Floor::withCount('zones') 
+            ->with(['zones' => function ($query) {
+                $query->select('id', 'floor_id', 'category');
+            }])
+            ->orderBy('name')
+            ->get();
+
+        $zones = Zone::withCount('bookshelves') 
+            ->with([
+                'bookshelves' => function ($query) {
+                    $query->select('id', 'zone_id', 'category'); 
+                },
+                'floor' => function ($query) { 
+                    $query->select('id', 'name');
+        }
+    ])
+    ->orderBy('category')
+    ->get();
+
+
+        return Inertia::render('bookshelves/Edit', [
+            'initialData' => $bookshelf,
+            'floor_id'=>$bookshelf->zone->floor->id,
             'page' => $request->query('page'),
             'perPage' => $request->query('perPage'),
             "genres" => $genres, 
-            "floors"=>$floors
+            "floors"=>$floors,
+            "zones"=>$zones,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Zone $zone, ZoneUpdateAction $action)
+    public function update(Request $request, Bookshelf $bookshelf, BookshelfUpdateAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1'],
-            'category' => ['required'],
-            'n_bookshelves' => ['required', 'int', 'min:1'],
-            'floor_id'=>['required'],
+            'enumeration' => [
+                'required',
+                'integer',
+                'min:1',
+                Rule::unique('bookshelves')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('zone_id', $request->zone_id);
+                    })
+                    ->ignore($request->route('bookshelf')),  
+            ],
+            'category' => ['required', 'string', 'max:255'],
+            'shelves' => ['required', 'integer', 'min:0'],
+            'books' => ['required', 'integer', 'min:0'],
+            'zone_id' => ['required', 'exists:zones,id'],
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
 
-        $action($zone, $validator->validated());
+        $action($bookshelf, $validator->validated());
 
-        $redirectUrl = route('zones.index');
+        $redirectUrl = route('bookshelves.index');
         
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');

@@ -14,17 +14,17 @@ class BookFactory extends Factory
 
     public function definition(): array
     {
-        $bookshelf = Bookshelf::inRandomOrder()->first();  // Asumiendo que se usa Bookshelf para referirse a los estantes de los libros.
-        $genre = Genre::inRandomOrder()->first();  // Asumiendo que se usa Genre para referirse a los géneros de libros.
+        $bookshelf = Bookshelf::inRandomOrder()->first();
+        $genre = Genre::inRandomOrder()->first();  
 
         return [
             'id' => fake()->uuid(),
-            'ISBN' => fake()->isbn13(),  // Generando un ISBN aleatorio
+            'ISBN' => fake()->isbn13(),  
             'title' => fake()->sentence(),
             'publisher' => fake()->company(),
             'author' => fake()->name(),
-            'genre' => $genre ? $genre->name : fake()->word(),  // Si existe un género, usarlo, si no, generar uno aleatorio.
-            'bookshelf_id' => $bookshelf->id,  // Relacionando el libro con un estante aleatorio
+            'genre' => $genre ? $genre->name : fake()->word(),  
+            'bookshelf_id' => $bookshelf->id,  
         ];
     }
 }

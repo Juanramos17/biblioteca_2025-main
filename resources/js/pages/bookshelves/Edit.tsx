@@ -1,5 +1,5 @@
 
-import { Building2, User } from "lucide-react";
+import { Building2} from "lucide-react";
 import { useTranslations } from "@/hooks/use-translations";
 import { CardHeader } from "@/components/ui/card";
 import BookshelfForm from "./components/BookshelfForm";
@@ -13,15 +13,15 @@ interface BookshelfProps extends PageProps{
     category: string;
     n_shelves: number;
     zone_id: string;
-  };
-    floor_id?:string;
+};
+    floor_id?: string;
     floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string}[] }[];  
     zones: { id: string; name: string, n_bookshelves:number,floor:{id:string, name:number}, bookshelves_count:number, category:string,       bookshelves:{category:string, zone_id:string, id:string}[] }[];
     page?: string;
     perPage?: string;  
 }
 
-export default function CreateBookshelf({zones, floors}:BookshelfProps) {
+export default function EditBookshelf({zones, floors, floor_id, initialData, page, perPage}:BookshelfProps) {
   const { t } = useTranslations();
 
   return (
@@ -38,7 +38,7 @@ export default function CreateBookshelf({zones, floors}:BookshelfProps) {
           </CardHeader>
 
 
-          <BookshelfForm zones={zones} floors={floors}/>
+          <BookshelfForm zones={zones} floors={floors} floor_id={floor_id} initialData={initialData} page={page} perPage={perPage} />
         </div>
       </div>
 

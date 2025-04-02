@@ -222,11 +222,20 @@ export default function FloorForm({ floors, initialData, page, perPage }: FloorP
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
-                            const numValue = Number(value);
 
-                            return isNaN(numValue) || numValue < 1
-                                ? t("ui.validation.required", { attribute: t("ui.floors.fields.zones").toLowerCase() })
-                                : undefined;
+                            if (value === null || value === undefined || value.toString().trim() === "") {
+                                return t("ui.validation.required", { attribute: t("ui.floors.fields.zones").toLowerCase() });
+                            }
+                    
+                            const numValue = Number(value);
+                    
+                            if (isNaN(numValue)) {
+                                return t("ui.validation.required", { attribute: t("ui.floors.fields.zones").toLowerCase() });
+                            }
+                    
+                            if (numValue < 1) {
+                                return t("ui.validation.min.numeric", { attribute: t("ui.floors.fields.zones").toLowerCase(), min: "1" });
+                            }
                         },
                     }}
                 >

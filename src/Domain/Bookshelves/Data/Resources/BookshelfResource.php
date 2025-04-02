@@ -35,8 +35,8 @@ class BookshelfResource extends Data
             shelves: $bookshelf->n_shelves,
             n_books: $bookshelf->n_books,
             count: $bookshelf->books()->count(),
-            created_at: $zone->created_at->format('Y-m-d H:i:s'),
-            updated_at: $zone->updated_at->format('Y-m-d H:i:s'),
+            created_at: $bookshelf->created_at->format('Y-m-d H:i:s'),
+            updated_at: $bookshelf->updated_at->format('Y-m-d H:i:s'),
         );
     }
 }

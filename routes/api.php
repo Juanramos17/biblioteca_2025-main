@@ -1,10 +1,10 @@
 <?php
 
 use App\Bookshelf\Controllers\Api\BookshelfApiController;
+use App\Book\Controllers\Api\BookApiController;
 use App\Users\Controllers\Api\UserApiController;
 use App\Floor\Controllers\Api\FloorApiController;
 use App\Zone\Controllers\Api\ZoneApiController;
-use Domain\Bookshelves\Model\Bookshelf;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth'])->group(function () {
@@ -37,4 +37,12 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/bookshelves', [BookshelfApiController::class, 'store']);
     Route::put('/bookshelves/{bookshelf}', [BookshelfApiController::class, 'update']);
     Route::delete('/bookshelves/{bookshelf}', [BookshelfApiController::class, 'destroy']);
+});
+
+Route::middleware(['web', 'auth'])->group(function () {
+Route::get('/books', [BookApiController::class, 'index']);
+    Route::get('/books/{book}', [BookApiController::class, 'show']);
+    Route::post('/books', [BookApiController::class, 'store']);
+    Route::put('/books/{book}', [BookApiController::class, 'update']);
+    Route::delete('/books/{book}', [BookApiController::class, 'destroy']);
 });

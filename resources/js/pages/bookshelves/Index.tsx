@@ -70,11 +70,13 @@ export default function BookshelvesIndex() {
       id: "enumeration",
       header: t("ui.bookshelves.columns.enumeration") || "Bookshelves' enum",
       accessorKey: "enumeration",
+      format: (value) => `${t('ui.bookshelves.bookshelf')}: ${value}`,
     }),
     createTextColumn<Bookshelf>({
       id: "zone_name",
       header: t("ui.bookshelves.columns.zone") || "Zones' number",
       accessorKey: "zone_name",
+      format: (value) => `${t('ui.zones.zone')}: ${value}`,
     }),
     createTextColumn<Bookshelf>({
       id: "category",
@@ -133,7 +135,7 @@ export default function BookshelvesIndex() {
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
                       <h1 className="text-3xl font-bold">{t('ui.bookshelves.title')}</h1>
-                      <Link href="/bookshelf/create">
+                      <Link href="/bookshelves/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
                               {t('ui.bookshelves.buttons.new')}
