@@ -21,16 +21,16 @@ import {
 import { floor } from "lodash";
 import { useState } from "react";
 
-interface FloorProps {
+interface BookshelfProps {
     initialData?: {
         id: string;
         enumeration: number;
         category: string;
-        n_shelves: number;
+        n_books: number;
         zone_id: string;
     };
     floor_id?: string;
-    floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string}[] }[];  
+    floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string, name:number}[] }[];  
     zones: { id: string; name: string, n_bookshelves:number,floor:{id:string, name:number}, bookshelves_count:number, category:string, bookshelves:{category:string, zone_id:string, id:string}[] }[];
     page?: string;
     perPage?: string;  
@@ -54,28 +54,26 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export default function FloorForm({ zones, floors,floor_id, initialData, page, perPage }: FloorProps) {
+export default function FloorForm({ zones, floors,floor_id, initialData, page, perPage }: BookshelfProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const form = useForm({
             defaultValues: {
                 enumeration: initialData?.enumeration ?? "",
                 category: initialData?.category ?? "",
-                shelves: initialData?.n_shelves ?? "",
+                n_books: initialData?.n_books ?? "",
                 zone_id: initialData?.zone_id ?? "",
                 floor_id: floor_id ?? "",
                 
                  
             },
             onSubmit: async ({ value }) => {
-                    const data = {
-                        ...value,
-                        category: zones.find((zone) => zone.id === value.zone_id)?.category || '', 
-                        books: Number(value.shelves) * 20,
-                    };
                 
-                    console.log(data);
                
+                const data = {
+                    ...value,
+                    category: zones.find((zone) => zone.id === value.zone_id)?.category || '', 
+                };
                 const options = {
 
                     onSuccess: () => {
@@ -92,14 +90,8 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                         
                         router.visit(url);
                     },
-                    onError: (errors: Record<string, string>) => {
-                        if (Object.keys(errors).length === 0) {
-                            toast.error(
-                                initialData
-                                ? t("messages.users.error.update")
-                                : t("messages.users.error.create")
-                            );
-                        }
+                    onError: () => {
+                        toast.error(t("ui.messages.zones.error"));
                     },
                 };
 
@@ -124,7 +116,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
         const [selectedFloor, setSelectedFloor] = useState<string>(floor_id??"");
         
 
-        console.log(initialData);
+        console.log(floors);
     
     return (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -148,7 +140,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                             if (numValue < 1) {
                                 return t("ui.validation.min.numeric", { attribute: t("ui.floors.fields.name").toLowerCase(), min: "1" });
                             }
-                    
+
                             return undefined;
                         },
                     }}
@@ -259,7 +251,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
 
             <div className='pl-4 pr-4'>
                 <form.Field
-                    name="shelves"
+                    name="n_books"
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
@@ -307,7 +299,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                     type="button"
                     variant="outline"
                     onClick={() => {
-                        let url = "/floors";
+                        let url = "/bookshelves";
                         if (page) {
                             url += `?page=${page}`;
                             if (perPage) {

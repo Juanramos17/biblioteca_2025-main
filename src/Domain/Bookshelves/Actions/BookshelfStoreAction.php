@@ -12,8 +12,7 @@ class BookshelfStoreAction
         $bookshelf = Bookshelf::create([
             'enumeration' => $data['enumeration'],
             'category' => $data['category'],
-            'n_books' => $data['books'],
-            'n_shelves' => $data['shelves'],
+            'n_books' => $data['n_books'],
             'zone_id' => $data['zone_id'],
         ]);
 

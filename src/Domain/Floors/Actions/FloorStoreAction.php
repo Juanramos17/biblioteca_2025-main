@@ -11,7 +11,6 @@ class FloorStoreAction
     {
         $floor = Floor::create([
             'name' => $data['name'],
-            'ubication' => $data['ubication'],
             'n_zones' => $data['n_zones'],
         ]);
 

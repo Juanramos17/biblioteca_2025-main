@@ -9,9 +9,11 @@ use Inertia\Inertia;
 use App\Core\Controllers\Controller;
 use Domain\Books\Actions\BookStoreAction;
 use Domain\Books\Model\Book;
+use Domain\Bookshelves\Model\Bookshelf;
 use Domain\Floors\Model\Floor;
 use Domain\Zones\Model\Zone;
 use Domain\Genres\Model\Genre;
+use Domain\Zones\Actions\ZoneUpdateAction;
 
 class BooksController extends Controller
 {
@@ -32,14 +34,14 @@ class BooksController extends Controller
     public function create()
     {
         $genres = Genre::all();
-
+    
         $floors = Floor::withCount('zones') 
             ->with(['zones' => function ($query) {
-                $query->select('id', 'floor_id', 'category');
+                $query->select('id', 'floor_id', 'category', 'name');
             }])
             ->orderBy('name')
             ->get();
-
+    
         $zones = Zone::withCount('bookshelves') 
             ->with([
                 'bookshelves' => function ($query) {
@@ -47,15 +49,16 @@ class BooksController extends Controller
                 },
                 'floor' => function ($query) { 
                     $query->select('id', 'name');
-        }
-    ])
-    ->orderBy('category')
-    ->get();
-
-        return Inertia::render('bookshelves/Create', [
+                }
+            ])
+            ->orderBy('category')
+            ->get();
+    
+    
+        return Inertia::render('books/Create', [
             "genres" => $genres,
             "zones" => $zones,
-            "floors" => $floors
+            "floors" => $floors,
         ]);
     }
 
@@ -64,23 +67,28 @@ class BooksController extends Controller
      */
     public function store(Request $request, BookStoreAction $action)
     {
+        
+        
         $validator = Validator::make($request->all(), [
-            'enumeration' => [
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
+            'publisher' => ['required', 'string', 'max:255'],
+            'ISBN' => [
                 'required',
-                'integer',
-                'min:1',
-                Rule::unique('bookshelves')->where(function ($query) use ($request) {
-                    return $query->where('zone_id', $request->zone_id);
-                })
+                'string',
+                'max:20',
+                Rule::unique('books')->where(function ($query) use ($request) {
+                    return $query
+                        ->where('title', $request->title)
+                        ->where('author', $request->author)
+                        ->where('publisher', $request->publisher);
+                }),
             ],
-            'category' => ['required', 'string', 'max:255'], 
-            'shelves' => ['required', 'integer', 'min:0'], 
-            'books' => ['required', 'integer', 'min:0'], 
-            'zone_id' => ['required', 'exists:zones,id'], 
+            'genre' => ['required', 'string', 'max:255'],
+            'bookshelf_id' => ['required', 'exists:bookshelves,id'],
         ]);
 
         if ($validator->fails()) {
-
             return back()->withErrors($validator);
         }
 
@@ -101,17 +109,38 @@ class BooksController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Zone $zone)
+    public function edit(Request $request, Book $book)
     {
         $genres = Genre::all();
-        $floors = Floor::all();
+    
+        $floors = Floor::withCount('zones') 
+            ->with(['zones' => function ($query) {
+                $query->select('id', 'floor_id', 'category', 'name');
+            }])
+            ->orderBy('name')
+            ->get();
+    
+        $zones = Zone::withCount('bookshelves') 
+            ->with([
+                'bookshelves' => function ($query) {
+                    $query->select('id', 'zone_id', 'category'); 
+                },
+                'floor' => function ($query) { 
+                    $query->select('id', 'name');
+                }
+            ])
+            ->orderBy('category')
+            ->get();
 
-        return Inertia::render('zones/Edit', [
-            'initialData' => $zone,
+        return Inertia::render('books/Edit', [
+            'initialData' => $book,
             'page' => $request->query('page'),
             'perPage' => $request->query('perPage'),
             "genres" => $genres, 
-            "floors"=>$floors
+            "floors"=>$floors,
+            "zones" => $zones,
+            'floor_id' => $book->bookshelf->zone->floor->id,
+            'floor_id' => $book->bookshelf->zone->id,
         ]);
     }
 

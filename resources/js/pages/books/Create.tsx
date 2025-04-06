@@ -1,27 +1,31 @@
 
-import { Building2} from "lucide-react";
+import { Building2, User } from "lucide-react";
 import { useTranslations } from "@/hooks/use-translations";
 import { CardHeader } from "@/components/ui/card";
-import BookshelfForm from "./components/BookshelfForm";
+import BookForm from "./components/BookForm";
 import { PageProps } from "@/types";
 import { BookshelfLayout } from "@/layouts/bookshelves/Bookshelf";
 
-interface BookshelfProps extends PageProps{
-  initialData?: {
-    id: string;
-    enumeration: number;
-    category: string;
-    n_books: number;
-    zone_id: string;
-};
+interface BookProps extends PageProps{
+    initialData?: {
+        id: string;
+        title: string;
+        genre: string;
+        publisher: string;
+        author: string;
+        ISBN: string;
+        bookshelf_id: string;
+    };
     floor_id?: string;
-    floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string, name:number}[] }[];   
-    zones: { id: string; name: string, n_bookshelves:number,floor:{id:string, name:number}, bookshelves_count:number, category:string,       bookshelves:{category:string, zone_id:string, id:string}[] }[];
+    genres: { id: string; name: string }[];
+    zone_id?: string;
+    floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string, name:number}[] }[];  
+    zones: { id: string; name: string, n_bookshelves:number,floor:{id:string, name:number}, bookshelves_count:number, category:string, bookshelves:{category:string, zone_id:string, id:string}[] }[];
     page?: string;
     perPage?: string;  
 }
 
-export default function EditBookshelf({zones, floors, floor_id, initialData, page, perPage}:BookshelfProps) {
+export default function CreateBookshelf({zones, floors, genres}:BookProps) {
   const { t } = useTranslations();
 
   return (
@@ -37,8 +41,7 @@ export default function EditBookshelf({zones, floors, floor_id, initialData, pag
               <p className="text-gray-500 text-sm mb-3">{t("ui.floors.info")}</p>
           </CardHeader>
 
-
-          <BookshelfForm zones={zones} floors={floors} floor_id={floor_id} initialData={initialData} page={page} perPage={perPage} />
+          <BookForm zones={zones} floors={floors} genres={genres}/>
         </div>
       </div>
 

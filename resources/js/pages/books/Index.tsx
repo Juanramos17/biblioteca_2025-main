@@ -3,7 +3,7 @@ import { ZoneLayout } from "@/layouts/zones/ZoneLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableSkeleton } from "@/components/stack-table/TableSkeleton";
-import { Zone, useZones, useDeleteZone } from "@/hooks/zones/useZones";
+import { Book, useBooks, useDeleteBook } from "@/hooks/books/useBooks";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Link, usePage } from "@inertiajs/react";
@@ -14,9 +14,10 @@ import { DeleteDialog } from "@/components/stack-table/DeleteDialog";
 import { FiltersTable, FilterConfig } from "@/components/stack-table/FiltersTable";
 import { toast } from "sonner";
 import { ColumnDef, Row } from "@tanstack/react-table";
+import { BookLayout } from "@/layouts/books/BookLayout";
 
 
-export default function ZonesIndex() {
+export default function BooksIndex() {
   const { t } = useTranslations();
   const { url } = usePage();
 
@@ -31,22 +32,22 @@ export default function ZonesIndex() {
   const [filters, setFilters] = useState<Record<string, any>>({});
 
   const combinedSearch = [
-    filters.name ? `${filters.name}` : "null",
-    filters.category ? `${filters.category}` : "null",
-    filters.n_bookshelves ? `${filters.n_bookshelves}` : "null",
-    filters.floor ? `${filters.floor}` : "null"
-  ]
+    filters.title ? `${filters.title}` : "null",
+    filters.bookshelf_name ? `${filters.bookshelf_name}` : "null",
+    filters.author ? `${filters.author}` : "null",
+    filters.publisher ? `${filters.publisher}` : "null",
+    filters.ISBN ? `${filters.ISBN}` : "null",
+    filters.category ? `${filters.category}` : "null"
+  ];
 
-  console.log(combinedSearch);
-
-  const { data: zones, isLoading, isError, refetch } = useZones({
+  const { data: zones, isLoading, isError, refetch } = useBooks({
     search: combinedSearch,
     page: currentPage,
     perPage: perPage,
   });
 
 
-  const deleteUserMutation = useDeleteZone();
+  const deleteUserMutation = useDeleteBook();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -68,51 +69,66 @@ export default function ZonesIndex() {
   };
 
   const columns = useMemo(() => ([
-    createTextColumn<Zone>({
-      id: "name",
-      header: t("ui.zones.columns.name") || "Zones' number",
-      accessorKey: "name",
+    createTextColumn<Book>({
+      id: "title",
+      header: t("ui.bookshelves.columns.enumeration") || "Bookshelves' enum",
+      accessorKey: "title",
     }),
-    createTextColumn<Zone>({
+    createTextColumn<Book>({
+      id: "bookshelf_name",
+      header: t("ui.bookshelves.columns.zone") || "Zones' number",
+      accessorKey: "bookshelf_name",
+    }),
+    createTextColumn<Book>({
+      id: "zone_name",
+      header: t("ui.bookshelves.columns.zone") || "Zones' number",
+      accessorKey: "zone_name",
+    }),
+    createTextColumn<Book>({
       id: "floor_name",
-      header: t("ui.floors.columns.name") || "Floors' number",
+      header: t("ui.bookshelves.columns.zone") || "Zones' number",
       accessorKey: "floor_name",
     }),
-    createTextColumn<Zone>({
-      id: "category",
-      header: t("ui.zones.columns.category") || "Category",
-      accessorKey: "category",
+    createTextColumn<Book>({
+      id: "genre",
+      header: t("ui.bookshelves.columns.category") || "Category",
+      accessorKey: "genre",
     }),
-    createTextColumn<Zone>({
-      id: "n_bookshelves",
-      header: t("ui.zones.columns.bookshelves") || "Bookshelves' number",
-      accessorKey: "n_bookshelves",
+    createTextColumn<Book>({
+      id: "author",
+      header: t("ui.bookshelves.columns.shelves") || "Shelves",
+      accessorKey: "author",
     }),
-    createTextColumn<Zone>({
-      id: "count",
-      header: t("ui.zones.columns.nBookshelves") || "Bookshelves' number",
-      accessorKey: "count",
+    createTextColumn<Book>({
+      id: "publisher",
+      header: t("ui.bookshelves.columns.books") || "Books' number",
+      accessorKey: "publisher",
     }),
-    createDateColumn<Zone>({
+    createTextColumn<Book>({
+      id: "ISBN",
+      header: t("ui.bookshelves.columns.count") || "Count",
+      accessorKey: "ISBN",
+    }),
+    createDateColumn<Book>({
       id: "created_at",
       header: t("ui.floors.columns.created_at") || "Created At",
       accessorKey: "created_at",
     }),
-    createActionsColumn<Zone>({
+    createActionsColumn<Book>({
       id: "actions",
       header: t("ui.floors.columns.actions") || "Actions",
-      renderActions: (zone) => (
+      renderActions: (book) => (
         <>
-          <Link href={`/zones/${zone.id}/edit?page=${currentPage}&perPage=${perPage}`}>
+          <Link href={`/books/${book.id}/edit?page=${currentPage}&perPage=${perPage}`}>
             <Button variant="outline" size="icon" title={t("ui.users.buttons.edit") || "Edit user"}>
               <PencilIcon className="h-4 w-4" />
             </Button>
           </Link>
           <DeleteDialog
-            id={zone.id}
+            id={book.id}
             onDelete={handleDeleteUser}
-            title={t("ui.zones.delete") || "Delete zone"}
-            description={t("ui.zones.description") || "Are you sure you want to delete this zone? This action cannot be undone."}
+            title={t("ui.bookshelves.delete") || "Delete bookshelf"}
+            description={t("ui.bookshelves.description") || "Are you sure you want to delete this bookshelf? This action cannot be undone."}
             trigger={
               <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" title={t("ui.users.buttons.delete") || "Delete user"}>
                 <TrashIcon className="h-4 w-4" />
@@ -122,18 +138,18 @@ export default function ZonesIndex() {
         </>
       ),
     }),
-  ] as ColumnDef<Zone>[]), [t, handleDeleteUser]);
+  ] as ColumnDef<Book>[]), [t, handleDeleteUser]);
 
   return (
-    <ZoneLayout title={t("ui.zones.title")}>
+    <BookLayout title={t("ui.bookshelves.title")}>
         <div className="p-6">
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                      <h1 className="text-3xl font-bold">{t('ui.zones.title')}</h1>
-                      <Link href="/zones/create">
+                      <h1 className="text-3xl font-bold">{t('ui.bookshelves.title')}</h1>
+                      <Link href="/books/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
-                              {t('ui.zones.buttons.new')}
+                              {t('ui.bookshelves.buttons.new')}
                           </Button>
                       </Link>
                   </div>
@@ -144,28 +160,40 @@ export default function ZonesIndex() {
                           filters={
                               [
                                   {
-                                      id: 'name',
+                                      id: 'title',
                                       label: t('ui.floors.filters.search') || 'Buscar',
-                                      type: 'number',
+                                      type: 'text',
                                       placeholder: t('ui.floors.placeholders.search') || 'Buscar...',
                        
                                   },
                                   {
-                                      id: 'category',
+                                      id: 'bookshelf_name',
                                       label: t('ui.floors.filters.name') || 'Nombre',
-                                      type: 'text',
+                                      type: 'number',
                                       placeholder: t('ui.floors.placeholders.name') || 'Nombre...',
                                   },
                                   {
-                                      id: 'n_bookshelves',
+                                      id: 'author',
+                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      type: 'text',
+                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                  },
+                                  {
+                                      id: 'publisher',
+                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      type: 'text',
+                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                  },
+                                  {
+                                      id: 'ISBN',
                                       label: t('ui.floors.filters.ubication') || 'Ubication',
                                       type: 'number',
                                       placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
                                   },
                                   {
-                                      id: 'floor',
+                                      id: 'category',
                                       label: t('ui.floors.filters.ubication') || 'Ubication',
-                                      type: 'number',
+                                      type: 'text',
                                       placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
                                   },
                               ] as FilterConfig[]
@@ -212,6 +240,6 @@ export default function ZonesIndex() {
                   </div>
               </div>
           </div>
-    </ZoneLayout>
+    </BookLayout>
   );
 }

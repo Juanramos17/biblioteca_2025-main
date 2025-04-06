@@ -71,6 +71,7 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
         },
     });
 
+    console.log(floors);
     
     if(initialData){
         floors.forEach(floor => {
@@ -79,8 +80,6 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
         
     }
     
-    console.log(floors);
-
     return (
         <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }} className="space-y-4" noValidate>
             <div className='pl-4 pr-4'>

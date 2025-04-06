@@ -24,16 +24,10 @@ class FloorFactory extends Factory
      */
     public function definition(): array
     {
-       
-        $locations = [
-            'Building A, Left Wing', 'Building A, Right Wing', 'Building B, Left Wing', 
-            'Building B, Right Wing', 'Building C, Center', 'Building D, West Wing',
-            'Building E, East Wing', 'Building F, Upper Deck', 'Building G, Lower Deck'
-        ];
+    
 
         return [
             'name' => fake()->unique()->numberBetween(1, 20),
-            'ubication' => fake()->randomElement($locations), 
             'n_zones' => fake()->numberBetween(1, 10), 
         ];
     }

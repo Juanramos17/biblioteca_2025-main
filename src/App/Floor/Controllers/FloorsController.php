@@ -25,7 +25,6 @@ class FloorsController extends Controller
             return [
                 'id' => $floor->id,
                 'name' => $floor->name,
-                'ubication' => $floor->ubication,
                 'n_zones' => $floor->n_zones,
                 'count' => $floor->zones_count,
                 'zones' => $floor->zones,
@@ -53,7 +52,6 @@ class FloorsController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'integer', 'min:1', 'unique:floors,name'],
-            'ubication' => ['required', 'string', 'max:255'],
             'n_zones' => ['required', 'integer', 'min:1'],
         ]);
 
@@ -103,7 +101,6 @@ class FloorsController extends Controller
                 'min:1',
                 Rule::unique('floors')->ignore($floor->id),  
             ],
-            'ubication' => ['required', 'string', 'max:255'],
             'n_zones' => ['required', 'int', 'min:1'],
         ]);
 

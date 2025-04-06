@@ -4,7 +4,6 @@ import axios from "../../lib/axios";
 export interface Floor {
   id: string;
   name: string;
-  ubication: string;
   count: number;
   n_zones: number;
   created_at: string;
@@ -45,7 +44,7 @@ export interface PaginatedResponse<T> {
 }
 
 interface UseFloorsParams {
-  search?: string;
+  search?: string[];
   page?: number;
   perPage?: number;
 }

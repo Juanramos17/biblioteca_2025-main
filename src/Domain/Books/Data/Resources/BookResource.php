@@ -15,9 +15,11 @@ class BookResource extends Data
         public readonly int $ISBN,
         public readonly string $title,
         public readonly string $genre,
-        public readonly int $publisher,
-        public readonly int $author,
+        public readonly string $publisher,
+        public readonly string $author,
         public readonly string $bookshelf_name,
+        public readonly string $zone_name,
+        public readonly string $floor_name,
         public readonly string $created_at,
         public readonly string $updated_at,
     ) {
@@ -25,12 +27,13 @@ class BookResource extends Data
 
     public static function fromModel(Book $book): self
     {
-        $bookshelf = Bookshelf::find($book->bookshelf_id); 
 
         return new self(
             id: $book->id,
             title: $book->title,
-            bookshelf_name:$bookshelf->enumeration,
+            bookshelf_name:$book->bookshelf->enumeration,
+            zone_name:$book->bookshelf->zone->name,
+            floor_name:$book->bookshelf->zone->floor->name,
             genre: $book->genre,
             publisher: $book->publisher,
             author: $book->author,

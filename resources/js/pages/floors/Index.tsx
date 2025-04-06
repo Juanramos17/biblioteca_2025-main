@@ -31,10 +31,9 @@ export default function FloorsIndex() {
   const [filters, setFilters] = useState<Record<string, any>>({});
 
   const combinedSearch = [
-    filters.search,
-    filters.name ? `name:${filters.name}` : null,
-    filters.email ? `email:${filters.email}` : null
-  ].filter(Boolean).join(' ');
+    filters.name ? `${filters.name}` : "null",
+    filters.zones ? `${filters.zones}` : "null"
+  ];
 
   const { data: floors, isLoading, isError, refetch } = useFloors({
     search: combinedSearch,
@@ -69,11 +68,6 @@ export default function FloorsIndex() {
       id: "name",
       header: t("ui.floors.columns.name") || "Floors' number",
       accessorKey: "name",
-    }),
-    createTextColumn<Floor>({
-      id: "ubication",
-      header: t("ui.floors.columns.ubication") || "Ubication",
-      accessorKey: "ubication",
     }),
     createTextColumn<Floor>({
       id: "n_zones",
@@ -136,23 +130,17 @@ export default function FloorsIndex() {
                           filters={
                               [
                                   {
-                                      id: 'search',
+                                      id: 'name',
                                       label: t('ui.floors.filters.search') || 'Buscar',
-                                      type: 'text',
+                                      type: 'number',
                                       placeholder: t('ui.floors.placeholders.search') || 'Buscar...',
                        
                                   },
                                   {
-                                      id: 'name',
+                                      id: 'zones',
                                       label: t('ui.floors.filters.name') || 'Nombre',
-                                      type: 'text',
+                                      type: 'number',
                                       placeholder: t('ui.floors.placeholders.name') || 'Nombre...',
-                                  },
-                                  {
-                                      id: 'ubication',
-                                      label: t('ui.floors.filters.ubication') || 'Ubication',
-                                      type: 'text',
-                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
                                   },
                               ] as FilterConfig[]
                           }

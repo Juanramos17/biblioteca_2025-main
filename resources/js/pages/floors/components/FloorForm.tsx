@@ -107,12 +107,6 @@ export default function FloorForm({ floors, initialData, page, perPage }: FloorP
             form.handleSubmit();
         };
 
-        const ubicaciones = [
-            'Building A, Left Wing', 'Building A, Right Wing', 'Building B, Left Wing', 
-            'Building B, Right Wing', 'Building C, Center', 'Building D, West Wing',
-            'Building E, East Wing', 'Building F, Upper Deck', 'Building G, Lower Deck'
-        ];
-
         console.log(floors);
     
     return (
@@ -169,49 +163,6 @@ export default function FloorForm({ floors, initialData, page, perPage }: FloorP
                     )}
                 </form.Field>
             </div>
-
-            {/* Email field */}
-            <div className='pl-4 pr-4'>
-            <form.Field
-                name="ubication"
-                validators={{
-                    onChangeAsync: async ({ value }) => {
-                        await new Promise((resolve) => setTimeout(resolve, 500));
-                        return !value
-                            ? t("ui.validation.required", { attribute: t("ui.floors.fields.ubication").toLowerCase() })
-                            : undefined;
-                    },
-                }}
->
-              {(field) => (
-                  <>
-                        <div className="flex m-1 align-center ">
-                            <MapPin size={16} className="mr-2 text-gray-500" />
-                            <Label htmlFor={field.name}>{t("ui.floors.fields.ubication")}</Label>
-                        </div>
-
-                        <Select value={field.state.value} onValueChange={field.handleChange}>
-                            <SelectTrigger className="w-full max-w-[770px] m-4 bg-muted mb-5">
-                                <SelectValue placeholder={t("ui.floors.placeholders.ubication")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>{t("ui.floors.fields.ubication")}</SelectLabel>
-
-                                        {ubicaciones.map((ubicacion, index) => (
-                                        <SelectItem key={index} value={ubicacion}>
-                                            {ubicacion}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                        <FieldInfo field={field} />
-                    </>
-                )}
-            </form.Field>
-            </div>
-
 
             {/* Password field */}
             <div className='pl-4 pr-4'>

@@ -7,16 +7,24 @@ use Domain\Floors\Model\Floor;
 
 class FloorIndexAction
 {
-    public function __invoke(?string $search = null, int $perPage = 10)
+    public function __invoke(?array $search = null, int $perPage = 10)
     {
-        $floors = Floor::query()
-            ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('ubication', 'like', "%{$search}%");
+
+        
+        $name = $search[0];
+        $capacity = $search[1];
+
+        $floor = Floor::query()
+            ->when($name !== "null", function ($query) use ($name) {
+
+                $query->where('name', '=', $name);
+            })
+            ->when($capacity !== "null", function ($query) use ($capacity) {
+                $query->where('n_zones', '=', $capacity);
             })
             ->latest()
             ->paginate($perPage);
 
-        return $floors->through(fn ($floor) => FloorResource::fromModel($floor));
+        return $floor->through(fn($floor) => FloorResource::fromModel($floor));
     }
 }

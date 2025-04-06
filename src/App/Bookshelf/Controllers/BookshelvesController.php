@@ -48,7 +48,7 @@ class BookshelvesController extends Controller
 
         $floors = Floor::withCount('zones') 
             ->with(['zones' => function ($query) {
-                $query->select('id', 'floor_id', 'category');
+                $query->select('id', 'floor_id', 'category','name');
             }])
             ->orderBy('name')
             ->get();
@@ -87,8 +87,7 @@ class BookshelvesController extends Controller
                 })
             ],
             'category' => ['required', 'string', 'max:255'], 
-            'shelves' => ['required', 'integer', 'min:0'], 
-            'books' => ['required', 'integer', 'min:0'], 
+            'n_books' => ['required', 'integer', 'min:0'], 
             'zone_id' => ['required', 'exists:zones,id'], 
         ]);
 
@@ -115,39 +114,46 @@ class BookshelvesController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, Bookshelf $bookshelf)
-    {
-        $genres = Genre::all();
+{
+    $genres = Genre::all();
 
-        $floors = Floor::withCount('zones') 
-            ->with(['zones' => function ($query) {
-                $query->select('id', 'floor_id', 'category');
-            }])
-            ->orderBy('name')
-            ->get();
+    $currentZoneId = $bookshelf->zone_id; 
 
-        $zones = Zone::withCount('bookshelves') 
-            ->with([
-                'bookshelves' => function ($query) {
-                    $query->select('id', 'zone_id', 'category'); 
-                },
-                'floor' => function ($query) { 
-                    $query->select('id', 'name');
-        }
-    ])
-    ->orderBy('category')
-    ->get();
+    $floors = Floor::withCount(['zones' => function ($query) use ($currentZoneId) {
+            $query->where('id', '!=', $currentZoneId); 
+        }])
+        ->with(['zones' => function ($query) use ($currentZoneId) {
+            $query->select('id', 'floor_id', 'category')
+                  ->where('id', '!=', $currentZoneId); 
+        }])
+        ->orderBy('name')
+        ->get();
 
+    $zones = Zone::withCount(['bookshelves' => function ($query) use ($currentZoneId) {
+            $query->where('zone_id', '!=', $currentZoneId); 
+        }])
+        ->with([
+            'bookshelves' => function ($query) {
+                $query->select('id', 'zone_id', 'category');
+            },
+            'floor' => function ($query) {
+                $query->select('id', 'name');
+            }
+        ])
+        ->orderBy('category')
+        ->get();
 
-        return Inertia::render('bookshelves/Edit', [
-            'initialData' => $bookshelf,
-            'floor_id'=>$bookshelf->zone->floor->id,
-            'page' => $request->query('page'),
-            'perPage' => $request->query('perPage'),
-            "genres" => $genres, 
-            "floors"=>$floors,
-            "zones"=>$zones,
-        ]);
-    }
+    return Inertia::render('bookshelves/Edit', [
+        'initialData' => $bookshelf,
+        'floor_id' => $bookshelf->zone->floor->id,
+        'page' => $request->query('page'),
+        'perPage' => $request->query('perPage'),
+        "genres" => $genres,
+        "floors" => $floors,
+        "zones" => $zones,
+    ]);
+}
+
 
     /**
      * Update the specified resource in storage.
@@ -166,8 +172,7 @@ class BookshelvesController extends Controller
                     ->ignore($request->route('bookshelf')),  
             ],
             'category' => ['required', 'string', 'max:255'],
-            'shelves' => ['required', 'integer', 'min:0'],
-            'books' => ['required', 'integer', 'min:0'],
+            'n_books' => ['required', 'integer', 'min:0'],
             'zone_id' => ['required', 'exists:zones,id'],
         ]);
 

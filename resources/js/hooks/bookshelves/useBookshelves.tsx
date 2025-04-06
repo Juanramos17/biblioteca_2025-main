@@ -6,9 +6,9 @@ export interface Bookshelf {
   enumeration: number;
   category: string;
   n_books: number;
-  shelves: number;
   count: number;
   zone_name: string;
+  floor_name: string;
   created_at: string;
 }
 
@@ -47,7 +47,7 @@ export interface PaginatedResponse<T> {
 }
 
 interface UseBookshelfParams {
-  search?: string;
+  search?: string[];
   page?: number;
   perPage?: number;
 }

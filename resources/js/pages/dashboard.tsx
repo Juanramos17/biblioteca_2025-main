@@ -69,7 +69,13 @@ export default function Dashboard() {
                 <DashboardCard
                     title="Estanterias"
                     description="Gestiona las estanterias de la biblioteca"
-                    href="/zones"
+                    href="/bookshelves"
+                    icon={Library}
+                />
+                <DashboardCard
+                    title="Books"
+                    description="Gestiona las estanterias de la biblioteca"
+                    href="/books"
                     icon={Library}
                 />
 

@@ -7,6 +7,7 @@ use Domain\Books\Model\Book;
 use Domain\Books\Actions\BookDestroyAction;
 use Domain\Books\Actions\BookIndexAction;
 use Domain\Books\Actions\BookStoreAction;
+use Domain\Books\Actions\BookUpdateAction;
 use Illuminate\Http\Request;
 
 class BookApiController extends Controller

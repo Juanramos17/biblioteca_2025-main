@@ -19,7 +19,7 @@ interface BookLayoutProps extends PropsWithChildren {
   title: string;
 }
 
-export function BookshelfLayout({ title, children }: BookLayoutProps) {
+export function BookLayout({ title, children }: BookLayoutProps) {
   const { flash } = usePage<PageProps>().props;
 
   useEffect(() => {

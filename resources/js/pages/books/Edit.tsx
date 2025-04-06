@@ -2,17 +2,19 @@
 import { Building2} from "lucide-react";
 import { useTranslations } from "@/hooks/use-translations";
 import { CardHeader } from "@/components/ui/card";
-import BookshelfForm from "./components/BookshelfForm";
+import BookForm from "./components/BookForm";
 import { PageProps } from "@/types";
-import { BookshelfLayout } from "@/layouts/bookshelves/Bookshelf";
+import { BookLayout } from "@/layouts/books/BookLayout";
 
 interface BookshelfProps extends PageProps{
   initialData?: {
     id: string;
-    enumeration: number;
-    category: string;
-    n_books: number;
-    zone_id: string;
+    title: string;
+    genre: string;
+    publisher: string;
+    author: string;
+    ISBN: string;
+    bookshelf_id: string;
 };
     floor_id?: string;
     floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string, name:number}[] }[];   
@@ -21,11 +23,11 @@ interface BookshelfProps extends PageProps{
     perPage?: string;  
 }
 
-export default function EditBookshelf({zones, floors, floor_id, initialData, page, perPage}:BookshelfProps) {
+export default function EditBook({zones, floors, floor_id, genres, initialData, page, perPage}:BookshelfProps) {
   const { t } = useTranslations();
 
   return (
-    <BookshelfLayout title={t("ui.floors.create")}>
+    <BookLayout title={t("ui.floors.create")}>
       <div className="flex flex-col items-center w-full">
         <div className="w-[800px] flex flex-col bg-muted/50 rounded-lg">
 
@@ -38,10 +40,10 @@ export default function EditBookshelf({zones, floors, floor_id, initialData, pag
           </CardHeader>
 
 
-          <BookshelfForm zones={zones} floors={floors} floor_id={floor_id} initialData={initialData} page={page} perPage={perPage} />
+          <BookForm genres={genres} zones={zones} floors={floors} floor_id={floor_id} initialData={initialData} page={page} perPage={perPage} />
         </div>
       </div>
 
-    </BookshelfLayout>
+    </BookLayout>
   );
 }

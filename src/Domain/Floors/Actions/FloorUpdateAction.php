@@ -12,7 +12,6 @@ class FloorUpdateAction
     {
         $updateData = [
             'name' => $data['name'],
-            'ubication' => $data['ubication'],
             'n_zones' => $data['n_zones'],
         ];
 

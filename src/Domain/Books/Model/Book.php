@@ -18,16 +18,16 @@ class Book extends Model
         'publisher',
         'author',
         'genre',
-        'bookshelve_id',
+        'bookshelf_id',
     ];
     protected static function newFactory()
     {
         return BookFactory::new();
     }
 
-    function bookshelve()
+    function bookshelf()
     {
-        return $this->belongsTo('Domain\Bookshelves\Model\Bookshelve');
+        return $this->belongsTo('Domain\Bookshelves\Model\Bookshelf');
     }
 }
 

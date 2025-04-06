@@ -11,11 +11,11 @@ interface BookshelfProps extends PageProps{
     id: string;
     enumeration: number;
     category: string;
-    n_shelves: number;
+    n_books: number;
     zone_id: string;
   };
     floor_id?:string;
-    floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string}[] }[];  
+    floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string, name:number}[] }[];   
     zones: { id: string; name: string, n_bookshelves:number,floor:{id:string, name:number}, bookshelves_count:number, category:string,       bookshelves:{category:string, zone_id:string, id:string}[] }[];
     page?: string;
     perPage?: string;  

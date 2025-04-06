@@ -46,7 +46,7 @@ export interface PaginatedResponse<T> {
 }
 
 interface UseZonesParams {
-  search?: string;
+  search?: string[];
   page?: number;
   perPage?: number;
 }

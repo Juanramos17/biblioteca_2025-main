@@ -32,10 +32,11 @@ export default function BookshelvesIndex() {
   const [filters, setFilters] = useState<Record<string, any>>({});
 
   const combinedSearch = [
-    filters.search,
-    filters.name ? `name:${filters.name}` : null,
-    filters.email ? `email:${filters.email}` : null
-  ].filter(Boolean).join(' ');
+    filters.enumeration ? `${filters.enumeration}` : "null",
+    filters.zone ? `${filters.zone}` : "null",
+    filters.category ? `${filters.category}` : "null",
+    filters.books ? `${filters.books}` : "null"
+  ]
 
   const { data: zones, isLoading, isError, refetch } = useBookshelves({
     search: combinedSearch,
@@ -79,14 +80,15 @@ export default function BookshelvesIndex() {
       format: (value) => `${t('ui.zones.zone')}: ${value}`,
     }),
     createTextColumn<Bookshelf>({
+      id: "floor_name",
+      header: t("ui.bookshelves.columns.zone") || "Zones' number",
+      accessorKey: "zone_name",
+      format: (value) => `${t('ui.floors.floor')}: ${value}`,
+    }),
+    createTextColumn<Bookshelf>({
       id: "category",
       header: t("ui.bookshelves.columns.category") || "Category",
       accessorKey: "category",
-    }),
-    createTextColumn<Bookshelf>({
-      id: "shelves",
-      header: t("ui.bookshelves.columns.shelves") || "Shelves",
-      accessorKey: "shelves",
     }),
     createTextColumn<Bookshelf>({
       id: "n_books",
@@ -149,22 +151,28 @@ export default function BookshelvesIndex() {
                           filters={
                               [
                                   {
-                                      id: 'search',
+                                      id: 'enumeration',
                                       label: t('ui.floors.filters.search') || 'Buscar',
-                                      type: 'text',
+                                      type: 'number',
                                       placeholder: t('ui.floors.placeholders.search') || 'Buscar...',
                        
                                   },
                                   {
-                                      id: 'name',
+                                      id: 'zone',
                                       label: t('ui.floors.filters.name') || 'Nombre',
-                                      type: 'text',
+                                      type: 'number',
                                       placeholder: t('ui.floors.placeholders.name') || 'Nombre...',
                                   },
                                   {
-                                      id: 'ubication',
+                                      id: 'category',
                                       label: t('ui.floors.filters.ubication') || 'Ubication',
                                       type: 'text',
+                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                  },
+                                  {
+                                      id: 'books',
+                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      type: 'number',
                                       placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
                                   },
                               ] as FilterConfig[]

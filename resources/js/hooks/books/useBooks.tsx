@@ -9,6 +9,8 @@ export interface Book {
   author: number;
   genre: number;
   bookshelf_name: string;
+  zone_name: string;
+  floor_name: string;
   created_at: string;
 }
 
@@ -47,12 +49,12 @@ export interface PaginatedResponse<T> {
 }
 
 interface UseBookParams {
-  search?: string;
+  search?: string[];
   page?: number;
   perPage?: number;
 }
 
-export function useBookshelves({ search, page = 1, perPage = 10 }: UseBookParams = {}) {
+export function useBooks({ search, page = 1, perPage = 10 }: UseBookParams = {}) {
   return useQuery({
     queryKey: ["bookshelves", { search, page, perPage }],
     queryFn: async () => {
@@ -112,7 +114,7 @@ export function useUpdateUser(userId: string) {
   });
 }
 
-export function useDeleteBookshelf() {
+export function useDeleteBook() {
   return useMutation({
     mutationFn: async (bookId: string) => {
       await axios.delete(`/api/books/${bookId}`, {

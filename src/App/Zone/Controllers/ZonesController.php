@@ -43,17 +43,17 @@ class ZonesController extends Controller
     {
         $genres = Genre::all();
 
-        $floors = Floor::withCount('zones') 
+        $floors = Floor::withCount('zones')
             ->with(['zones' => function ($query) {
                 $query->select('id', 'floor_id', 'category');
             }])
             ->orderBy('name')
             ->get();
 
-           
+
         $zones = Zone::all()->pluck('name');
 
-        return Inertia::render('zones/Create', ["genres" => $genres, "floors"=>$floors, "zones" => $zones]);
+        return Inertia::render('zones/Create', ["genres" => $genres, "floors" => $floors, "zones" => $zones]);
     }
 
     /**
@@ -67,12 +67,12 @@ class ZonesController extends Controller
                 'int',
                 'min:1',
                 Rule::unique('zones')->where(function ($query) use ($request) {
-                    return $query->where('floor_id', $request->floor_id); 
+                    return $query->where('floor_id', $request->floor_id);
                 }),
             ],
             'category' => ['required'],
             'n_bookshelves' => ['required', 'int', 'min:1'],
-            'floor_id'=>['required'],
+            'floor_id' => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -102,29 +102,28 @@ class ZonesController extends Controller
         $genres = Genre::all();
 
         $categoryToExclude = $zone->category;
-    
+
         $floors = Floor::withCount([
-        'zones' => function ($query) use ($categoryToExclude, $zone) {
-            $query->where('category', '!=', $categoryToExclude)
-                  ->where('id', '!=', $zone->id); 
-        }
-        ])
-        ->with([
             'zones' => function ($query) use ($categoryToExclude, $zone) {
-                $query->select('id', 'floor_id', 'category')
-                    ->where('category', '!=', $categoryToExclude)
-                    ->where('id', '!=', $zone->id); 
+                $query->where('category', '!=', $categoryToExclude)
+                    ->where('id', '!=', $zone->id);
             }
         ])
-        ->orderBy('name')
-        ->get();
+            ->with([
+                'zones' => function ($query) use ($categoryToExclude, $zone) {
+                    $query->select('id', 'floor_id', 'category')
+                        ->where('category', '!=', $categoryToExclude);
+                }
+            ])
+            ->orderBy('name')
+            ->get();
 
         return Inertia::render('zones/Edit', [
             'initialData' => $zone,
             'page' => $request->query('page'),
             'perPage' => $request->query('perPage'),
-            "genres" => $genres, 
-            "floors"=>$floors
+            "genres" => $genres,
+            "floors" => $floors
         ]);
     }
 
@@ -144,7 +143,7 @@ class ZonesController extends Controller
             ],
             'category' => ['required'],
             'n_bookshelves' => ['required', 'int', 'min:1'],
-            'floor_id'=>['required'],
+            'floor_id' => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -154,7 +153,7 @@ class ZonesController extends Controller
         $action($zone, $validator->validated());
 
         $redirectUrl = route('zones.index');
-        
+
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');
             if ($request->has('perPage')) {

@@ -10,11 +10,12 @@ class BookStoreAction
     public function __invoke(array $data): BookResource
     {
         $book = Book::create([
-            'enumeration' => $data['enumeration'],
-            'category' => $data['category'],
-            'n_books' => $data['books'],
-            'n_shelves' => $data['shelves'],
-            'zone_id' => $data['zone_id'],
+            'title'        => $data['title'],
+            'author'       => $data['author'],
+            'publisher'    => $data['publisher'],
+            'ISBN'         => $data['ISBN'],
+            'genre'        => $data['genre'],
+            'bookshelf_id' => $data['bookshelf_id'],
         ]);
 
         
