@@ -68,16 +68,19 @@ export default function FloorsIndex() {
       id: "name",
       header: t("ui.floors.columns.name") || "Floors' number",
       accessorKey: "name",
+      format: (value) => `${t('ui.floors.floor')}: ${value}`,
     }),
     createTextColumn<Floor>({
       id: "n_zones",
       header: t("ui.floors.columns.nZones") || "Zones' number",
       accessorKey: "n_zones",
+      format: (value) => `${t('ui.zones.zones')}: ${value}`,
     }),
     createTextColumn<Floor>({
       id: "count",
       header: t("ui.floors.columns.ocupedZones") || "Count",
       accessorKey: "count",
+      format: (value) => `${t('ui.floors.ocuped')}: ${value}`,
     }),
     createDateColumn<Floor>({
       id: "created_at",
@@ -131,16 +134,16 @@ export default function FloorsIndex() {
                               [
                                   {
                                       id: 'name',
-                                      label: t('ui.floors.filters.search') || 'Buscar',
+                                      label: t('ui.floors.filters.name') || 'Buscar',
                                       type: 'number',
                                       placeholder: t('ui.floors.placeholders.search') || 'Buscar...',
                        
                                   },
                                   {
                                       id: 'zones',
-                                      label: t('ui.floors.filters.name') || 'Nombre',
+                                      label: t('ui.floors.filters.zones') || 'Nombre',
                                       type: 'number',
-                                      placeholder: t('ui.floors.placeholders.name') || 'Nombre...',
+                                      placeholder: t('ui.floors.placeholders.zones') || 'Nombre...',
                                   },
                               ] as FilterConfig[]
                           }

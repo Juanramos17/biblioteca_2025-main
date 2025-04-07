@@ -29,10 +29,12 @@ export default function UsersIndex() {
   const [filters, setFilters] = useState<Record<string, any>>({});
   // Combine name and email filters into a single search string if they exist
   const combinedSearch = [
-    filters.search,
-    filters.name ? `${filters.name}` : " ",
-    filters.email ? `${filters.email}` : " "
-  ].filter(Boolean).join('.');
+    filters.search ? `${filters.search}` : "null", 
+    filters.name ? `${filters.name}` : "null",
+    filters.email ? `${filters.email}` : "null"
+  ]
+
+  console.log(combinedSearch);
 
   const { data: users, isLoading, isError, refetch } = useUsers({
     search: combinedSearch,

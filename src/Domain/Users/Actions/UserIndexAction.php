@@ -7,33 +7,27 @@ use Domain\Users\Models\User;
 
 class UserIndexAction
 {
-    public function __invoke(?string $search = null, int $perPage = 10)
+    public function __invoke(?array $search = null, int $perPage = 10)
     {
 
-        $array = explode(" ", $search);
+        $search2 = $search[0];
+        $name = $search[1];
+        $email = $search[2];
 
-        $s = isset($array[0]) ? $array[0] : null;
-        $s2 = isset($array[1]) ? $array[1] : null;
-        $s3 = isset($array[2]) ? $array[2] : null;
-        
-        $query = User::query()->latest(); // Preparamos la consulta base
-        
-        // Si se encuentra una palabra, agregamos la condición de búsqueda por nombre
-        if ($s) {
-            $query->where('name', 'like', "%{$s}%");
-        }
-        
-        if ($s2) {
-            $query->orWhere('name', 'like', "%{$s2}%");
-        }
-        
-        if ($s3) {
-            $query->orWhere('name', 'like', "%{$s3}%");
-        }
-        
-        // Ejecutamos la consulta y la paginamos
-        $users = $query->paginate($perPage);
+        $user = User::query()
+        ->when($search2 !== "null", function ($query) use ($search2) {
+            $query->where('name', 'LIKE', '%' . $search2 . '%')
+                  ->orWhere('email', 'LIKE', '%' . $search2 . '%');
+        })
+        ->when($name !== "null", function ($query) use ($name) {
+            $query->where('name', 'LIKE', '%' . $name . '%');
+        })
+        ->when($email !== "null", function ($query) use ($email) {
+            $query->where('email', 'LIKE', '%' . $email . '%');
+        })
+        ->latest()
+        ->paginate($perPage);
 
-        return $users->through(fn ($user) => UserResource::fromModel($user));
+        return $user->through(fn($user) => UserResource::fromModel($user));
     }
 }

@@ -134,49 +134,49 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
 
 
             <div className='pl-4 pr-4'>
-                <form.Field
-                    name="category"
-                    validators={{
-                        onChangeAsync: async ({ value }) => {
-                            await new Promise((resolve) => setTimeout(resolve, 500));
-                            return !value
-                                ? t("ui.validation.required", { attribute: t("ui.zones.fields.category").toLowerCase() })
-                                : undefined;
-                        },
-                    }}
-                >
-                    {(field) => (
-                        <>
-                            <div className="flex m-1 align-center">
-                                <Layers size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t("ui.zones.fields.category")}</Label>
-                            </div>
-                            <Select 
-                                value={field.state.value} 
-                                onValueChange={(value) => {
-                                    field.handleChange(value); 
-                                }}
+            <form.Field
+    name="category"
+    validators={{
+        onChangeAsync: async ({ value }) => {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            return !value
+                ? t("ui.validation.required", { attribute: t("ui.zones.fields.category").toLowerCase() })
+                : undefined;
+        },
+    }}
+>
+    {(field) => (
+        <>
+            <div className="flex m-1 align-center">
+                <Layers size={16} className="mr-2 text-gray-500" />
+                <Label htmlFor={field.name}>{t("ui.zones.fields.category")}</Label>
+            </div>
+            <Select 
+                value={field.state.value} 
+                onValueChange={(value) => {
+                    field.handleChange(value); 
+                }}
+            >
+                <SelectTrigger className="w-full max-w-[770px] bg-muted">
+                    <SelectValue placeholder={t("ui.zones.placeholders.category")} />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        {genres.map((genre) => (
+                            <SelectItem
+                                key={genre.id}
+                                value={genre.name}
                             >
-                                <SelectTrigger className="w-full max-w-[770px] bg-muted">
-                                    <SelectValue placeholder={t("ui.zones.placeholders.category")} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        {genres.map((genre) => (
-                                            <SelectItem
-                                                key={genre.id}
-                                                value={genre.name}
-                                            >
-                                                {genre.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                            <FieldInfo field={field} />
-                        </>
-                    )}
-                </form.Field>
+                                {t(`ui.genres.${genre.name.toLowerCase()}`)}  {/* Aquí se traducen los géneros */}
+                            </SelectItem>
+                        ))}
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+            <FieldInfo field={field} />
+        </>
+    )}
+</form.Field>
             </div>
             
             <div className='pl-4 pr-4'>

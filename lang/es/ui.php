@@ -3,10 +3,37 @@
 
 return [
     'messages' => [
+        'users' => [
+            'created' => 'Usuario creado correctamente',
+            'updated' => 'Usuario actualizado correctamente',
+            'deleted' => 'Usuario eliminado correctamente',
+        ],
+        'floors' => [
+            'error' => 'El numero del piso ya esta en uso. Introduzca otro.',
+            'created' => 'Piso creado correctamente',
+            'updated' => 'Piso actualizado correctamente',
+            'deleted' => 'Piso eliminado correctamente',
+        ],
         'zones' => [
             'error' => 'El numero de la zona en ese piso esta ya en uso. Introduzca otra.',
-        ]
+            'created' => 'Zona creada correctamente',
+            'updated' => 'Zona actualizada correctamente',
+            'deleted' => 'Zona eliminada correctamente',
+
         ],
+        'bookshelves' => [
+            'error' => 'El numero de la estanteria en ese piso esta ya en uso. Introduzca otra.',
+            'created' => 'Estanteria creada correctamente',
+            'updated' => 'Estanteria actualizada correctamente',
+            'deleted' => 'Estanteria eliminada correctamente',
+        ],
+        'books' => [
+            'error' => 'El ISBN ya esta en uso. Introduzca otro.',
+            'created' => 'Libro creado correctamente',
+            'updated' => 'Libro actualizado correctamente',
+            'deleted' => 'Libro eliminado correctamente',
+        ],
+    ],
     'navigation' => [
         'menu' => 'Menú de Navegación',
         'items' => [
@@ -32,11 +59,11 @@ return [
         'fiction' => 'Ficción',
         'mystery' => 'Misterio',
         'thriller' => 'Suspenso',
-        'science_fiction' => 'Ciencia Ficción',
+        'science fiction' => 'Ciencia Ficción',
         'fantasy' => 'Fantasía',
         'romance' => 'Romántico',
         'historical' => 'Histórico',
-        'non_fiction' => 'No Ficción',
+        'non-fiction' => 'No Ficción',
         'biography' => 'Biografía',
         'horror' => 'Terror',
         'info' => 'Selecciona un género para categorizar el contenido',
@@ -136,17 +163,20 @@ return [
         ],
     ],
     'validation' => [
-            'required' => 'El campo :attribute es obligatorio.',
-            'email' => 'El campo :attribute debe ser una dirección de correo válida.',
-            'min' => [
-                'string' => 'El campo :attribute debe tener al menos :min caracteres.',
-                'numeric' => 'El campo :attribute debe ser mínimo 1.',
-            ],
-            'max' => [
-                'string' => 'El campo :attribute no debe tener más de :max caracteres.',
-            ],
-            'unique' => 'El campo :attribute ya ha sido tomado.',
-            'confirmed' => 'El campo :attribute no coincide.',
+        'numeric' => 'El campo :attribute debe contener solo números.',
+        'length' => 'El campo :attribute debe tener entre :min y :max dígitos.',
+        'required' => 'El campo :attribute es obligatorio.',
+        'email' => 'El campo :attribute debe ser una dirección de correo válida.',
+        'min' => [
+            'string' => 'El campo :attribute debe tener al menos :min caracteres.',
+            'numeric' => 'El campo :attribute debe ser al menos 1.',
+        ],
+        'max' => [
+            'string' => 'El campo :attribute no debe superar los :max caracteres.',
+        ],
+        'unique' => 'El campo :attribute ya ha sido registrado.',
+        'confirmed' => 'El campo :attribute no coincide con su confirmación.',
+
     ],
     'common' => [
         'buttons' => [
@@ -154,12 +184,12 @@ return [
             'delete' => 'Eliminar',
             'close' => 'Cerrar',
         ],
-        'filters'=> [
+        'filters' => [
             'title' => 'Filtros',
             'clear' => 'Limpiar',
         ],
         'delete_dialog' => [
-            'success' => 'Usuario eliminado correctamente',
+            'success' => 'Eliminado correctamente',
         ],
         'showing_results' => 'Mostrando :from a :to de :total resultados',
         'pagination' => [
@@ -171,8 +201,9 @@ return [
         'per_page' => 'Por página',
         'no_results' => 'No hay resultados',
     ],
-   'floors' => [
+    'floors' => [
         'floor' => 'Piso',
+        'ocuped' => 'Ocupadas',
         'floorZones' => 'Zonas del Piso',
         'title' => 'Pisos',
         'create' => 'Crear Nuevo Piso',
@@ -181,20 +212,10 @@ return [
         'description' => 'Esta acción no se puede deshacer. Se eliminará permanentemente el piso del sistema.',
         'deleted_error' => 'Error al eliminar el piso',
         'info' => 'Introduzca la información del nuevo piso',
-        'locations' => [
-            'buildingALeftWing' => 'Edificio A, Ala Izquierda',
-            'buildingARightWing' => 'Edificio A, Ala Derecha',
-            'buildingBLeftWing' => 'Edificio B, Ala Izquierda',
-            'buildingBRightWing' => 'Edificio B, Ala Derecha',
-            'buildingCCenter' => 'Edificio C, Centro',
-            'buildingDWestWing' => 'Edificio D, Ala Oeste',
-            'buildingEEastWing' => 'Edificio E, Ala Este',
-            'buildingFUpperDeck' => 'Edificio F, Cubierta Superior',
-            'buildingGLowerDeck' => 'Edificio G, Cubierta Inferior',
-            'info' => 'Selecciona una ubicación del edificio',
-        ],'filters' => [
+        'filters' => [
             'search' => 'Buscar',
             'name' => 'Numero del piso',
+            'zones' => 'Numero de zonas del piso',
             'ubication' => 'Ubicacion del piso',
         ],
         'placeholders' => [
@@ -228,8 +249,9 @@ return [
             'zones' => 'Numero de zonas del piso',
         ],
     ],
-   'zones' => [
+    'zones' => [
         'zone' => 'Zona',
+        'zones' => 'Zonas',
         'freeZones' => 'Zonas Libres',
         'floorZones' => 'Zonas del Piso',
         'title' => 'Zonas',
@@ -241,14 +263,16 @@ return [
         'info' => 'Introduzca la información de la nueva zona',
         'filters' => [
             'search' => 'Buscar',
-            'name' => 'Numero del piso',
-            'ubication' => 'Ubicacion del piso',
+            'name' => 'Numero de la zona',
+            'category' => 'Categoría de la zona',
+            'bookshelves' => 'Estanterías de la zona',
+            'floor' => 'Piso en el que está la zona',
         ],
         'placeholders' => [
             'name' => 'Numero de la zona',
             'category' => 'Categoria de la zona',
             'bookshelves' => 'Numero de estanterias maximas de la zona',
-            'floor' => 'Numero del piso en el que estara la zona',
+            'floor' => 'Numero del piso en el que esta la zona',
             'search' => 'Buscar zonas...',
         ],
         'buttons' => [
@@ -277,7 +301,7 @@ return [
             'floor' => 'Piso en el que estara la zona',
         ],
     ],
-   'bookshelves' => [
+    'bookshelves' => [
         'bookshelves' => 'Estanterias',
         'bookshelf' => 'Estanteria',
         'title' => 'Estanterias',
@@ -285,21 +309,26 @@ return [
         'edit' => 'Editar Estanteria',
         'delete' => 'Eliminar Estanteria',
         'description' => 'Esta acción no se puede deshacer. Se eliminará permanentemente la estanteria del sistema.',
-        'deleted_error' => 'Error al eliminar la zona',
-        'info' => 'Introduzca la información de la nueva zona',
+        'deleted_error' => 'Error al eliminar la estanteria',
+        'info' => 'Introduzca la información de la nueva estanteria',
         'filters' => [
-            'search' => 'Buscar',
-            'name' => 'Numero del piso',
+            'enumeration' => 'Enumeracion de la estanteria',
+            'zone' => 'Zona en la que esta la estanteria',
             'ubication' => 'Ubicacion del piso',
+            'category' => 'Categoria de la estanteria',
+            'books' => 'Numero de libros de la estanteria',
         ],
         'placeholders' => [
-            'name' => 'Numero de la estanteria',
+            'enumeration' => 'Enumeracion de la estanteria',
             'bookshelves' => 'Numero de estanterias maximas de la zona',
-            'floor' => 'Numero del piso en el que estara la zona',
+            'zone' => 'Zona en la que esta la estanteria',
+            'category' => 'Categoria de la estanteria',
             'search' => 'Buscar zonas...',
+            'books' => 'Numero de libros maximos de la estanteria',
+            'floor' => 'Piso en el que esta la estanteria',
         ],
         'buttons' => [
-            'new' => 'Nueva Zona',
+            'new' => 'Nueva Estanteria',
             'edit' => 'Editar',
             'save' => 'Guardar',
             'update' => 'Actualizar',
@@ -311,8 +340,9 @@ return [
         ],
         'columns' => [
             'zone' => 'Zona perteneciente',
+            'floor' => 'Piso perteneciente',
             'enumeration' => 'Enumeracion',
-            'name' => 'Numero de la Zona',
+            'name' => 'Numero de la estanteria',
             'books' => 'Numero de libros max',
             'shelves' => 'Numero de estantes',
             'count' => 'Numero de libros',
@@ -321,10 +351,79 @@ return [
             'actions' => 'Acciones',
         ],
         'fields' => [
-            'name' => 'Número de la zona',
-            'category' => 'Categoria de la zona',
-            'bookshelves' => 'Numero de estanterias de la zona',
-            'floor' => 'Piso en el que estara la zona',
+            'enumeration' => 'Enumeracion',
+            'category' => 'Categoria de la estanteria',
+            'books' => 'Numero de libros de la estanteria',
+            'floor' => 'Piso de la estanteria',
+            'zone' => 'Zone de la estanteria',
+        ],
+    ],
+    'books' => [
+        'books' => 'Libros',
+        'book' => 'Libro',
+        'title' => 'Libros',
+        'create' => 'Crear Nuevo Libro',
+        'edit' => 'Editar Libro',
+        'delete' => 'Eliminar Libro',
+        'description' => 'Esta acción no se puede deshacer. Se eliminará permanentemente el libro del sistema.',
+        'deleted_error' => 'Error al eliminar el libro',
+        'info' => 'Introduzca la información del nuevo libro',
+        'filters' => [
+            'title' => 'Titulo del libro',
+            'bookshelf' => 'Estanteria a la que pertenece',
+            'author' => 'Autor del libro',
+            'publisher' => 'Editorial del libro',
+            'ISBN' => 'ISBN del libro',
+            'genres' => 'Generos del libro',
+            'floor' => 'Piso al que pertenece',
+            'zone' => 'Zona al que pertenece',
+        ],
+        'placeholders' => [
+            'title' => 'Titulo del libro',
+            'bookshelf' => 'Estanteria a la que pertenece',
+            'author' => 'Autor del libro',
+            'floor' => 'Piso al que pertenece',
+            'zone' => 'Zona al que pertenece',
+            'publisher' => 'Editorial del libro',
+            'ISBN' => 'ISBN del libro',
+            'selectGenres' => 'Generos del libro',
+            'genres' => 'Generos del libro',
+        ],
+        'buttons' => [
+            'new' => 'Nuevo Libro',
+            'edit' => 'Editar',
+            'save' => 'Guardar',
+            'update' => 'Actualizar',
+            'cancel' => 'Cancelar',
+            'delete' => 'Eliminar',
+            'deleting' => 'Eliminando...',
+            'saving' => 'Guardando...',
+            'retry' => 'Reintentar',
+        ],
+        'columns' => [
+            'bookshelf' => 'Estanteria perteneciente',
+            'zone' => 'Zona perteneciente',
+            'floor' => 'Piso perteneciente',
+            'title' => 'Titulo del libro',
+            'name' => 'Numero de la estanteria',
+            'books' => 'Numero de libros max',
+            'author' => 'Nombre del autor',
+            'publisher' => 'Editorial',
+            'ISBN' => 'ISBN del libro',
+            'count' => 'Numero de libros',
+            'category' => 'Categorias del libro',
+            'created_at' => 'Fecha de creación',
+            'actions' => 'Acciones',
+        ],
+        'fields' => [
+            'title' => 'Titulo',
+            'publisher' => 'Editorial',
+            'ISBN' => 'ISBN',
+            'author' => 'Autor',
+            'bookshelf' => 'Estanteria perteneciente',
+            'zone' => 'Zona perteneciente',
+            'floor' => 'Piso perteneciente',
+            'genres' => 'Generos',
         ],
     ],
 
@@ -386,4 +485,5 @@ return [
             'next' => 'Siguiente',
         ],
     ],
+
 ];

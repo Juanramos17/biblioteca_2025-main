@@ -9,7 +9,7 @@ import type { AnyFieldApi } from '@tanstack/react-form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { Barcode, BookOpen, Factory, FileText, MapPin, Save, User, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 interface BookProps {
@@ -39,7 +39,7 @@ interface BookProps {
         floor: { id: string; name: number };
         bookshelves_count: number;
         category: string;
-        bookshelves: { category: string; zone_id: string; id: string }[];
+        bookshelves: { category: string; zone_id: string; id: string; enumeration: number }[];
     }[];
     page?: string;
     perPage?: string;
@@ -60,8 +60,6 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 export default function FloorForm({ zones, floors, floor_id, genres, zone_id, initialData, page, perPage }: BookProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
-    console.log(initialData);
-    console.log(floor_id);
     const form = useForm({
         defaultValues: {
             title: initialData?.title ?? '',
@@ -73,6 +71,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
             floor_id: floor_id ?? '',
             zone_id: zone_id ?? '',
         },
+
         onSubmit: async ({ value }) => {
             const options = {
                 onSuccess: () => {
@@ -109,12 +108,22 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
         form.handleSubmit();
     };
 
-    const [selectedGenres, setSelectedGenres] = useState<string[]>(
-        initialData?.genre ? initialData.genre.split(',') : []
-      );
+    const [selectedGenres, setSelectedGenres] = useState<string[]>(initialData?.genre ? initialData.genre.split(',').map((g) => g.trim()) : []);
 
     const [selectedFloor, setSelectedFloor] = useState<string>(floor_id ?? '');
+    useEffect(() => {
+        if (floor_id) {
+            setSelectedFloor(floor_id);
+        }
+    }, [floor_id]);
+
     const [selectedZone, setSelectedZone] = useState<string>(zone_id ?? '');
+
+    useEffect(() => {
+        if (zone_id) {
+            setSelectedZone(zone_id);
+        }
+    }, [zone_id]);
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -188,13 +197,15 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                             <MultiSelect
                                 options={genres.map((genre) => ({
                                     value: genre.name,
-                                    label: genre.name,
+                                    label: t(`ui.genres.${genre.name.toLowerCase()}`), // Aquí estamos traduciendo el género
                                 }))}
-                                value={selectedGenres}
+                                value={field.state.value}
                                 onValueChange={(selected: string[]) => {
                                     setSelectedGenres(selected);
-                                    field.handleChange(selected.join(','));
+                                    field.handleChange(selected.join(', '));
                                 }}
+                                defaultValue={selectedGenres}
+                                onBlur={field.handleBlur}
                                 placeholder={t('ui.books.placeholders.selectGenres')}
                                 variant="inverted"
                                 maxCount={5}
@@ -217,17 +228,17 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                         <>
                             <div className="align-center m-1 flex">
                                 <MapPin size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.zones.fields.floor')}</Label>
+                                <Label htmlFor={field.name}>{t('ui.books.fields.floor')}</Label>
                             </div>
                             <Select
-                                value={field.state.value}
+                                value={selectedFloor}
                                 onValueChange={(value) => {
                                     field.handleChange(value);
                                     setSelectedFloor(value);
                                 }}
                             >
                                 <SelectTrigger className="bg-muted w-full max-w-[770px]">
-                                    <SelectValue placeholder={t('ui.zones.placeholders.floor')} />
+                                    <SelectValue placeholder={t('ui.books.placeholders.floor')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
@@ -250,25 +261,25 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                     name="zone_id"
                     validators={{
                         onChange: ({ value }) =>
-                            value ? undefined : t('ui.validation.required', { attribute: t('ui.zones.fields.name').toLowerCase() }),
+                            value ? undefined : t('ui.validation.required', { attribute: t('ui.books.fields.zone').toLowerCase() }),
                     }}
                 >
                     {(field) => (
                         <>
                             <div className="align-center m-1 flex">
                                 <MapPin size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.zones.fields.name')}</Label>
+                                <Label htmlFor={field.name}>{t('ui.books.fields.zone')}</Label>
                             </div>
                             <Select
-                                value={field.state.value}
+                                value={selectedZone}
                                 onValueChange={(value) => {
                                     field.handleChange(value);
                                     setSelectedZone(value);
                                 }}
-                                disabled={selectedFloor == '' || selectedGenres.length === 0}
+                                disabled={selectedFloor == ''}
                             >
                                 <SelectTrigger className="bg-muted w-full max-w-[770px]">
-                                    <SelectValue placeholder={t('ui.zones.placeholders.name')} />
+                                    <SelectValue placeholder={t('ui.books.placeholders.zone')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
@@ -293,18 +304,18 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                     name="bookshelf_id"
                     validators={{
                         onChange: ({ value }) =>
-                            value ? undefined : t('ui.validation.required', { attribute: t('ui.bookshelves.fields.name').toLowerCase() }),
+                            value ? undefined : t('ui.validation.required', { attribute: t('ui.books.fields.bookshelf').toLowerCase() }),
                     }}
                 >
                     {(field) => (
                         <>
                             <div className="align-center m-1 flex">
                                 <BookOpen size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.bookshelves.fields.name')}</Label>
+                                <Label htmlFor={field.name}>{t('ui.books.fields.bookshelf')}</Label>
                             </div>
                             <Select value={field.state.value} onValueChange={(value) => field.handleChange(value)} disabled={selectedZone == ''}>
                                 <SelectTrigger className="bg-muted w-full max-w-[770px]">
-                                    <SelectValue placeholder={t('ui.bookshelves.placeholders.name')} />
+                                    <SelectValue placeholder={t('ui.books.placeholders.bookshelf')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
@@ -312,7 +323,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                                             .find((zone) => zone.id === selectedZone)
                                             ?.bookshelves.map((bookshelf) => (
                                                 <SelectItem key={bookshelf.id} value={bookshelf.id}>
-                                                    {t('ui.bookshelves.shelf')} {bookshelf.category}
+                                                    {t('ui.bookshelves.bookshelf')} {bookshelf.enumeration}
                                                 </SelectItem>
                                             ))}
                                     </SelectGroup>
@@ -360,76 +371,92 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
             </div>
 
             <div className="pr-4 pl-4">
-  <form.Field
-    name="publisher"
-    validators={{
-      onChange: ({ value }) =>
-        value && value.trim() !== ""
-          ? undefined
-          : t("ui.validation.required", {
-              attribute: t("ui.books.fields.publisher").toLowerCase(),
-            }),
-    }}
-  >
-    {(field) => (
-      <>
-        <div className="align-center m-1 flex">
-          <Factory size={16} className="mr-2 text-gray-500" />
-          <Label htmlFor={field.name}>{t("ui.books.fields.publisher")}</Label>
-        </div>
-        <Input
-          id={field.name}
-          name={field.name}
-          value={field.state.value}
-          onChange={(e) => field.handleChange(e.target.value)}
-          onBlur={field.handleBlur}
-          placeholder={t("ui.books.placeholders.publisher")}
-          disabled={form.state.isSubmitting}
-          autoComplete="off"
-          className="w-full max-w-[770px] bg-muted"
-        />
-        <FieldInfo field={field} />
-      </>
-    )}
-  </form.Field>
-</div>
+                <form.Field
+                    name="publisher"
+                    validators={{
+                        onChange: ({ value }) =>
+                            value && value.trim() !== ''
+                                ? undefined
+                                : t('ui.validation.required', {
+                                      attribute: t('ui.books.fields.publisher').toLowerCase(),
+                                  }),
+                    }}
+                >
+                    {(field) => (
+                        <>
+                            <div className="align-center m-1 flex">
+                                <Factory size={16} className="mr-2 text-gray-500" />
+                                <Label htmlFor={field.name}>{t('ui.books.fields.publisher')}</Label>
+                            </div>
+                            <Input
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                onBlur={field.handleBlur}
+                                placeholder={t('ui.books.placeholders.publisher')}
+                                disabled={form.state.isSubmitting}
+                                autoComplete="off"
+                                className="bg-muted w-full max-w-[770px]"
+                            />
+                            <FieldInfo field={field} />
+                        </>
+                    )}
+                </form.Field>
+            </div>
 
-<div className="pr-4 pl-4">
-  <form.Field
-    name="ISBN"
-    validators={{
-      onChange: ({ value }) =>
-        value && value.trim() !== ""
-          ? undefined
-          : t("ui.validation.required", {
-              attribute: t("ui.books.fields.ISBN").toLowerCase(),
-            }),
-    }}
-  >
-    {(field) => (
-      <>
-        <div className="align-center m-1 flex">
-          <Barcode size={16} className="mr-2 text-gray-500" />
-          <Label htmlFor={field.name}>{t("ui.books.fields.ISBN")}</Label>
-        </div>
-        <Input
-          id={field.name}
-          name={field.name}
-          value={field.state.value}
-          onChange={(e) => field.handleChange(e.target.value)}
-          onBlur={field.handleBlur}
-          placeholder={t("ui.books.placeholders.ISBN")}
-          disabled={form.state.isSubmitting}
-          autoComplete="off"
-          className="w-full max-w-[770px] bg-muted"
-        />
-        <FieldInfo field={field} />
-      </>
-    )}
-  </form.Field>
-</div>
+            <div className="pr-4 pl-4">
+                <form.Field
+                    name="ISBN"
+                    validators={{
+                        onChange: ({ value }) => {
+                            const trimmed = value?.trim();
 
+                            if (!trimmed) {
+                                return t('ui.validation.required', {
+                                    attribute: t('ui.books.fields.ISBN').toLowerCase(),
+                                });
+                            }
 
+                            if (!/^\d+$/.test(trimmed)) {
+                                return t('ui.validation.numeric', {
+                                    attribute: t('ui.books.fields.ISBN').toLowerCase(),
+                                });
+                            }
+
+                            if (trimmed.length !== 10 && trimmed.length !== 13) {
+                                return t('ui.validation.length', {
+                                    attribute: t('ui.books.fields.ISBN').toLowerCase(),
+                                    length: '10 o 13',
+                                });
+                            }
+
+                            return undefined;
+                        },
+                    }}
+                >
+                    {(field) => (
+                        <>
+                            <div className="align-center m-1 flex">
+                                <Barcode size={16} className="mr-2 text-gray-500" />
+                                <Label htmlFor={field.name}>{t('ui.books.fields.ISBN')}</Label>
+                            </div>
+                            <Input
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                onBlur={field.handleBlur}
+                                placeholder={t('ui.books.placeholders.ISBN')}
+                                disabled={form.state.isSubmitting}
+                                autoComplete="off"
+                                className="bg-muted w-full max-w-[770px]"
+                            />
+                            <FieldInfo field={field} />
+                        </>
+                    )}
+                </form.Field>
+            </div>
 
             <div className="bg-muted flex h-20 justify-between gap-4 rounded-b-lg p-5">
                 <Button

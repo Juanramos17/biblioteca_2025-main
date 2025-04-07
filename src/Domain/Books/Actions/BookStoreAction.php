@@ -4,6 +4,7 @@ namespace Domain\Books\Actions;
 
 use Domain\Books\Model\Book;
 use Domain\Books\Data\Resources\BookResource;
+use Domain\Genres\Model\Genre;
 
 class BookStoreAction
 {
@@ -18,7 +19,18 @@ class BookStoreAction
             'bookshelf_id' => $data['bookshelf_id'],
         ]);
 
-        
+   
+        $genreNames = explode(',', $data['genre']);  
+
+       
+        $genreNames = array_map('trim', $genreNames);
+  
+        $genreIds = Genre::whereIn('name', $genreNames)
+                                      ->pluck('id')
+                                      ->toArray();
+    
+        $book->genres()->sync($genreIds);
+    
         return BookResource::fromModel($book);
     }
 }

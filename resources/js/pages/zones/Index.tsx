@@ -72,16 +72,19 @@ export default function ZonesIndex() {
       id: "name",
       header: t("ui.zones.columns.name") || "Zones' number",
       accessorKey: "name",
+      format: (value) => `${t('ui.zones.zone')}: ${value}`,
     }),
     createTextColumn<Zone>({
       id: "floor_name",
       header: t("ui.floors.columns.name") || "Floors' number",
       accessorKey: "floor_name",
+      format: (value) => `${t('ui.floors.floor')}: ${value}`,
     }),
     createTextColumn<Zone>({
       id: "category",
       header: t("ui.zones.columns.category") || "Category",
       accessorKey: "category",
+      format: (value) => `${t(`ui.genres.${value.toLowerCase()}`)}`, 
     }),
     createTextColumn<Zone>({
       id: "n_bookshelves",
@@ -145,28 +148,28 @@ export default function ZonesIndex() {
                               [
                                   {
                                       id: 'name',
-                                      label: t('ui.floors.filters.search') || 'Buscar',
+                                      label: t('ui.zones.filters.name') || 'Numero',
                                       type: 'number',
-                                      placeholder: t('ui.floors.placeholders.search') || 'Buscar...',
+                                      placeholder: t('ui.zones.placeholders.name') || 'Numero...',
                        
                                   },
                                   {
                                       id: 'category',
-                                      label: t('ui.floors.filters.name') || 'Nombre',
+                                      label: t('ui.zones.filters.category') || 'Categoria',
                                       type: 'text',
-                                      placeholder: t('ui.floors.placeholders.name') || 'Nombre...',
+                                      placeholder: t('ui.zones.placeholders.category') || 'Categoria...',
                                   },
                                   {
                                       id: 'n_bookshelves',
-                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      label: t('ui.zones.filters.bookshelves') || 'Numero de estanterias',
                                       type: 'number',
-                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                      placeholder: t('ui.zones.placeholders.bookshelves') || 'Numero de estanterias...',
                                   },
                                   {
                                       id: 'floor',
-                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      label: t('ui.zones.filters.floor') || 'Piso',
                                       type: 'number',
-                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                      placeholder: t('ui.zones.placeholders.floor') || 'Ubicacion...',
                                   },
                               ] as FilterConfig[]
                           }

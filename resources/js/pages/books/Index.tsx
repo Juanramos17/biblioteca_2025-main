@@ -37,7 +37,9 @@ export default function BooksIndex() {
     filters.author ? `${filters.author}` : "null",
     filters.publisher ? `${filters.publisher}` : "null",
     filters.ISBN ? `${filters.ISBN}` : "null",
-    filters.category ? `${filters.category}` : "null"
+    filters.category ? `${filters.category}` : "null",
+    filters.floor ? `${filters.floor}` : "null",
+    filters.zone ? `${filters.zone}` : "null",
   ];
 
   const { data: zones, isLoading, isError, refetch } = useBooks({
@@ -63,50 +65,60 @@ export default function BooksIndex() {
       await deleteUserMutation.mutateAsync(id);
       refetch();
     } catch (error) {
-      toast.error(t("ui.users.deleted_error") || "Error deleting floor");
-      console.error("Error deleting floor:", error);
+      toast.error(t("ui.books.deleted_error") || "Error deleting book");
+      console.error("Error deleting book:", error);
     }
   };
 
   const columns = useMemo(() => ([
     createTextColumn<Book>({
       id: "title",
-      header: t("ui.bookshelves.columns.enumeration") || "Bookshelves' enum",
+      header: t("ui.books.columns.title") || "Book' title",
       accessorKey: "title",
     }),
     createTextColumn<Book>({
       id: "bookshelf_name",
-      header: t("ui.bookshelves.columns.zone") || "Zones' number",
+      header: t("ui.books.columns.bookshelf") || "Bookshelf' number",
       accessorKey: "bookshelf_name",
+      format: (value) => `${t('ui.bookshelves.bookshelf')}: ${value}`,
     }),
     createTextColumn<Book>({
       id: "zone_name",
-      header: t("ui.bookshelves.columns.zone") || "Zones' number",
+      header: t("ui.bookshelves.columns.zone") || "Zone' number",
       accessorKey: "zone_name",
+      format: (value) => `${t('ui.zones.zone')}: ${value}`,
     }),
     createTextColumn<Book>({
       id: "floor_name",
-      header: t("ui.bookshelves.columns.zone") || "Zones' number",
+      header: t("ui.books.columns.floor") || "Floor' number",
       accessorKey: "floor_name",
+      format: (value) => `${t('ui.floors.floor')}: ${value}`,
     }),
     createTextColumn<Book>({
       id: "genre",
-      header: t("ui.bookshelves.columns.category") || "Category",
+      header: t("ui.books.columns.category") || "Category",
       accessorKey: "genre",
+      format: (value) => {
+        // Dividir el string por ", " y luego mapearlo para traducir cada género
+        return value
+          .split(", ") // Divide el string en un array de géneros
+          .map((genre) => t(`ui.genres.${genre.toLowerCase()}`)) // Traducir cada género
+          .join(", "); // Vuelve a unir los géneros traducidos en un string
+      },
     }),
     createTextColumn<Book>({
       id: "author",
-      header: t("ui.bookshelves.columns.shelves") || "Shelves",
+      header: t("ui.books.columns.author") || "Author",
       accessorKey: "author",
     }),
     createTextColumn<Book>({
       id: "publisher",
-      header: t("ui.bookshelves.columns.books") || "Books' number",
+      header: t("ui.books.columns.publisher") || "Publisher's number",
       accessorKey: "publisher",
     }),
     createTextColumn<Book>({
       id: "ISBN",
-      header: t("ui.bookshelves.columns.count") || "Count",
+      header: t("ui.books.columns.ISBN") || "ISBN",
       accessorKey: "ISBN",
     }),
     createDateColumn<Book>({
@@ -127,10 +139,10 @@ export default function BooksIndex() {
           <DeleteDialog
             id={book.id}
             onDelete={handleDeleteUser}
-            title={t("ui.bookshelves.delete") || "Delete bookshelf"}
-            description={t("ui.bookshelves.description") || "Are you sure you want to delete this bookshelf? This action cannot be undone."}
+            title={t("ui.books.delete") || "Delete bookshelf"}
+            description={t("ui.books.description") || "Are you sure you want to delete this book? This action cannot be undone."}
             trigger={
-              <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" title={t("ui.users.buttons.delete") || "Delete user"}>
+              <Button variant="outline" size="icon" className="text-destructive hover:text-destructive" title={t("ui.books.buttons.delete") || "Delete user"}>
                 <TrashIcon className="h-4 w-4" />
               </Button>
             }
@@ -141,15 +153,15 @@ export default function BooksIndex() {
   ] as ColumnDef<Book>[]), [t, handleDeleteUser]);
 
   return (
-    <BookLayout title={t("ui.bookshelves.title")}>
+    <BookLayout title={t("ui.books.title")}>
         <div className="p-6">
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                      <h1 className="text-3xl font-bold">{t('ui.bookshelves.title')}</h1>
+                      <h1 className="text-3xl font-bold">{t('ui.books.title')}</h1>
                       <Link href="/books/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
-                              {t('ui.bookshelves.buttons.new')}
+                              {t('ui.books.buttons.new')}
                           </Button>
                       </Link>
                   </div>
@@ -161,40 +173,52 @@ export default function BooksIndex() {
                               [
                                   {
                                       id: 'title',
-                                      label: t('ui.floors.filters.search') || 'Buscar',
+                                      label: t('ui.books.filters.title') || 'Titulo',
                                       type: 'text',
-                                      placeholder: t('ui.floors.placeholders.search') || 'Buscar...',
+                                      placeholder: t('ui.books.placeholders.title') || 'Titulo...',
                        
                                   },
                                   {
                                       id: 'bookshelf_name',
-                                      label: t('ui.floors.filters.name') || 'Nombre',
+                                      label: t('ui.books.filters.bookshelf') || 'Estanteria',
                                       type: 'number',
-                                      placeholder: t('ui.floors.placeholders.name') || 'Nombre...',
+                                      placeholder: t('ui.books.placeholders.bookshelf') || 'Estanteria...',
                                   },
                                   {
                                       id: 'author',
-                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      label: t('ui.books.filters.author') || 'Autor',
                                       type: 'text',
-                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                      placeholder: t('ui.books.placeholders.author') || 'Autor...',
                                   },
                                   {
                                       id: 'publisher',
-                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      label: t('ui.books.filters.publisher') || 'Editorial',
                                       type: 'text',
-                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                      placeholder: t('ui.books.placeholders.publisher') || 'Editorial...',
                                   },
                                   {
                                       id: 'ISBN',
-                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      label: t('ui.books.filters.ISBN') || 'ISBN',
                                       type: 'number',
-                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                      placeholder: t('ui.books.placeholders.ISBN') || 'ISBN...',
                                   },
                                   {
                                       id: 'category',
-                                      label: t('ui.floors.filters.ubication') || 'Ubication',
+                                      label: t('ui.books.filters.genres') || 'Categoria',
                                       type: 'text',
-                                      placeholder: t('ui.floors.placeholders.ubication') || 'Ubicacion...',
+                                      placeholder: t('ui.books.placeholders.genres') || 'Categoria...',
+                                  },
+                                  {
+                                      id: 'floor',
+                                      label: t('ui.books.filters.floor') || 'Piso',
+                                      type: 'number',
+                                      placeholder: t('ui.books.placeholders.floor') || 'Piso...',
+                                  },
+                                  {
+                                      id: 'zone',
+                                      label: t('ui.books.filters.zone') || 'Zona',
+                                      type: 'number',
+                                      placeholder: t('ui.books.placeholders.zone') || 'Zona...',
                                   },
                               ] as FilterConfig[]
                           }
@@ -208,9 +232,9 @@ export default function BooksIndex() {
                           <TableSkeleton columns={4} rows={10} />
                       ) : isError ? (
                           <div className="p-4 text-center">
-                              <div className="mb-4 text-red-500">{t('ui.users.error_loading')}</div>
+                              <div className="mb-4 text-red-500">{t('ui.books.error_loading')}</div>
                               <Button onClick={() => refetch()} variant="outline">
-                                  {t('ui.users.buttons.retry')}
+                                  {t('ui.books.buttons.retry')}
                               </Button>
                           </div>
                       ) : (

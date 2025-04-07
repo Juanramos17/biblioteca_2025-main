@@ -40,7 +40,7 @@ class UserController extends Controller
         $action($validator->validated());
 
         return redirect()->route('users.index')
-            ->with('success', __('messages.users.created'));
+            ->with('success', __('ui.messages.users.created'));
     }
 
     public function edit(Request $request, User $user)

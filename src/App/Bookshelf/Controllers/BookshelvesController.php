@@ -99,7 +99,7 @@ class BookshelvesController extends Controller
         $action($validator->validated());
 
         return redirect()->route('zones.index')
-            ->with('success', __('messages.zones.created'));
+            ->with('success', __('ui.messages.bookshelves.created'));
     }
 
     /**
@@ -192,7 +192,7 @@ class BookshelvesController extends Controller
         }
 
         return redirect($redirectUrl)
-            ->with('success', __('messages.users.updated'));
+            ->with('success', __('ui.messages.bookshelves.updated'));
     }
 
     /**

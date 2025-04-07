@@ -65,7 +65,6 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                 zone_id: initialData?.zone_id ?? "",
                 floor_id: floor_id ?? "",
                 
-                 
             },
             onSubmit: async ({ value }) => {
                 
@@ -91,7 +90,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                         router.visit(url);
                     },
                     onError: () => {
-                        toast.error(t("ui.messages.zones.error"));
+                        toast.error(t("ui.messages.bookshelves.error"));
                     },
                 };
 
@@ -114,9 +113,6 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
         };
 
         const [selectedFloor, setSelectedFloor] = useState<string>(floor_id??"");
-        
-
-        console.log(floors);
     
     return (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -128,7 +124,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                             await new Promise((resolve) => setTimeout(resolve, 500));
                     
                             if (value === null || value === undefined || value.toString().trim() === "") {
-                                return t("ui.validation.required", { attribute: t("ui.floors.fields.name").toLowerCase() });
+                                return t("ui.validation.required", { attribute: t("ui.bookshelves.fields.enumeration").toLowerCase() });
                             }
                     
                             const numValue = Number(value);
@@ -148,7 +144,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                     {(field) => (
                         <>
                         <div className="flex m-1 align-center ">
-                            <Building2 size={16} className='mr-2 text-gray-500 '/><Label htmlFor={field.name}>{t("ui.floors.fields.name")}</Label>
+                            <Building2 size={16} className='mr-2 text-gray-500 '/><Label htmlFor={field.name}>{t("ui.bookshelves.fields.enumeration")}</Label>
                         </div>
                             <Input
                                 id={field.name}
@@ -156,7 +152,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                                 value={field.state.value}
                                 onChange={(e) => field.handleChange(e.target.value)}
                                 onBlur={field.handleBlur}
-                                placeholder={t("ui.floors.placeholders.name")}
+                                placeholder={t("ui.bookshelves.placeholders.enumeration")}
                                 disabled={form.state.isSubmitting}
                                 required={false}
                                 autoComplete="off"
@@ -171,19 +167,19 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                 <form.Field
                     name="floor_id"
                         validators={{
-                            onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.zones.fields.floor").toLowerCase() }),
+                            onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.bookshelves.fields.floor").toLowerCase() }),
                         }}
                     >
                         {(field) => (
                             <>
                            <div className="flex m-1 align-center">
                                 <MapPin size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t("ui.zones.fields.floor")}</Label>
+                                <Label htmlFor={field.name}>{t("ui.bookshelves.fields.floor")}</Label>
                             </div>
                                 <Select value={field.state.value} onValueChange={(value) => {field.handleChange(value);setSelectedFloor(value);}}
             >
                                 <SelectTrigger className="w-full max-w-[770px] bg-muted">
-                                    <SelectValue placeholder={t("ui.zones.placeholders.floor")} />
+                                    <SelectValue placeholder={t("ui.bookshelves.placeholders.floor")} />
                                 </SelectTrigger>
                                  <SelectContent>
                                     <SelectGroup>
@@ -209,14 +205,14 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                 <form.Field
                     name="zone_id"
                     validators={{
-                        onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() }),
+                        onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.bookshelves.fields.zone").toLowerCase() }),
                     }}
                 >
                     {(field) => (
                         <>
                             <div className="flex m-1 align-center">
                                 <MapPin size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t("ui.zones.fields.name")}</Label>
+                                <Label htmlFor={field.name}>{t("ui.bookshelves.fields.zone")}</Label>
                             </div>
                             <Select 
                                 value={field.state.value} 
@@ -225,7 +221,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                                 disabled={selectedFloor==""} 
                             >
                                 <SelectTrigger className="w-full max-w-[770px] bg-muted">
-                                    <SelectValue placeholder={t("ui.zones.placeholders.name")} />
+                                    <SelectValue placeholder={t("ui.bookshelves.placeholders.zone")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
@@ -256,17 +252,17 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
                             if (value === null || value === undefined || value.toString().trim() === "") {
-                                return t("ui.validation.required", { attribute: t("ui.floors.fields.name").toLowerCase() });
+                                return t("ui.validation.required", { attribute: t("ui.bookshelves.fields.books").toLowerCase() });
                             }
                     
                             const numValue = Number(value);
                     
                             if (isNaN(numValue)) {
-                                return t("ui.validation.required", { attribute: t("ui.floors.fields.name").toLowerCase() });
+                                return t("ui.validation.required", { attribute: t("ui.bookshelves.fields.books").toLowerCase() });
                             }
                     
                             if (numValue < 1) {
-                                return t("ui.validation.min.numeric", { attribute: t("ui.floors.fields.name").toLowerCase(), min: "1" });
+                                return t("ui.validation.min.numeric", { attribute: t("ui.bookshelves.fields.books").toLowerCase(), min: "1" });
                             }
                         },
                     }}
@@ -275,7 +271,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                         <>
                             <div className="flex m-1 align-center">
                                 <Grid size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t("ui.zones.fields.bookshelves")}</Label>
+                                <Label htmlFor={field.name}>{t("ui.bookshelves.fields.books")}</Label>
                             </div>
                             <Input
                                 id={field.name}
@@ -283,7 +279,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                                 value={field.state.value}
                                 onChange={(e) => field.handleChange(Number(e.target.value))}
                                 onBlur={field.handleBlur}
-                                placeholder={t("ui.zones.placeholders.bookshelves")}
+                                placeholder={t("ui.bookshelves.placeholders.books")}
                                 disabled={form.state.isSubmitting}
                                 autoComplete="off"
                                 required
@@ -311,7 +307,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                     disabled={form.state.isSubmitting}
                 >
                     <X />
-                    {t("ui.users.buttons.cancel")}
+                    {t("ui.bookshelves.buttons.cancel")}
                 </Button>
 
                 <form.Subscribe

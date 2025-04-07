@@ -37,12 +37,12 @@ export function BookshelfLayout({ title, children }: BookshelfLayoutProps) {
       href: "/dashboard",
     },
     {
-      title: "Librerias",
+      title: "Estanterias",
       href: "/bookshelves",
     },
   ];
 
-  if (title !== "Librerias") {
+  if (title !== "Estanterias") {
     breadcrumbs.push({
       title,
       href: "#",

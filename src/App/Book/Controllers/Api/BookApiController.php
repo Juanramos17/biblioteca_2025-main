@@ -36,7 +36,7 @@ class BookApiController extends Controller
         $action($book);
 
         return response()->json([
-            'message' => __('messages.bookshelves.deleted')
+            'message' => __('ui.messages.books.deleted')
         ]);
     }
 }

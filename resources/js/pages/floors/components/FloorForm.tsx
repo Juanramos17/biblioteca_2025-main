@@ -107,7 +107,6 @@ export default function FloorForm({ floors, initialData, page, perPage }: FloorP
             form.handleSubmit();
         };
 
-        console.log(floors);
     
     return (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>

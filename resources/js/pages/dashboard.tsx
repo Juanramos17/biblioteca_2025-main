@@ -1,5 +1,5 @@
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
-import { Users, User, Building2, MapPin, Library } from 'lucide-react';
+import { Users, User, Building2, MapPin, Library, Book } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -76,7 +76,7 @@ export default function Dashboard() {
                     title="Books"
                     description="Gestiona las estanterias de la biblioteca"
                     href="/books"
-                    icon={Library}
+                    icon={Book}
                 />
 
             </div>

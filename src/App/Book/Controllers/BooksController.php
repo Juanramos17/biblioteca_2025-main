@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Core\Controllers\Controller;
 use Domain\Books\Actions\BookStoreAction;
+use Domain\Books\Actions\BookUpdateAction;
 use Domain\Books\Model\Book;
 use Domain\Bookshelves\Model\Bookshelf;
 use Domain\Floors\Model\Floor;
@@ -34,27 +35,27 @@ class BooksController extends Controller
     public function create()
     {
         $genres = Genre::all();
-    
-        $floors = Floor::withCount('zones') 
+
+        $floors = Floor::withCount('zones')
             ->with(['zones' => function ($query) {
                 $query->select('id', 'floor_id', 'category', 'name');
             }])
             ->orderBy('name')
             ->get();
-    
-        $zones = Zone::withCount('bookshelves') 
+
+        $zones = Zone::withCount('bookshelves')
             ->with([
                 'bookshelves' => function ($query) {
-                    $query->select('id', 'zone_id', 'category'); 
+                    $query->select('id', 'zone_id', 'category', 'enumeration');
                 },
-                'floor' => function ($query) { 
+                'floor' => function ($query) {
                     $query->select('id', 'name');
                 }
             ])
             ->orderBy('category')
             ->get();
-    
-    
+
+
         return Inertia::render('books/Create', [
             "genres" => $genres,
             "zones" => $zones,
@@ -67,23 +68,13 @@ class BooksController extends Controller
      */
     public function store(Request $request, BookStoreAction $action)
     {
-        
-        
+
+
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
             'publisher' => ['required', 'string', 'max:255'],
-            'ISBN' => [
-                'required',
-                'string',
-                'max:20',
-                Rule::unique('books')->where(function ($query) use ($request) {
-                    return $query
-                        ->where('title', $request->title)
-                        ->where('author', $request->author)
-                        ->where('publisher', $request->publisher);
-                }),
-            ],
+            'ISBN' => ['required','string','max:20',],
             'genre' => ['required', 'string', 'max:255'],
             'bookshelf_id' => ['required', 'exists:bookshelves,id'],
         ]);
@@ -94,8 +85,8 @@ class BooksController extends Controller
 
         $action($validator->validated());
 
-        return redirect()->route('zones.index')
-            ->with('success', __('messages.zones.created'));
+        return redirect()->route('books.index')
+            ->with('success', __('ui.messages.books.created'));
     }
 
     /**
@@ -112,20 +103,20 @@ class BooksController extends Controller
     public function edit(Request $request, Book $book)
     {
         $genres = Genre::all();
-    
-        $floors = Floor::withCount('zones') 
+
+        $floors = Floor::withCount('zones')
             ->with(['zones' => function ($query) {
                 $query->select('id', 'floor_id', 'category', 'name');
             }])
             ->orderBy('name')
             ->get();
-    
-        $zones = Zone::withCount('bookshelves') 
+
+        $zones = Zone::withCount('bookshelves')
             ->with([
                 'bookshelves' => function ($query) {
-                    $query->select('id', 'zone_id', 'category'); 
+                    $query->select('id', 'zone_id', 'category', 'enumeration');
                 },
-                'floor' => function ($query) { 
+                'floor' => function ($query) {
                     $query->select('id', 'name');
                 }
             ])
@@ -136,34 +127,38 @@ class BooksController extends Controller
             'initialData' => $book,
             'page' => $request->query('page'),
             'perPage' => $request->query('perPage'),
-            "genres" => $genres, 
-            "floors"=>$floors,
+            "genres" => $genres,
+            "floors" => $floors,
             "zones" => $zones,
             'floor_id' => $book->bookshelf->zone->floor->id,
-            'floor_id' => $book->bookshelf->zone->id,
+            'zone_id' => $book->bookshelf->zone->id,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Zone $zone, ZoneUpdateAction $action)
+    public function update(Request $request, Book $book, BookUpdateAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'int', 'min:1'],
-            'category' => ['required'],
-            'n_bookshelves' => ['required', 'int', 'min:1'],
-            'floor_id'=>['required'],
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
+            'publisher' => ['required', 'string', 'max:255'],
+            'ISBN' => ['required','string','max:20'],
+            'genre' => ['required', 'string', 'max:255'],
+            'bookshelf_id' => ['required', 'exists:bookshelves,id'],
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
 
-        $action($zone, $validator->validated());
+        $validatedData = $validator->validated();
 
-        $redirectUrl = route('zones.index');
-        
+        $action($book, $validatedData);
+
+        $redirectUrl = route('books.index');
+
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');
             if ($request->has('perPage')) {
@@ -172,9 +167,8 @@ class BooksController extends Controller
         }
 
         return redirect($redirectUrl)
-            ->with('success', __('messages.users.updated'));
+            ->with('success', __('ui.messages.books.updated'));
     }
-
     /**
      * Remove the specified resource from storage.
      */
