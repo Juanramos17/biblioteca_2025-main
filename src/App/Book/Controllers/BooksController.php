@@ -69,7 +69,6 @@ class BooksController extends Controller
     public function store(Request $request, BookStoreAction $action)
     {
 
-
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
@@ -83,7 +82,7 @@ class BooksController extends Controller
             return back()->withErrors($validator);
         }
 
-        $action($validator->validated());
+        $action($validator->validated(), $request->files);
 
         return redirect()->route('books.index')
             ->with('success', __('ui.messages.books.created'));
@@ -123,6 +122,8 @@ class BooksController extends Controller
             ->orderBy('category')
             ->get();
 
+        $image = $book->getFirstMediaUrl('images');
+
         return Inertia::render('books/Edit', [
             'initialData' => $book,
             'page' => $request->query('page'),
@@ -132,6 +133,7 @@ class BooksController extends Controller
             "zones" => $zones,
             'floor_id' => $book->bookshelf->zone->floor->id,
             'zone_id' => $book->bookshelf->zone->id,
+            'image_path' => $image,
         ]);
     }
 
@@ -147,15 +149,14 @@ class BooksController extends Controller
             'ISBN' => ['required','string','max:20'],
             'genre' => ['required', 'string', 'max:255'],
             'bookshelf_id' => ['required', 'exists:bookshelves,id'],
+            
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
 
-        $validatedData = $validator->validated();
-
-        $action($book, $validatedData);
+         $action($book, $validator->validated(), $request->files);
 
         $redirectUrl = route('books.index');
 

@@ -8,7 +8,7 @@ import { router } from '@inertiajs/react';
 import type { AnyFieldApi } from '@tanstack/react-form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { Barcode, BookOpen, Factory, FileText, MapPin, Save, User, X } from 'lucide-react';
+import { Barcode, BookOpen, Factory, FileText, ImageIcon, MapPin, Save, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -43,6 +43,8 @@ interface BookProps {
     }[];
     page?: string;
     perPage?: string;
+    image: File;
+    image_path: string;
 }
 
 // Field error display component
@@ -57,9 +59,11 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export default function FloorForm({ zones, floors, floor_id, genres, zone_id, initialData, page, perPage }: BookProps) {
+export default function FloorForm({ zones, floors, floor_id, genres, zone_id, initialData, page, perPage, image, image_path }: BookProps) {
     const { t } = useTranslations();
+    const [selectedImage, setSelectedImage] = useState(image??'');
     const queryClient = useQueryClient();
+    console.log(image_path);
     const form = useForm({
         defaultValues: {
             title: initialData?.title ?? '',
@@ -70,9 +74,23 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
             bookshelf_id: initialData?.bookshelf_id ?? '',
             floor_id: floor_id ?? '',
             zone_id: zone_id ?? '',
+            image:"",
+
         },
 
         onSubmit: async ({ value }) => {
+            const formData = new FormData();
+            formData.append('title', value.title);
+            formData.append('genre', value.genre);
+            formData.append('publisher', value.publisher);
+            formData.append('author', value.author);
+            formData.append('ISBN', value.ISBN);
+            formData.append('bookshelf_id', value.bookshelf_id);
+            formData.append('floor_id', value.floor_id);
+            formData.append('zone_id', value.zone_id);
+            formData.append('image', selectedImage);
+            formData.append('_method', 'PUT');
+
             const options = {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ['books'] });
@@ -94,7 +112,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
 
             // Submit with Inertia
             if (initialData) {
-                router.put(`/books/${initialData.id}`, value, options);
+                router.post(`/books/${initialData.id}`, formData, options);
             } else {
                 router.post('/books', value, options);
             }
@@ -124,6 +142,8 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
             setSelectedZone(zone_id);
         }
     }, [zone_id]);
+
+    
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -453,6 +473,59 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                                 className="bg-muted w-full max-w-[770px]"
                             />
                             <FieldInfo field={field} />
+                        </>
+                    )}
+                </form.Field>
+            </div>
+
+            <div className="pr-4 pl-4">
+                <form.Field
+                    name="image"
+                    validators={{
+                        onChange: ({ value }) => {
+                           
+
+                            return undefined;
+                        },
+                    }}
+                >
+                    {(field) => (
+                        <>
+                            <div className="align-center m-1 flex">
+                                <ImageIcon size={16} className="mr-2 text-gray-500" />
+                                <Label htmlFor={field.name}>{t('ui.books.fields.img_path')}</Label>
+                            </div>
+                            <Input
+                                            id={field.name}
+                                            name={field.name}
+                                            type="file"
+                                            // value={field.state.value}
+                                            onChange={(e) => {
+                                                field.handleChange(e.target.files[0]);
+                                                console.log(e.target.files[0]);
+                                                setSelectedImage(e.target.files[0]);
+                                            }}
+                                            onBlur={field.handleBlur}
+                                            placeholder={t('ui.books.placeholders.img_path')}
+                                            disabled={form.state.isSubmitting}
+                                            required={true}
+                                            autoComplete="off"
+                                            accept="image/*"
+                                        />
+
+                                        {selectedImage && (
+                                            <img
+                                                src={URL.createObjectURL(selectedImage)}
+                                                alt="Preview"
+                                                style={{ width: '200px', height: 'auto', marginTop: '10px' }}
+                                            />
+                                        )}
+
+                            {initialData && !selectedImage && (
+                                <span>
+                                    <img src={image_path} alt="Preview" style={{ width: '200px', height: 'auto', marginTop: '10px' }} />
+                                </span>
+                            )}
                         </>
                     )}
                 </form.Field>

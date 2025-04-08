@@ -2,18 +2,17 @@
 
 namespace Database\Seeders;
 
+use Domain\Loans\Model\Loan;
 use Illuminate\Database\Seeder;
-use Domain\Books\Model\Book;
 
-class BookSeeder extends Seeder
+class LoanSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Book::truncate();
 
-        Book::factory()->count(10)->create();
+        Loan::factory()->count(10)->create();
     }
 }

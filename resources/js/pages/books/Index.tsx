@@ -99,11 +99,10 @@ export default function BooksIndex() {
       header: t("ui.books.columns.category") || "Category",
       accessorKey: "genre",
       format: (value) => {
-        // Dividir el string por ", " y luego mapearlo para traducir cada género
         return value
-          .split(", ") // Divide el string en un array de géneros
-          .map((genre) => t(`ui.genres.${genre.toLowerCase()}`)) // Traducir cada género
-          .join(", "); // Vuelve a unir los géneros traducidos en un string
+          .split(", ") 
+          .map((genre) => t(`ui.genres.${genre.toLowerCase()}`)) 
+          .join(", "); 
       },
     }),
     createTextColumn<Book>({
@@ -167,7 +166,7 @@ export default function BooksIndex() {
                   </div>
                   <div></div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                       <FiltersTable
                           filters={
                               [

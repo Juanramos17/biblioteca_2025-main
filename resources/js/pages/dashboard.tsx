@@ -78,6 +78,12 @@ export default function Dashboard() {
                     href="/books"
                     icon={Book}
                 />
+                <DashboardCard
+                    title="Loans"
+                    description="Gestiona las estanterias de la biblioteca"
+                    href="/loans"
+                    icon={Book}
+                />
 
             </div>
         </AppLayout>

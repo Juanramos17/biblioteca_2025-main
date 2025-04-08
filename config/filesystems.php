@@ -48,8 +48,8 @@ return [
         ],
         'images' => [
             'driver' => 'local',
-            'root' => public_path('images'),
-            'url' => env('APP_URL').'/images',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
         ],

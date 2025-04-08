@@ -37,9 +37,11 @@ zones: {
 }[];
 page?: string;
 perPage?: string; 
+image_path: string;
+image: File;
 }
 
-export default function EditBook({zones, floors, floor_id, zone_id, genres, initialData, page, perPage}:BookProps) {
+export default function EditBook({zones, floors, floor_id, zone_id, genres, initialData, page, perPage, image_path, image}:BookProps) {
   const { t } = useTranslations();
 
   return (
@@ -56,7 +58,7 @@ export default function EditBook({zones, floors, floor_id, zone_id, genres, init
           </CardHeader>
 
 
-          <BookForm genres={genres} zones={zones} floors={floors} floor_id={floor_id} zone_id={zone_id} initialData={initialData} page={page} perPage={perPage} />
+          <BookForm genres={genres} zones={zones} floors={floors} floor_id={floor_id} zone_id={zone_id} initialData={initialData} page={page} perPage={perPage} image_path={image_path} image={image} />
         </div>
       </div>
 

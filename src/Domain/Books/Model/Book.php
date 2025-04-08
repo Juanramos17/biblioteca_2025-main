@@ -4,14 +4,18 @@ namespace Domain\Books\Model;
 
 use Database\Factories\BookFactory;
 use Domain\Genres\Model\Genre;
+use Domain\Loans\Model\Loan;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Book extends Model
+class Book extends Model implements HasMedia
 {
 
     use HasUuids, HasFactory;
+    use InteractsWithMedia;
     protected $fillable = [
         'id',
         'ISBN',
@@ -36,5 +40,10 @@ class Book extends Model
 {
     return $this->belongsToMany(Genre::class);
 }
+
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
+    }
 }
 

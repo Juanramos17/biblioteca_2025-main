@@ -4,6 +4,7 @@ use App\Bookshelf\Controllers\Api\BookshelfApiController;
 use App\Book\Controllers\Api\BookApiController;
 use App\Users\Controllers\Api\UserApiController;
 use App\Floor\Controllers\Api\FloorApiController;
+use App\Loan\Controllers\Api\LoanApiController;
 use App\Zone\Controllers\Api\ZoneApiController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,9 +41,17 @@ Route::middleware(['web', 'auth'])->group(function () {
 });
 
 Route::middleware(['web', 'auth'])->group(function () {
-Route::get('/books', [BookApiController::class, 'index']);
+    Route::get('/books', [BookApiController::class, 'index']);
     Route::get('/books/{book}', [BookApiController::class, 'show']);
     Route::post('/books', [BookApiController::class, 'store']);
     Route::put('/books/{book}', [BookApiController::class, 'update']);
     Route::delete('/books/{book}', [BookApiController::class, 'destroy']);
+});
+
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/loans', [LoanApiController::class, 'index']);
+    Route::get('/loans/{loan}', [LoanApiController::class, 'show']);
+    Route::post('/loans', [LoanApiController::class, 'store']);
+    Route::put('/loans/{loan}', [LoanApiController::class, 'update']);
+    Route::delete('/loans/{loan}', [LoanApiController::class, 'destroy']);
 });
