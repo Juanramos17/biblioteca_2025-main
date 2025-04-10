@@ -6,7 +6,7 @@ import { TableSkeleton } from "@/components/stack-table/TableSkeleton";
 import { Book, useBooks, useDeleteBook } from "@/hooks/books/useBooks";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState, useMemo } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { useTranslations } from "@/hooks/use-translations";
 import { Table } from "@/components/stack-table/Table";
 import { createTextColumn, createDateColumn, createActionsColumn } from "@/components/stack-table/columnsTable";
@@ -48,6 +48,10 @@ export default function BooksIndex() {
     perPage: perPage,
   });
 
+  function handleCreate(book_id: string, book_ISBN: number, book_author: string, book_title: string) {
+    return router.get('loans/create', {book_id, book_ISBN, book_author, book_title});
+  };
+
 
   const deleteUserMutation = useDeleteBook();
 
@@ -77,6 +81,42 @@ export default function BooksIndex() {
       accessorKey: "title",
     }),
     createTextColumn<Book>({
+      id: "author",
+      header: t("ui.books.columns.author") || "Author",
+      accessorKey: "author",
+    }),
+    createTextColumn<Book>({
+      id: "publisher",
+      header: t("ui.books.columns.publisher") || "Publisher's number",
+      accessorKey: "publisher",
+    }),
+    createActionsColumn<Book>({
+      id: "ISBN",
+      header: t("ui.books.columns.ISBN") || "ISBN",
+      renderActions: (book) => {
+        return `${book.ISBN} (${book.loaned_count}/${book.total})`;
+      },
+    }),
+    createTextColumn<Book>({
+      id: "is_available",
+      header: t("ui.books.columns.ISBN") || "ISBN",
+      accessorKey:"is_available",
+      format: (value) => {
+        return value ? "Disponible" : "No disponible";
+      },
+    }),
+    createTextColumn<Book>({
+      id: "genre",
+      header: t("ui.books.columns.category") || "Category",
+      accessorKey: "genre",
+      format: (value) => {
+        return value
+          .split(", ") 
+          .map((genre) => t(`ui.genres.${genre.toLowerCase()}`)) 
+          .join(", "); 
+      },
+    }),
+    createTextColumn<Book>({
       id: "bookshelf_name",
       header: t("ui.books.columns.bookshelf") || "Bookshelf' number",
       accessorKey: "bookshelf_name",
@@ -94,32 +134,6 @@ export default function BooksIndex() {
       accessorKey: "floor_name",
       format: (value) => `${t('ui.floors.floor')}: ${value}`,
     }),
-    createTextColumn<Book>({
-      id: "genre",
-      header: t("ui.books.columns.category") || "Category",
-      accessorKey: "genre",
-      format: (value) => {
-        return value
-          .split(", ") 
-          .map((genre) => t(`ui.genres.${genre.toLowerCase()}`)) 
-          .join(", "); 
-      },
-    }),
-    createTextColumn<Book>({
-      id: "author",
-      header: t("ui.books.columns.author") || "Author",
-      accessorKey: "author",
-    }),
-    createTextColumn<Book>({
-      id: "publisher",
-      header: t("ui.books.columns.publisher") || "Publisher's number",
-      accessorKey: "publisher",
-    }),
-    createTextColumn<Book>({
-      id: "ISBN",
-      header: t("ui.books.columns.ISBN") || "ISBN",
-      accessorKey: "ISBN",
-    }),
     createDateColumn<Book>({
       id: "created_at",
       header: t("ui.floors.columns.created_at") || "Created At",
@@ -130,11 +144,26 @@ export default function BooksIndex() {
       header: t("ui.floors.columns.actions") || "Actions",
       renderActions: (book) => (
         <>
+
+      <Button 
+        variant="outline" 
+        onClick={() => handleCreate(book.id, book.ISBN, book.author, book.title)}
+        size="icon" 
+        title={t("ui.users.buttons.edit") || "Edit user"} 
+        disabled={!book.is_available}
+      >
+        <PencilIcon className="h-4 w-4" />
+      </Button>
+  
+
+
           <Link href={`/books/${book.id}/edit?page=${currentPage}&perPage=${perPage}`}>
             <Button variant="outline" size="icon" title={t("ui.users.buttons.edit") || "Edit user"}>
               <PencilIcon className="h-4 w-4" />
             </Button>
           </Link>
+
+
           <DeleteDialog
             id={book.id}
             onDelete={handleDeleteUser}

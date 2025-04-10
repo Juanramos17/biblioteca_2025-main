@@ -11,8 +11,6 @@ class LoanIndexAction
     {
         $enumeration = $search[0];
 
-       
-
         $loans = Loan::query()
             ->when($enumeration !== "null", function ($query) use ($enumeration) {
                 $query->where('enumeration', 'like', '%' . $enumeration . '%');

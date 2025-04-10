@@ -24,13 +24,11 @@ class LoanFactory extends Factory
         $dueDate = (clone $loanDate)->modify('+14 days');
 
         $isLoaned = $this->faker->boolean(70);
-        $isOverdue = $isLoaned && $dueDate < now();
 
         return [
             'user_id' => $user->id,
             'book_id' => $book->id,
             'isLoaned' => $isLoaned,
-            'isOverdue' => $isOverdue,
             'loan_date' => $loanDate->format('Y-m-d'),
             'due_date' => $dueDate->format('Y-m-d'),
         ];

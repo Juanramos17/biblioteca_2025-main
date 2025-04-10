@@ -161,9 +161,6 @@ export function UserForm({ initialData, page, perPage, roles = [], permissions =
       }
 
       console.log(permissions);
-    
-    
-    console.log("Estado de permisos:", selectedPermissions);
 
     const iconMap: Record<string, React.ReactNode> = {
         users: <Users size={17} className="text-blue-500 mr-3 mb-3" />,

@@ -5,12 +5,15 @@ export interface Book {
   id: string;
   ISBN: number;
   title: string;
-  publisher: number;
-  author: number;
-  genre: number;
+  publisher: string;
+  author: string;
+  genre: string;
   bookshelf_name: string;
   zone_name: string;
   floor_name: string;
+  total: number;
+  loaned_count: number;
+  is_available: boolean;
   created_at: string;
 }
 

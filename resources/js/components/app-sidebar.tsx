@@ -39,6 +39,11 @@ const mainNavItems = (t: (key: string) => string): NavItem[] => [
         url: '/books',
         icon: Book,
     },
+    {
+        title: t('ui.navigation.items.books'),
+        url: '/loans',
+        icon: Book,
+    },
 ];
 
 const footerNavItems = (t: (key: string) => string): NavItem[] => [

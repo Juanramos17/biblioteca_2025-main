@@ -3,7 +3,9 @@
 namespace App\Loan\Controllers\Api;
 
 use App\Core\Controllers\Controller;
+use Domain\Loans\Actions\LoanDestroyAction;
 use Domain\Loans\Actions\LoanIndexAction;
+use Domain\Loans\Model\Loan;
 use Illuminate\Http\Request;
 
 class LoanApiController extends Controller
@@ -14,18 +16,18 @@ class LoanApiController extends Controller
     }
 
 
-    public function show(Book $book)
-    {
-    }
+    // public function show(Book $book)
+    // {
+    // }
 
-    public function store(Request $request, BookStoreAction $book)
-    {
+    // public function store(Request $request, BookStoreAction $book)
+    // {
        
-    }
+    // }
 
-    public function update(Request $request, Book $book, BookUpdateAction $action)
-    {
-    }
+    // public function update(Request $request, Book $book, BookUpdateAction $action)
+    // {
+    // }
 
     public function destroy(Loan $loan, LoanDestroyAction $action)
     {

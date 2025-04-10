@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignUuid('book_id')->constrained('books')->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->boolean('isLoaned');
-            $table->boolean('isOverdue');
             $table->date('loan_date');
             $table->date('due_date');
             $table->timestamps();

@@ -39,7 +39,7 @@ export default function LoansIndex() {
     filters.floor ? `${filters.floor}` : "null"
   ]
 
-  const { data: zones, isLoading, isError, refetch } = useLoans({
+  const { data: loans, isLoading, isError, refetch } = useLoans({
     search: combinedSearch,
     page: currentPage,
     perPage: perPage,
@@ -91,10 +91,10 @@ export default function LoansIndex() {
       id: "isLoaned",
       header: t("ui.bookshelves.columns.books") || "Books' number",
       accessorKey: "isLoaned",
-      format: (value) => {return value ? "En Prestamo" : "Disponible"},
+      format: (value) => {return value ? "En Prestamo" : "Finalizado"},
     }),
     createTextColumn<Loan>({
-      id: "overdue_messageç",
+      id: "overdue_message",
       header: t("ui.bookshelves.columns.count") || "Count",
       accessorKey: "overdue_message",
     }),
@@ -103,11 +103,13 @@ export default function LoansIndex() {
       header: t("ui.floors.columns.actions") || "Actions",
       renderActions: (loan) => (
         <>
+
           <Link href={`/loans/${loan.id}/edit?page=${currentPage}&perPage=${perPage}`}>
             <Button variant="outline" size="icon" title={t("ui.users.buttons.edit") || "Edit user"}>
               <PencilIcon className="h-4 w-4" />
             </Button>
           </Link>
+          
           <DeleteDialog
             id={loan.id}
             onDelete={handleDeleteUser}
@@ -130,7 +132,7 @@ export default function LoansIndex() {
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
                       <h1 className="text-3xl font-bold">{t('ui.bookshelves.title')}</h1>
-                      <Link href="/bookshelves/create">
+                      <Link href="/loans/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
                               {t('ui.bookshelves.buttons.new')}
@@ -195,7 +197,7 @@ export default function LoansIndex() {
                           <div>
                               <Table
                                   data={
-                                      zones ?? {
+                                      loans ?? {
                                           data: [],
                                           meta: {
                                               current_page: 1,

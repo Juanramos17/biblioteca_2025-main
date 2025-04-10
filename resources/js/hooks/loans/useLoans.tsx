@@ -8,7 +8,6 @@ export interface Loan {
   loan_date: string;
   due_date: string;
   isLoaned: boolean;
-  isOverdue: boolean;
   overdue_message: number;
   created_at: string;
   updated_at: string;
