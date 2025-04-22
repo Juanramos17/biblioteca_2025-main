@@ -6,17 +6,18 @@ import { router } from '@inertiajs/react';
 import type { AnyFieldApi } from '@tanstack/react-form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { Building2, Calendar, Mail, Save, X } from 'lucide-react';
+import { Book, Building2, Calendar, Mail, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { useState } from 'react';
 
-interface FloorProps {
+interface LoanProps {
     initialData?: {
         id: string;
+        loan_id: string;
         email: string;
-        date: string;
+        date: Date;
     };
     page?: string;
     perPage?: string;
@@ -34,18 +35,18 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export default function LoanForm({ initialData, page, perPage }: FloorProps) {
+export default function LoanForm({ initialData, page, perPage }: LoanProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const url = window.location.href;
     const params = new URLSearchParams(window.location.search);
-    const [selected, setSelected] = useState<Date>();
-    
+    const [selected, setSelected] = useState(initialData?.date || undefined);
 
     const form = useForm({
         defaultValues: {
             id: initialData?.id ?? params.get('book_id') ?? '',
             email: initialData?.email ?? '',
+            borrow: "false",
             date: initialData?.date ?? '',
         },
         onSubmit: async ({ value }) => {
@@ -67,7 +68,7 @@ export default function LoanForm({ initialData, page, perPage }: FloorProps) {
                         }
                     }
 
-                    router.visit(url);
+                    // router.visit(url);
                 },
                 onError: (errors: Record<string, string>) => {
                     if (Object.keys(errors).length === 0) {
@@ -76,11 +77,9 @@ export default function LoanForm({ initialData, page, perPage }: FloorProps) {
                 },
             };
 
-            console.log(value);
 
-            // Submit with Inertia
             if (initialData) {
-                router.put(`/loans/${initialData.id}`, data, options);
+                router.put(`/loans/${initialData.loan_id}`, data, options);
             } else {
                 router.post('/loans', data, options);
             }
@@ -96,8 +95,6 @@ export default function LoanForm({ initialData, page, perPage }: FloorProps) {
 
     return (
 
-        
-        
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="pr-4 pl-4">
                 <form.Field
@@ -113,8 +110,8 @@ export default function LoanForm({ initialData, page, perPage }: FloorProps) {
                     {(field) => (
                         <>
                             <div className="align-center m-1 flex">
-                                <Building2 size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.floors.fields.name')}</Label>
+                                <Book size={16} className="mr-2 text-gray-500" />
+                                <Label htmlFor={field.name}>{t('ui.loans.fields.book')}</Label>
                             </div>
                             <Input
                                 id={field.name}
@@ -122,8 +119,8 @@ export default function LoanForm({ initialData, page, perPage }: FloorProps) {
                                 value={field.state.value}
                                 onChange={(e) => field.handleChange(e.target.value)}
                                 onBlur={field.handleBlur}
-                                placeholder={t('ui.floors.placeholders.name')}
-                                disabled={form.state.isSubmitting}
+                                placeholder={t('ui.loans.placeholders.book')}
+                                disabled={true}
                                 required={false}
                                 autoComplete="off"
                             />
@@ -182,15 +179,16 @@ export default function LoanForm({ initialData, page, perPage }: FloorProps) {
                         <>
                             <div className="align-center m-1 flex">
                                 <Calendar size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.floors.fields.date')}</Label>
+                                <Label htmlFor={field.name}>{t('ui.loans.fields.date')}</Label>
                             </div>
                             <DayPicker
+                                timeZone='Europe/Madrid'
                                 animate
                                 mode="single"
                                 selected={selected}
                                 onSelect={setSelected}
                                 footer={
-                                    selected ? `Selected: ${selected.toLocaleDateString()}` : "Pick a day."
+                                    selected ? ` ${new Date(selected).toISOString().split("T")[0]}` : ""
                                 }
                                 />
                             <FieldInfo field={field} />
@@ -203,7 +201,7 @@ export default function LoanForm({ initialData, page, perPage }: FloorProps) {
                     type="button"
                     variant="outline"
                     onClick={() => {
-                        let url = '/floors';
+                        let url = '/loans';
                         if (page) {
                             url += `?page=${page}`;
                             if (perPage) {

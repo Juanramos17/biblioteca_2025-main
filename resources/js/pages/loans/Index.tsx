@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableSkeleton } from "@/components/stack-table/TableSkeleton";
 import { Loan, useLoans, useDeleteLoan } from "@/hooks/loans/useLoans";
-import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, PlusIcon, Repeat, TrashIcon } from "lucide-react";
 import { useState, useMemo } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { useTranslations } from "@/hooks/use-translations";
 import { Table } from "@/components/stack-table/Table";
 import { createTextColumn, createDateColumn, createActionsColumn } from "@/components/stack-table/columnsTable";
@@ -14,7 +14,7 @@ import { DeleteDialog } from "@/components/stack-table/DeleteDialog";
 import { FiltersTable, FilterConfig } from "@/components/stack-table/FiltersTable";
 import { toast } from "sonner";
 import { ColumnDef, Row } from "@tanstack/react-table";
-import { BookshelfLayout } from "@/layouts/bookshelves/Bookshelf";
+import { LoanLayout } from "@/layouts/loans/LoanLayout";
 
 
 export default function LoansIndex() {
@@ -32,12 +32,14 @@ export default function LoansIndex() {
   const [filters, setFilters] = useState<Record<string, any>>({});
 
   const combinedSearch = [
-    filters.enumeration ? `${filters.enumeration}` : "null",
-    filters.zone ? `${filters.zone}` : "null",
-    filters.category ? `${filters.category}` : "null",
-    filters.books ? `${filters.books}` : "null",
-    filters.floor ? `${filters.floor}` : "null"
+    filters.title ? filters.title : "null",
+    filters.user ? filters.user : "null",
+    filters.loan_date ? filters.loan_date : "null",
+    filters.due_date ? filters.due_date : "null",
+    filters.isLoaned ? filters.isLoaned : "null"
   ]
+
+  console.log(combinedSearch);
 
   const { data: loans, isLoading, isError, refetch } = useLoans({
     search: combinedSearch,
@@ -48,13 +50,25 @@ export default function LoansIndex() {
 
   const deleteUserMutation = useDeleteLoan();
 
+  function handleChangeStatus (loan_id: string){
+    const status = true;
+    const formData = new FormData();
+    formData.append('borrow', status);
+    formData.append('_method', 'PUT');
+    router.post(`/loans/${loan_id}`, formData);
+    setTimeout(function(){
+      refetch();
+
+    },500)
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
   const handlePerPageChange = (newPerPage: number) => {
     setPerPage(newPerPage);
-    setCurrentPage(1); // Reset to first page when changing items per page
+    setCurrentPage(1); 
   };
 
   const handleDeleteUser = async (id: string) => {
@@ -69,40 +83,50 @@ export default function LoansIndex() {
   const columns = useMemo(() => ([
     createTextColumn<Loan>({
       id: "book_id",
-      header: t("ui.bookshelves.columns.enumeration") || "Bookshelves' enum",
+      header: t("ui.loans.columns.book") || "Book' title",
       accessorKey: "book_id",
     }),
     createTextColumn<Loan>({
       id: "user_id",
-      header: t("ui.bookshelves.columns.zone") || "Zones' number",
+      header: t("ui.loans.columns.user") || "User' name",
       accessorKey: "user_id",
     }),
     createTextColumn<Loan>({
       id: "loan_date",
-      header: t("ui.bookshelves.columns.floor") || "Zones' number",
+      header: t("ui.loans.columns.loan_date") || "Loan date",
       accessorKey: "loan_date",
     }),
     createTextColumn<Loan>({
       id: "due_date",
-      header: t("ui.bookshelves.columns.category") || "Category",
+      header: t("ui.loans.columns.due_date") || "Due date",
       accessorKey: "due_date", 
     }),
     createTextColumn<Loan>({
       id: "isLoaned",
-      header: t("ui.bookshelves.columns.books") || "Books' number",
+      header: t("ui.loans.columns.isLoaned") || "Status",
       accessorKey: "isLoaned",
-      format: (value) => {return value ? "En Prestamo" : "Finalizado"},
+      format: (value) => {return value ? t('ui.loans.filters.loaned') : t('ui.loans.filters.finished')},
     }),
     createTextColumn<Loan>({
       id: "overdue_message",
-      header: t("ui.bookshelves.columns.count") || "Count",
+      header: t("ui.loans.columns.days") || "Days overdue",
       accessorKey: "overdue_message",
     }),
     createActionsColumn<Loan>({
       id: "actions",
-      header: t("ui.floors.columns.actions") || "Actions",
+      header: t("ui.loans.columns.actions") || "Actions",
       renderActions: (loan) => (
         <>
+
+            <Button
+                    onClick={() => handleChangeStatus(loan.id)}
+                    variant="outline"
+                    size="icon"
+                    title={t("ui.loans.buttons.loan") || "Loan"}
+                    disabled={!loan.isLoaned} 
+                  >
+              <Repeat className="h-4 w-4" />
+            </Button>
 
           <Link href={`/loans/${loan.id}/edit?page=${currentPage}&perPage=${perPage}`}>
             <Button variant="outline" size="icon" title={t("ui.users.buttons.edit") || "Edit user"}>
@@ -127,15 +151,15 @@ export default function LoansIndex() {
   ] as ColumnDef<Loan>[]), [t, handleDeleteUser]);
 
   return (
-    <BookshelfLayout title={t("ui.bookshelves.title")}>
+    <LoanLayout title={t("ui.loans.title")}>
         <div className="p-6">
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                      <h1 className="text-3xl font-bold">{t('ui.bookshelves.title')}</h1>
+                      <h1 className="text-3xl font-bold">{t('ui.loans.loans')}</h1>
                       <Link href="/loans/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
-                              {t('ui.bookshelves.buttons.new')}
+                              {t('ui.loans.create')}
                           </Button>
                       </Link>
                   </div>
@@ -146,35 +170,39 @@ export default function LoansIndex() {
                           filters={
                               [
                                   {
-                                      id: 'enumeration',
-                                      label: t('ui.bookshelves.filters.enumeration') || 'Enumeracion',
-                                      type: 'number',
-                                      placeholder: t('ui.bookshelves.placeholders.enumeration') || 'Enumeracion...',
+                                      id: 'title',
+                                      label: t('ui.loans.filters.title') || 'Titulo',
+                                      type: 'text',
+                                      placeholder: t('ui.loans.placeholders.title') || 'Titulo...',
                        
                                   },
                                   {
-                                      id: 'zone',
-                                      label: t('ui.bookshelves.filters.zone') || 'Zonas',
-                                      type: 'number',
-                                      placeholder: t('ui.bookshelves.placeholders.zone') || 'Zonas...',
-                                  },
-                                  {
-                                      id: 'category',
-                                      label: t('ui.bookshelves.filters.category') || 'Categoria',
+                                      id: 'user',
+                                      label: t('ui.loans.filters.user') || 'Usuario',
                                       type: 'text',
-                                      placeholder: t('ui.bookshelves.placeholders.category') || 'Categoria...',
+                                      placeholder: t('ui.loans.placeholders.user') || 'Usuario...',
                                   },
                                   {
-                                      id: 'books',
-                                      label: t('ui.bookshelves.filters.books') || 'Libros',
-                                      type: 'number',
-                                      placeholder: t('ui.bookshelves.placeholders.books') || 'Libros...',
+                                      id: 'loan_date',
+                                      label: t('ui.loans.filters.loan_date') || 'Fecha de préstamo',
+                                      type: 'date',
+                                      placeholder: t('ui.loans.placeholders.loan_date') || 'Fecha de préstamo...',
                                   },
                                   {
-                                      id: 'floor',
-                                      label: t('ui.bookshelves.filters.floor') || 'Piso',
-                                      type: 'number',
-                                      placeholder: t('ui.bookshelves.placeholders.floor') || 'Piso...',
+                                      id: 'due_date',
+                                      label: t('ui.loans.filters.due_date') || 'Fecha de devolución',
+                                      type: 'date',
+                                      placeholder: t('ui.loans.placeholders.due_date') || 'Fecha de devolución...',
+                                  },
+                                  {
+                                      id: 'isLoaned',
+                                      label: t('ui.loans.filters.isLoaned') || 'Estado',
+                                      type: 'select',
+                                      options: [
+                                          { value: 'true', label:  t('ui.loans.filters.loaned') || 'En préstamo' },
+                                          { value: 'false', label: t('ui.loans.filters.finished') || 'Finalizado' },
+                                      ],
+                                      placeholder: t('ui.loans.placeholders.isLoaned') || 'Estado...',
                                   },
                               ] as FilterConfig[]
                           }
@@ -188,7 +216,7 @@ export default function LoansIndex() {
                           <TableSkeleton columns={4} rows={10} />
                       ) : isError ? (
                           <div className="p-4 text-center">
-                              <div className="mb-4 text-red-500">{t('ui.users.error_loading')}</div>
+                              <div className="mb-4 text-red-500">{t('ui.loans.error_loading')}</div>
                               <Button onClick={() => refetch()} variant="outline">
                                   {t('ui.users.buttons.retry')}
                               </Button>
@@ -213,13 +241,13 @@ export default function LoansIndex() {
                                   onPageChange={handlePageChange}
                                   onPerPageChange={handlePerPageChange}
                                   perPageOptions={[10, 25, 50, 100]}
-                                  noResultsMessage={t('ui.users.no_results') || 'No users found'}
+                                  noResultsMessage={t('ui.users.no_results') || 'No loans found'}
                               />
                           </div>
                       )}
                   </div>
               </div>
           </div>
-    </BookshelfLayout>
+    </LoanLayout>
   );
 }

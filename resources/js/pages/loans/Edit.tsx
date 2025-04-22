@@ -10,8 +10,9 @@ import { LoanLayout } from "@/layouts/loans/LoanLayout";
 interface LoanProps extends PageProps{
     initialData?: {
         id: string;
+        loan_id: string;
         email: string;
-        date: string;
+        date: Date;
     };
     page?: string;
     perPage?: string;

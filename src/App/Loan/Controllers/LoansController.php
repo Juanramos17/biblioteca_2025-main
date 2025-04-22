@@ -15,6 +15,7 @@ use Domain\Floors\Model\Floor;
 use Domain\Zones\Model\Zone;
 use Domain\Genres\Model\Genre;
 use Domain\Loans\Actions\LoanStoreAction;
+use Domain\Loans\Actions\LoanUpdateAction;
 use Domain\Loans\Model\Loan;
 use Domain\Users\Models\User;
 
@@ -78,10 +79,10 @@ class LoansController extends Controller
 {
         $email = User::where('id', $loan->user_id)->first()->email;
         
-
         return Inertia::render('loans/Edit', [
             'initialData' => [
             'id' => $loan->book_id, 
+            'loan_id' => $loan->id,
             'email' => $email,
             'date' => $loan->due_date,
         ],
@@ -94,31 +95,23 @@ class LoansController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Bookshelf $bookshelf, BookshelfUpdateAction $action)
+    public function update(Request $request, Loan $loan, LoanUpdateAction $action)
     {
+
         $validator = Validator::make($request->all(), [
-            'enumeration' => [
-                'required',
-                'integer',
-                'min:1',
-                Rule::unique('bookshelves')
-                    ->where(function ($query) use ($request) {
-                        return $query->where('zone_id', $request->zone_id);
-                    })
-                    ->ignore($request->route('bookshelf')),  
-            ],
-            'category' => ['required', 'string', 'max:255'],
-            'n_books' => ['required', 'integer', 'min:0'],
-            'zone_id' => ['required', 'exists:zones,id'],
+            'id' => ['string'],
+            'email' => ['string'], 
+            'date' => ['date'], 
+            'borrow' => ['string'],
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
 
-        $action($bookshelf, $validator->validated());
+        $action($loan, $validator->validated());
 
-        $redirectUrl = route('bookshelves.index');
+        $redirectUrl = route('loans.index');
         
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');
@@ -128,7 +121,7 @@ class LoansController extends Controller
         }
 
         return redirect($redirectUrl)
-            ->with('success', __('ui.messages.bookshelves.updated'));
+            ->with('success', __('ui.messages.loans.updated'));
     }
 
     /**

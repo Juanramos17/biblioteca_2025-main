@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableSkeleton } from "@/components/stack-table/TableSkeleton";
 import { Book, useBooks, useDeleteBook } from "@/hooks/books/useBooks";
-import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { Handshake, PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { useTranslations } from "@/hooks/use-translations";
@@ -152,7 +152,7 @@ export default function BooksIndex() {
         title={t("ui.users.buttons.edit") || "Edit user"} 
         disabled={!book.is_available}
       >
-        <PencilIcon className="h-4 w-4" />
+        <Handshake className="h-4 w-4" />
       </Button>
   
 
