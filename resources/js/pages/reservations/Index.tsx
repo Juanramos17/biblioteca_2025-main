@@ -4,16 +4,17 @@ import { FilterConfig, FiltersTable } from '@/components/stack-table/FiltersTabl
 import { Table } from '@/components/stack-table/Table';
 import { TableSkeleton } from '@/components/stack-table/TableSkeleton';
 import { Button } from '@/components/ui/button';
-import { Loan, useDeleteLoan, useLoans } from '@/hooks/loans/useLoans';
+import { Reservation, useDeleteReservation, useReservations } from '@/hooks/reservations/useReservations';
 import { useTranslations } from '@/hooks/use-translations';
 import { LoanLayout } from '@/layouts/loans/LoanLayout';
+import { ReservationLayout } from '@/layouts/reservations/ReservationLayout';
 import { Link, router, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { PencilIcon, PlusIcon, Repeat, TrashIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-export default function LoansIndex() {
+export default function ReservationsIndex() {
     const { t } = useTranslations();
     const { url } = usePage();
 
@@ -35,32 +36,18 @@ export default function LoansIndex() {
         filters.isLoaned ? filters.isLoaned : 'null',
     ];
 
-    console.log(combinedSearch);
-
     const {
         data: loans,
         isLoading,
         isError,
         refetch,
-    } = useLoans({
+    } = useReservations({
         search: combinedSearch,
         page: currentPage,
         perPage: perPage,
     });
 
-    const deleteUserMutation = useDeleteLoan();
-
-    function handleChangeStatus(loan_id: string, loan_user_id: string) {
-        const status = true;
-        const formData = new FormData();
-        formData.append('borrow', status);
-        formData.append('name', loan_user_id);
-        formData.append('_method', 'PUT');
-        router.post(`/loans/${loan_id}`, formData);
-        setTimeout(function () {
-            refetch();
-        }, 500);
-    }
+    const deleteUserMutation = useDeleteReservation();
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -83,62 +70,31 @@ export default function LoansIndex() {
     const columns = useMemo(
         () =>
             [
-                createTextColumn<Loan>({
+                createTextColumn<Reservation>({
                     id: 'book_id',
                     header: t('ui.loans.columns.book') || "Book' title",
                     accessorKey: 'book_id',
                 }),
-                createTextColumn<Loan>({
+                createTextColumn<Reservation>({
                     id: 'user_id',
                     header: t('ui.loans.columns.user') || "User' name",
                     accessorKey: 'user_id',
                 }),
-                createTextColumn<Loan>({
-                    id: 'loan_date',
-                    header: t('ui.loans.columns.loan_date') || 'Loan date',
-                    accessorKey: 'loan_date',
+                createTextColumn<Reservation>({
+                    id: 'created_at',
+                    header: t('ui.loans.columns.user') || "User' name",
+                    accessorKey: 'created_at',
                 }),
-                createTextColumn<Loan>({
-                    id: 'due_date',
-                    header: t('ui.loans.columns.due_date') || 'Due date',
-                    accessorKey: 'due_date',
-                }),
-                createTextColumn<Loan>({
-                    id: 'isLoaned',
-                    header: t('ui.loans.columns.isLoaned') || 'Status',
-                    accessorKey: 'isLoaned',
-                    format: (value) => {
-                        return value ? t('ui.loans.filters.loaned') : t('ui.loans.filters.finished');
-                    },
-                }),
-                createTextColumn<Loan>({
-                    id: 'overdue_message',
-                    header: t('ui.loans.columns.days') || 'Days overdue',
-                    accessorKey: 'overdue_message',
-                }),
-                createActionsColumn<Loan>({
+                
+                createActionsColumn<Reservation>({
                     id: 'actions',
                     header: t('ui.loans.columns.actions') || 'Actions',
-                    renderActions: (loan) => (
+                    renderActions: (reservation) => (
                         <>
-                            <Button
-                                onClick={() => handleChangeStatus(loan.id, loan.user_id)}
-                                variant="outline"
-                                size="icon"
-                                title={t('ui.loans.buttons.loan') || 'Loan'}
-                                disabled={!loan.isLoaned}
-                            >
-                                <Repeat className="h-4 w-4 text-green-500" />
-                            </Button>
-
-                            <Link href={`/loans/${loan.id}/edit?page=${currentPage}&perPage=${perPage}`}>
-                                <Button disabled={!loan.isLoaned} variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
-                                    <PencilIcon className="h-4 w-4" />
-                                </Button>
-                            </Link>
+                           
 
                             <DeleteDialog
-                                id={loan.id}
+                                id={reservation.id}
                                 onDelete={handleDeleteUser}
                                 title={t('ui.bookshelves.delete') || 'Delete bookshelf'}
                                 description={
@@ -158,17 +114,17 @@ export default function LoansIndex() {
                         </>
                     ),
                 }),
-            ] as ColumnDef<Loan>[],
+            ] as ColumnDef<Reservation>[],
         [t, handleDeleteUser],
     );
 
     return (
-        <LoanLayout title={t('ui.loans.title')}>
+        <ReservationLayout title={t('ui.loans.title')}>
             <div className="p-6">
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h1 className="text-3xl font-bold">{t('ui.loans.loans')}</h1>
-                        <Link href="/loans/create">
+                        <Link href="/reservations/create">
                             <Button>
                                 <PlusIcon className="mr-2 h-4 w-4" />
                                 {t('ui.loans.create')}
@@ -259,6 +215,6 @@ export default function LoansIndex() {
                     </div>
                 </div>
             </div>
-        </LoanLayout>
+        </ReservationLayout>
     );
 }

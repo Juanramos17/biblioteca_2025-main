@@ -6,15 +6,7 @@ import LoanForm from "./components/LoanForm";
 import { PageProps } from "@/types";
 import { LoanLayout } from "@/layouts/loans/LoanLayout";
 
-interface LoanProps extends PageProps{
-    initialData?: {
-        id: string;
-        email: string;
-        date: string;
-    };
-}
-
-export default function CreateFloor({initialData}:LoanProps) {
+export default function CreateFloor() {
   const { t } = useTranslations();
   const url = window.location.href;
   const params = new URLSearchParams(window.location.search);
@@ -36,7 +28,7 @@ export default function CreateFloor({initialData}:LoanProps) {
           </CardHeader>
 
 
-          <LoanForm initialData={initialData}/>
+          <LoanForm/>
         </div>
       </div>
 

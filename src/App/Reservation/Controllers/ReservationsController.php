@@ -1,34 +1,30 @@
 <?php
 
-namespace App\Loan\Controllers;
+namespace App\Reservation\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Core\Controllers\Controller;
-use Domain\Books\Model\Book;
-use Domain\Bookshelves\Actions\BookshelfStoreAction;
-use Domain\Bookshelves\Actions\BookshelfUpdateAction;
-use Domain\Bookshelves\Model\Bookshelf;
-use Domain\Floors\Model\Floor;
-use Domain\Zones\Model\Zone;
-use Domain\Genres\Model\Genre;
 use Domain\Loans\Actions\LoanStoreAction;
 use Domain\Loans\Actions\LoanUpdateAction;
 use Domain\Loans\Model\Loan;
+use Domain\Reservations\Actions\ReservationStoreAction;
+use Domain\Reservations\Actions\ReservationUpdateAction;
+use Domain\Reservations\Model\Reservation;
 use Domain\Users\Models\User;
 
-class LoansController extends Controller
+class ReservationsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $loans = Loan::all()->toArray();
+        $reservations = Reservation::all()->toArray();
 
-        return Inertia::render('loans/Index', ["loans" => $loans]);
+        return Inertia::render('reservations/Index', ["reservations" => $reservations]);
     }
 
     /**
@@ -37,7 +33,7 @@ class LoansController extends Controller
     public function create()
     {
 
-        return Inertia::render('loans/Create', [
+        return Inertia::render('reservations/Create', [
            
         ]);
     }
@@ -45,12 +41,11 @@ class LoansController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, LoanStoreAction $action)
+    public function store(Request $request, ReservationStoreAction $action)
     {
         $validator = Validator::make($request->all(), [
             'id' => ['required' ],
             'email' => ['required'], 
-            'date' => ['required'], 
         ]);
 
         if ($validator->fails()) {
@@ -60,7 +55,7 @@ class LoansController extends Controller
 
         $action($validator->validated());
 
-        return redirect()->route('loans.index')
+        return redirect()->route('reservations.index')
             ->with('success', __('ui.messages.bookshelves.created'));
     }
 
@@ -75,44 +70,40 @@ class LoansController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Loan $loan)
-{
-        $email = User::where('id', $loan->user_id)->first()->email;
+//     public function edit(Request $request, Reservation $reservation)
+// {
+//         $email = User::where('id', $reservation->user_id)->first()->email;
         
-        return Inertia::render('loans/Edit', [
-            'initialData' => [
-            'id' => $loan->book_id, 
-            'loan_id' => $loan->id,
-            'email' => $email,
-            'date' => $loan->due_date,
-        ],
-        'page' => $request->query('page'),
-        'perPage' => $request->query('perPage'),
-        ]);
-}
+//         return Inertia::render('loans/Edit', [
+//             'initialData' => [
+//             'id' => $reservation->book_id, 
+//             'loan_id' => $reservation->id,
+//             'email' => $email,
+//         ],
+//         'page' => $request->query('page'),
+//         'perPage' => $request->query('perPage'),
+//         ]);
+// }
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Loan $loan, LoanUpdateAction $action)
+    public function update(Request $request, Reservation $reservation, ReservationUpdateAction $action)
     {
 
         $validator = Validator::make($request->all(), [
             'id' => ['string'],
             'email' => ['string'], 
-            'date' => ['date'], 
-            'name' => ['string'], 
-            'borrow' => ['string'],
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
 
-        $action($loan, $validator->validated());
+        $action($reservation, $validator->validated());
 
-        $redirectUrl = route('loans.index');
+        $redirectUrl = route('reservations.index');
         
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');

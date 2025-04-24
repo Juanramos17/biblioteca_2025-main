@@ -85,6 +85,13 @@ export default function Dashboard() {
                     icon={Handshake}
                 />
 
+                <DashboardCard
+                    title="Reservations"
+                    description="Gestiona las reservas de la biblioteca"
+                    href="/reservations"
+                    icon={Handshake}
+                />
+
             </div>
         </AppLayout>
     );

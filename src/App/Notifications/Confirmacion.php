@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class Email extends Notification implements ShouldQueue
+class Confirmacion extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -34,7 +34,7 @@ class Email extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('Aqui es donde escribo llo que llega.')
+                    ->line('Confirmacion.')
                     ->action('Notification Action', url('/'))
                     ->line('Thank you for using our application!');
     }

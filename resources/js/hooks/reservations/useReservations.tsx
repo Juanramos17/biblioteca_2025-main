@@ -1,21 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "../../lib/axios";
 
-export interface Loan {
+export interface Reservation {
   id: string;
   book_id: string;
   user_id: string;
-  loan_date: string;
-  due_date: string;
-  isLoaned: boolean;
-  overdue_message: number;
-  reservation_id: string;
   created_at: string;
-  updated_at: string;
 }
 
-
-// Interface representing the actual API response structure
 export interface ApiPaginatedResponse<T> {
   current_page: number;
   data: T[];
@@ -49,17 +41,17 @@ export interface PaginatedResponse<T> {
   };
 }
 
-interface UseLoansParams {
+interface UseReservationsParams {
   search?: any[];
   page?: number;
   perPage?: number;
 }
 
-export function useLoans({ search, page = 1, perPage = 10 }: UseLoansParams = {}) {
+export function useReservations({ search, page = 1, perPage = 10 }: UseReservationsParams = {}) {
   return useQuery({
-    queryKey: ["loans", { search, page, perPage }],
+    queryKey: ["reservations", { search, page, perPage }],
     queryFn: async () => {
-      const { data: apiResponse } = await axios.get<ApiPaginatedResponse<Loan>>("/api/loans", {
+      const { data: apiResponse } = await axios.get<ApiPaginatedResponse<Reservation>>("/api/reservations", {
         params: {
           search,
           page,
@@ -82,7 +74,7 @@ export function useLoans({ search, page = 1, perPage = 10 }: UseLoansParams = {}
           to: apiResponse.to,
           total: apiResponse.total
         }
-      } as PaginatedResponse<Loan>;
+      } as PaginatedResponse<Reservation>;
     },
   });
 }
@@ -115,10 +107,10 @@ export function useUpdateUser(userId: string) {
   });
 }
 
-export function useDeleteLoan() {
+export function useDeleteReservation() {
   return useMutation({
-    mutationFn: async (loanId: string) => {
-      await axios.delete(`/api/loans/${loanId}`, {
+    mutationFn: async (reservationId: string) => {
+      await axios.delete(`/api/reservations/${reservationId}`, {
         headers: {
           'Accept': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'

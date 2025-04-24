@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('loans', function (Blueprint $table) {
+        Schema::create('reservations', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
             $table->foreignUuid('book_id')->constrained('books')->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->boolean('isLoaned');
-            $table->date('loan_date');
-            $table->date('due_date');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('loans');
+        Schema::dropIfExists('reservations');
     }
 };

@@ -44,6 +44,11 @@ const mainNavItems = (t: (key: string) => string): NavItem[] => [
         url: '/loans',
         icon: Handshake,
     },
+    {
+        title: t('ui.navigation.items.reservations'),
+        url: '/reservations',
+        icon: Handshake,
+    },
 ];
 
 const footerNavItems = (t: (key: string) => string): NavItem[] => [

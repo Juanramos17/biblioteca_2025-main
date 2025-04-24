@@ -62,7 +62,7 @@ return [
         'select' => 'Selecciona un género',
         'fiction' => 'Ficción',
         'mystery' => 'Misterio',
-        'thriller' => 'Suspenso',
+        'thriller' => 'Suspense',
         'science fiction' => 'Ciencia Ficción',
         'fantasy' => 'Fantasía',
         'romance' => 'Romántico',
@@ -403,6 +403,8 @@ return [
             'deleting' => 'Eliminando...',
             'saving' => 'Guardando...',
             'retry' => 'Reintentar',
+            'loan' => 'Préstamo',
+            'reservation' => 'Reserva',
         ],
         'columns' => [
             'bookshelf' => 'Estanteria perteneciente',
@@ -418,6 +420,9 @@ return [
             'category' => 'Categorias del libro',
             'created_at' => 'Fecha de creación',
             'actions' => 'Acciones',
+            'status' => 'Estado',
+            'available' => 'Disponible',
+            'not_available' => 'No disponible',
         ],
         'fields' => [
             'title' => 'Titulo',

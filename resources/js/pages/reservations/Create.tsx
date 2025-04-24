@@ -1,36 +1,24 @@
 
-import { Building2, User } from "lucide-react";
-import { FloorLayout } from "@/layouts/floors/FloorLayout";
+import { Building2, Handshake, Receipt, Repeat, User } from "lucide-react";
 import { useTranslations } from "@/hooks/use-translations";
 import { CardDescription, CardHeader } from "@/components/ui/card";
-import LoanForm from "./components/LoanForm";
-import { PageProps } from "@/types";
-import { LoanLayout } from "@/layouts/loans/LoanLayout";
+import ReservationForm from "./components/ReservationForm";
+import { ReservationLayout } from "@/layouts/reservations/ReservationLayout";
 
-interface LoanProps extends PageProps{
-    initialData?: {
-        id: string;
-        loan_id: string;
-        email: string;
-        date: Date;
-    };
-    page?: string;
-    perPage?: string;
-}
 
-export default function CreateFloor({initialData, page, perPage}:LoanProps) {
+export default function CreateReservation() {
   const { t } = useTranslations();
   const url = window.location.href;
   const params = new URLSearchParams(window.location.search);
 
   return (
-    <LoanLayout title={t("ui.loans.create")}>
+    <ReservationLayout title={t("ui.loans.create")}>
       <div className="flex flex-col items-center w-full">
         <div className="w-[800px] flex flex-col bg-muted/50 rounded-lg">
 
           <CardHeader className="w-full flex justify-start bg-muted p-4 rounded-t-lg">
             <div className="flex space-x-2">
-              <Building2 size={20} className="text-blue-500" />
+              <Handshake size={20} className="text-blue-500" />
               <h2 className="font-bold text-xl">{t("ui.loans.create")}</h2>
             </div>
               <p className="text-gray-500 text-sm mb-3">{t("ui.loans.info")}</p>
@@ -40,10 +28,10 @@ export default function CreateFloor({initialData, page, perPage}:LoanProps) {
           </CardHeader>
 
 
-          <LoanForm initialData={initialData} page={page} perPage={perPage} />
+          <ReservationForm/>
         </div>
       </div>
 
-    </LoanLayout>
+    </ReservationLayout>
   );
 }

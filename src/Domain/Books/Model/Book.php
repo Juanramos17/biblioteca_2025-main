@@ -5,6 +5,7 @@ namespace Domain\Books\Model;
 use Database\Factories\BookFactory;
 use Domain\Genres\Model\Genre;
 use Domain\Loans\Model\Loan;
+use Domain\Reservations\Model\Reservation;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,5 +53,10 @@ class Book extends Model implements HasMedia
     public function activeLoan():HasOne
     {
         return $this->hasOne(Loan::class)->where('isLoaned', true);
+    }
+
+    public function reservations(): HasMany
+    {
+        return $this->hasMany(Reservation::class);
     }
 }

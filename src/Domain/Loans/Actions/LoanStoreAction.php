@@ -12,6 +12,13 @@ class LoanStoreAction
     {
         $user = User::where('email', $data['email'])->first()->id;
 
+        $alreadyLoaned = Loan::where('book_id', $data['id'])
+        ->where('isLoaned', true)
+        ->exists();
+
+    if ($alreadyLoaned) {
+
+    }else{
         $loan = Loan::create([
             'book_id' => $data['id'],
             'user_id' => $user,
@@ -19,6 +26,7 @@ class LoanStoreAction
             'loan_date' => now()->toDateString(),
             'due_date' => $data['date'],
         ]);
+    }
 
         return LoanResource::fromModel($loan);
 

@@ -5,6 +5,7 @@ namespace Domain\Loans\Data\Resources;
 use Carbon\Carbon;
 use Domain\Bookshelves\Model\Bookshelf;
 use Domain\Loans\Model\Loan;
+use Domain\Reservations\Model\Reservation;
 use Spatie\LaravelData\Data;
 
 use function Termwind\parse;
@@ -37,13 +38,12 @@ class LoanResource extends Data
                 : "En tiempo";
         } else {
             if ($updateDate->greaterThan($dueDate)) {
-                $overdueMessage = "Finalizado con " . intval($dueDate->diffInDays($updateDate)) . " días de retraso";
+                $overdueMessage = "Devuelto el ".$loan->updated_at->format('Y-m-d'). " con " . intval($dueDate->diffInDays($updateDate)) . " días de retraso";
             } else {
-                $overdueMessage = "Finalizado a tiempo";
+                $overdueMessage = "Devuelto a tiempo";
             }
         }
         
-
         return new self(
             id: $loan->id,
             book_id: $loan->book->title,
