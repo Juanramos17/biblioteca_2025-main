@@ -1,5 +1,5 @@
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
-import { Users, User, Building2, MapPin, Library, Book, Handshake } from 'lucide-react';
+import { Users, User, Building2, MapPin, Library, Book, Handshake, Calendar } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -89,7 +89,7 @@ export default function Dashboard() {
                     title="Reservations"
                     description="Gestiona las reservas de la biblioteca"
                     href="/reservations"
-                    icon={Handshake}
+                    icon={Calendar}
                 />
 
             </div>

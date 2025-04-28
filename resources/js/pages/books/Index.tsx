@@ -36,10 +36,13 @@ export default function BooksIndex() {
         filters.category ? `${filters.category}` : 'null',
         filters.floor ? `${filters.floor}` : 'null',
         filters.zone ? `${filters.zone}` : 'null',
+        filters.status ? `${filters.status}` : 'null',
     ];
 
+    console.log('Combined Search:', combinedSearch);
+
     const {
-        data: zones,
+        data: books,
         isLoading,
         isError,
         refetch,
@@ -61,6 +64,15 @@ export default function BooksIndex() {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
+
+    const handleFilterChange = (newFilters: Record<string, any>) => {
+        const filtersChanged = newFilters!==filters;
+
+        if (filtersChanged) {
+            setCurrentPage(1);
+        }
+        setFilters(newFilters);
+        };
 
     const handlePerPageChange = (newPerPage: number) => {
         setPerPage(newPerPage);
@@ -187,6 +199,7 @@ export default function BooksIndex() {
                                         size="icon"
                                         className="text-destructive hover:text-destructive"
                                         title={t('ui.books.buttons.delete') || 'Delete user'}
+                                        disabled={!book.is_available}
                                     >
                                         <TrashIcon className="h-4 w-4" />
                                     </Button>
@@ -225,12 +238,6 @@ export default function BooksIndex() {
                                         placeholder: t('ui.books.placeholders.title') || 'Titulo...',
                                     },
                                     {
-                                        id: 'bookshelf_name',
-                                        label: t('ui.books.filters.bookshelf') || 'Estanteria',
-                                        type: 'number',
-                                        placeholder: t('ui.books.placeholders.bookshelf') || 'Estanteria...',
-                                    },
-                                    {
                                         id: 'author',
                                         label: t('ui.books.filters.author') || 'Autor',
                                         type: 'text',
@@ -247,6 +254,16 @@ export default function BooksIndex() {
                                         label: t('ui.books.filters.ISBN') || 'ISBN',
                                         type: 'number',
                                         placeholder: t('ui.books.placeholders.ISBN') || 'ISBN...',
+                                    },
+                                    {
+                                        id: 'status',
+                                        label: t('ui.books.filters.status') || 'Status',
+                                        type: 'select',
+                                        options: [
+                                            { value: 'false', label: t('ui.books.filters.available') || 'Available' },
+                                            { value: 'true', label: t('ui.books.filters.not_available') || 'Unavailable' },
+                                        ],
+                                        placeholder: t('ui.books.placeholders.status') || 'Status...',
                                     },
                                     {
                                         id: 'category',
@@ -266,11 +283,25 @@ export default function BooksIndex() {
                                         type: 'number',
                                         placeholder: t('ui.books.placeholders.zone') || 'Zona...',
                                     },
+                                    {
+                                        id: 'bookshelf_name',
+                                        label: t('ui.books.filters.bookshelf') || 'Estanteria',
+                                        type: 'number',
+                                        placeholder: t('ui.books.placeholders.bookshelf') || 'Estanteria...',
+                                    },
                                 ] as FilterConfig[]
                             }
-                            onFilterChange={setFilters}
+                            onFilterChange={handleFilterChange}
                             initialValues={filters}
                         />
+                    </div>
+
+                    <div>
+                        { (books?.meta.total !== undefined && books?.meta.total > 0) && (
+                            <div className="mt-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm">
+                                {books.meta.total} {t('ui.info.total') || 'Total'}
+                            </div>
+                        )}
                     </div>
 
                     <div className="w-full overflow-hidden">
@@ -287,7 +318,7 @@ export default function BooksIndex() {
                             <div>
                                 <Table
                                     data={
-                                        zones ?? {
+                                        books ?? {
                                             data: [],
                                             meta: {
                                                 current_page: 1,

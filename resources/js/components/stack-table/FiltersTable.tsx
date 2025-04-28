@@ -36,6 +36,7 @@ dayjs.locale("es"); // Establecer español como idioma predeterminado
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { enUS, es } from "date-fns/locale";
 
 /**
  * Tipos de filtros disponibles
@@ -138,7 +139,11 @@ export interface FiltersTableProps {
   filtersButtonText?: string;
   /** Texto para el botón de limpiar filtros */
   clearFiltersText?: string;
+
+  containerClassName?: string;
+  lang?: string;
 }
+
 
 /**
  * Componente para filtrar datos de una tabla
@@ -151,6 +156,8 @@ export function FiltersTable({
   filtersTitle,
   filtersButtonText,
   clearFiltersText,
+  containerClassName,
+  lang,
 }: FiltersTableProps) {
   const { t } = useTranslations();
   const [open, setOpen] = useState(false);
@@ -158,6 +165,7 @@ export function FiltersTable({
     initialValues || {}
   );
   const debouncedFilterValues = useDebounce(filterValues, debounce);
+ 
 
   // Crear un esquema de validación a partir de los filtros
   const formSchema = z.object(
@@ -227,7 +235,7 @@ export function FiltersTable({
     <div className="w-full">
       <div className="hidden md:flex flex-wrap gap-4 items-end">
         <Form {...form}>
-          <div className="flex flex-wrap gap-4">
+          <div className={cn("flex flex-wrap gap-4", containerClassName)}>
             {filters.map((filter) => (
               <FormField
                 key={filter.id}
@@ -240,6 +248,7 @@ export function FiltersTable({
                       {renderFilterInput(
                         filter,
                         field,
+                        lang,
                         (value) => handleFilterChange(filter.id, value)
                       )}
                     </FormControl>
@@ -299,6 +308,7 @@ export function FiltersTable({
                             {renderFilterInput(
                               filter,
                               field,
+                              lang,
                               (value) => handleFilterChange(filter.id, value)
                             )}
                           </FormControl>
@@ -333,6 +343,10 @@ export function FiltersTable({
     </div>
   );
 }
+const langMap = {
+  en:enUS, 
+  es:es
+}
 
 /**
  * Función auxiliar para renderizar el input correcto según el tipo de filtro
@@ -340,6 +354,8 @@ export function FiltersTable({
 function renderFilterInput(
   filter: FilterConfig,
   field: any,
+  lang: string,
+  
   onChange: (value: any) => void
 ) {
   switch (filter.type) {
@@ -401,6 +417,7 @@ function renderFilterInput(
               timeZone="Europe/Madrid"
               mode="single"
               selected={field.value}
+              locale={langMap[lang]}
               onSelect={(date: Date | undefined) => {
                 field.onChange(date);
                 onChange(date);

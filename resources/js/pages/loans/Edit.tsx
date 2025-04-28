@@ -16,9 +16,10 @@ interface LoanProps extends PageProps{
     };
     page?: string;
     perPage?: string;
+    lang: string;
 }
 
-export default function CreateFloor({initialData, page, perPage}:LoanProps) {
+export default function CreateFloor({initialData, page, perPage, lang}:LoanProps) {
   const { t } = useTranslations();
   const url = window.location.href;
   const params = new URLSearchParams(window.location.search);
@@ -40,7 +41,7 @@ export default function CreateFloor({initialData, page, perPage}:LoanProps) {
           </CardHeader>
 
 
-          <LoanForm initialData={initialData} page={page} perPage={perPage} />
+          <LoanForm initialData={initialData} page={page} perPage={perPage} lang={lang}/>
         </div>
       </div>
 

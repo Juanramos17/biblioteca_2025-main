@@ -19,7 +19,6 @@ class LoanResource extends Data
         public readonly string $loan_date,
         public readonly string $due_date,
         public readonly bool $isLoaned,
-        public readonly string $overdue_message,
         public readonly string $created_at,
         public readonly string $updated_at,
     ) {
@@ -29,20 +28,7 @@ class LoanResource extends Data
     {
 
         $dueDate = Carbon::parse($loan->due_date);
-        $updateDate = Carbon::parse($loan->updated_at);
-        $today = Carbon::today();
         
-        if ($loan->isLoaned) {
-            $overdueMessage = $dueDate->isBefore($today)
-                ? intval($dueDate->diffInDays($today)) . " días de retraso"
-                : "En tiempo";
-        } else {
-            if ($updateDate->greaterThan($dueDate)) {
-                $overdueMessage = "Devuelto el ".$loan->updated_at->format('Y-m-d'). " con " . intval($dueDate->diffInDays($updateDate)) . " días de retraso";
-            } else {
-                $overdueMessage = "Devuelto a tiempo";
-            }
-        }
         
         return new self(
             id: $loan->id,
@@ -51,7 +37,6 @@ class LoanResource extends Data
             loan_date: $loan->loan_date,
             due_date: $dueDate->format('Y-m-d'), 
             isLoaned: $loan->isLoaned,
-            overdue_message: $overdueMessage,  
             created_at: $loan->created_at->format('Y-m-d H:i:s'),
             updated_at: $loan->updated_at->format('Y-m-d H:i:s'),
         );

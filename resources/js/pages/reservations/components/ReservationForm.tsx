@@ -102,7 +102,13 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
-
+                    
+                            if (value === null || value === undefined || value.toString().trim() === '') {
+                                return t('ui.validation.required', {
+                                    attribute: t('ui.books.fields.book').toLowerCase(),
+                                });
+                            }
+                    
                             return undefined;
                         },
                     }}

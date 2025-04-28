@@ -11,11 +11,16 @@ class Confirmacion extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    public string $title;
+    public string $author;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($title, $author)
     {
+        $this->title = $title;
+        $this->author = $author;
     }
 
     /**
@@ -33,10 +38,16 @@ class Confirmacion extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $titulo = $this->title; 
+        $autor = $this->author;   
+        $nombreUsuario = $notifiable->name;  
+
         return (new MailMessage)
-                    ->line('Confirmacion.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->greeting('Hola ' . $nombreUsuario)  
+                    ->line('El libro "' . $titulo . '" de ' . $autor . ' ha sido entregado correctamente.')
+                    ->line('Gracias por utilizar nuestro servicio. Si tienes alguna pregunta, no dudes en contactarnos.')
+                    ->action('Visitar nuestra página', url('/'))  
+                    ->line('¡Esperamos verte pronto!');
     }
 
     /**

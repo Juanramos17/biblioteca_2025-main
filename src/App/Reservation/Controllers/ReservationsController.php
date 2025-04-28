@@ -44,8 +44,8 @@ class ReservationsController extends Controller
     public function store(Request $request, ReservationStoreAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'id' => ['required' ],
-            'email' => ['required'], 
+            'id' => ['required', 'integer', 'exists:users,id'],
+            'email' => ['required', 'email', 'max:255', 'exists:users,email'],
         ]);
 
         if ($validator->fails()) {
@@ -89,32 +89,32 @@ class ReservationsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Reservation $reservation, ReservationUpdateAction $action)
-    {
+    // public function update(Request $request, Reservation $reservation, ReservationUpdateAction $action)
+    // {
 
-        $validator = Validator::make($request->all(), [
-            'id' => ['string'],
-            'email' => ['string'], 
-        ]);
+    //     $validator = Validator::make($request->all(), [
+    //         'id' => ['required', 'integer', 'exists:users,id'],
+    //         'email' => ['required', 'email', 'max:255', 'exists:users,email'],
+    //     ]);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator);
-        }
+    //     if ($validator->fails()) {
+    //         return back()->withErrors($validator);
+    //     }
 
-        $action($reservation, $validator->validated());
+    //     $action($reservation, $validator->validated());
 
-        $redirectUrl = route('reservations.index');
+    //     $redirectUrl = route('reservations.index');
         
-        if ($request->has('page')) {
-            $redirectUrl .= "?page=" . $request->query('page');
-            if ($request->has('perPage')) {
-                $redirectUrl .= "&per_page=" . $request->query('perPage');
-            }
-        }
+    //     if ($request->has('page')) {
+    //         $redirectUrl .= "?page=" . $request->query('page');
+    //         if ($request->has('perPage')) {
+    //             $redirectUrl .= "&per_page=" . $request->query('perPage');
+    //         }
+    //     }
 
-        return redirect($redirectUrl)
-            ->with('success', __('ui.messages.loans.updated'));
-    }
+    //     return redirect($redirectUrl)
+    //         ->with('success', __('ui.messages.loans.updated'));
+    // }
 
     /**
      * Remove the specified resource from storage.

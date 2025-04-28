@@ -7,6 +7,7 @@ use Domain\Books\Model\Book;
 use Domain\Books\Data\Resources\BookResource;
 use Domain\Bookshelves\Model\Bookshelf;
 use Domain\Floors\Model\Floor;
+use Domain\Loans\Model\Loan;
 use Domain\Zones\Model\Zone;
 
 class BookIndexAction
@@ -21,6 +22,7 @@ class BookIndexAction
         $category = $search[5];
         $floor_name = $search[6];
         $zone_name = $search[7];
+        $status = $search[8];
 
         $bookshelfId = null;
         if ($bookshelf_enumeration !== "null") {
@@ -29,7 +31,7 @@ class BookIndexAction
                 $bookshelfId = $bookshelf->id;
             }
         }
-
+        
         $floorId = null;
         if ($floor_name !== "null") {
             $floor = Floor::where('name', $floor_name)->first();
@@ -37,7 +39,7 @@ class BookIndexAction
                 $floorId = $floor->id;
             }
         }
-
+        
         $zoneId = null;
         if ($zone_name !== "null") {
             $zone = Zone::where('name', $zone_name)->first();
@@ -45,6 +47,8 @@ class BookIndexAction
                 $zoneId = $zone->id;
             }
         }
+
+        $books_availables = Loan::where('isLoaned', '=', true)->pluck('book_id');
 
         $books = Book::query()
             ->when($title !== "null", function ($query) use ($title) {
@@ -75,8 +79,16 @@ class BookIndexAction
                     $query->where('id', '=', $zoneId);
                 });
             })
+            ->when($status == 'false', function ($query) use ($books_availables) {
+                    $query->whereNotIn('id', $books_availables);  
+            })
+            ->when($status == 'true', function ($query) use ($books_availables) {
+                    $query->whereIn('id', $books_availables);  
+            })
+            
             ->latest()
             ->paginate($perPage);
+
 
         return $books->through(fn($book) => BookResource::fromModel($book));
     }

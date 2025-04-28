@@ -39,7 +39,7 @@ export default function BookshelvesIndex() {
     filters.floor ? `${filters.floor}` : "null"
   ]
 
-  const { data: zones, isLoading, isError, refetch } = useBookshelves({
+  const { data: bookshelves, isLoading, isError, refetch } = useBookshelves({
     search: combinedSearch,
     page: currentPage,
     perPage: perPage,
@@ -56,6 +56,15 @@ export default function BookshelvesIndex() {
     setPerPage(newPerPage);
     setCurrentPage(1); // Reset to first page when changing items per page
   };
+
+  const handleFilterChange = (newFilters: Record<string, any>) => {
+    const filtersChanged = newFilters!==filters;
+
+    if (filtersChanged) {
+        setCurrentPage(1);
+    }
+    setFilters(newFilters);
+    };
 
   const handleDeleteUser = async (id: string) => {
     try {
@@ -185,10 +194,18 @@ export default function BookshelvesIndex() {
                                   },
                               ] as FilterConfig[]
                           }
-                          onFilterChange={setFilters}
+                          onFilterChange={handleFilterChange}
                           initialValues={filters}
                       />
                   </div>
+
+                  <div>
+                        { (bookshelves?.meta.total !== undefined && bookshelves?.meta.total > 0) && (
+                            <div className="mt-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm">
+                                {bookshelves.meta.total} {t('ui.info.total') || 'Total'}
+                            </div>
+                        )}
+                    </div>
 
                   <div className="w-full overflow-hidden">
                       {isLoading ? (
@@ -204,7 +221,7 @@ export default function BookshelvesIndex() {
                           <div>
                               <Table
                                   data={
-                                      zones ?? {
+                                      bookshelves ?? {
                                           data: [],
                                           meta: {
                                               current_page: 1,

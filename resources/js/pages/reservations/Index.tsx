@@ -31,13 +31,11 @@ export default function ReservationsIndex() {
     const combinedSearch = [
         filters.title ? filters.title : 'null',
         filters.user ? filters.user : 'null',
-        filters.loan_date ? filters.loan_date : 'null',
-        filters.due_date ? filters.due_date : 'null',
-        filters.isLoaned ? filters.isLoaned : 'null',
+        filters.created_date ? filters.created_date : 'null',
     ];
 
     const {
-        data: loans,
+        data: reservations,
         isLoading,
         isError,
         refetch,
@@ -58,6 +56,15 @@ export default function ReservationsIndex() {
         setCurrentPage(1);
     };
 
+    const handleFilterChange = (newFilters: Record<string, any>) => {
+        const filtersChanged = newFilters!==filters;
+
+        if (filtersChanged) {
+            setCurrentPage(1);
+        }
+        setFilters(newFilters);
+        };
+
     const handleDeleteUser = async (id: string) => {
         try {
             await deleteUserMutation.mutateAsync(id);
@@ -72,23 +79,23 @@ export default function ReservationsIndex() {
             [
                 createTextColumn<Reservation>({
                     id: 'book_id',
-                    header: t('ui.loans.columns.book') || "Book' title",
+                    header: t('ui.reservations.columns.book') || "Book' title",
                     accessorKey: 'book_id',
                 }),
                 createTextColumn<Reservation>({
                     id: 'user_id',
-                    header: t('ui.loans.columns.user') || "User' name",
+                    header: t('ui.reservations.columns.user') || "User' name",
                     accessorKey: 'user_id',
                 }),
                 createTextColumn<Reservation>({
                     id: 'created_at',
-                    header: t('ui.loans.columns.user') || "User' name",
+                    header: t('ui.reservations.columns.reservation_date') || "User' name",
                     accessorKey: 'created_at',
                 }),
                 
                 createActionsColumn<Reservation>({
                     id: 'actions',
-                    header: t('ui.loans.columns.actions') || 'Actions',
+                    header: t('ui.reservations.columns.actions') || 'Actions',
                     renderActions: (reservation) => (
                         <>
                            
@@ -96,9 +103,9 @@ export default function ReservationsIndex() {
                             <DeleteDialog
                                 id={reservation.id}
                                 onDelete={handleDeleteUser}
-                                title={t('ui.bookshelves.delete') || 'Delete bookshelf'}
+                                title={t('ui.reservations.delete') || 'Delete reservation'}
                                 description={
-                                    t('ui.bookshelves.description') || 'Are you sure you want to delete this bookshelf? This action cannot be undone.'
+                                    t('ui.reservations.description') || 'Are you sure you want to delete this reservation? This action cannot be undone.'
                                 }
                                 trigger={
                                     <Button
@@ -119,17 +126,11 @@ export default function ReservationsIndex() {
     );
 
     return (
-        <ReservationLayout title={t('ui.loans.title')}>
+        <ReservationLayout title={t('ui.reservations.title')}>
             <div className="p-6">
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-3xl font-bold">{t('ui.loans.loans')}</h1>
-                        <Link href="/reservations/create">
-                            <Button>
-                                <PlusIcon className="mr-2 h-4 w-4" />
-                                {t('ui.loans.create')}
-                            </Button>
-                        </Link>
+                        <h1 className="text-3xl font-bold">{t('ui.reservations.reservation')}</h1>
                     </div>
                     <div></div>
 
@@ -139,44 +140,38 @@ export default function ReservationsIndex() {
                                 [
                                     {
                                         id: 'title',
-                                        label: t('ui.loans.filters.title') || 'Titulo',
+                                        label: t('ui.reservations.filters.title') || 'Titulo',
                                         type: 'text',
-                                        placeholder: t('ui.loans.placeholders.title') || 'Titulo...',
+                                        placeholder: t('ui.reservations.placeholders.title') || 'Titulo...',
                                     },
                                     {
                                         id: 'user',
-                                        label: t('ui.loans.filters.user') || 'Usuario',
+                                        label: t('ui.reservations.filters.user') || 'Usuario',
                                         type: 'text',
-                                        placeholder: t('ui.loans.placeholders.user') || 'Usuario...',
+                                        placeholder: t('ui.reservations.placeholders.user') || 'Usuario...',
                                     },
                                     {
-                                        id: 'loan_date',
-                                        label: t('ui.loans.filters.loan_date') || 'Fecha de préstamo',
+                                        id: 'created_date',
+                                        label: t('ui.reservations.filters.loan_date') || 'Fecha de Reserva',
                                         type: 'date',
-                                        placeholder: t('ui.loans.placeholders.loan_date') || 'Fecha de préstamo...',
+                                        placeholder: t('ui.reservations.placeholders.loan_date') || 'Fecha de Reserva...',
                                     },
-                                    {
-                                        id: 'due_date',
-                                        label: t('ui.loans.filters.due_date') || 'Fecha de devolución',
-                                        type: 'date',
-                                        placeholder: t('ui.loans.placeholders.due_date') || 'Fecha de devolución...',
-                                    },
-                                    {
-                                        id: 'isLoaned',
-                                        label: t('ui.loans.filters.isLoaned') || 'Estado',
-                                        type: 'select',
-                                        options: [
-                                            { value: 'true', label: t('ui.loans.filters.loaned') || 'En préstamo' },
-                                            { value: 'false', label: t('ui.loans.filters.finished') || 'Finalizado' },
-                                        ],
-                                        placeholder: t('ui.loans.placeholders.isLoaned') || 'Estado...',
-                                    },
+                                   
                                 ] as FilterConfig[]
                             }
-                            onFilterChange={setFilters}
+                            onFilterChange={handleFilterChange}
                             initialValues={filters}
                         />
                     </div>
+
+                    <div>
+                        { (reservations?.meta.total !== undefined && reservations?.meta.total > 0) && (
+                            <div className="mt-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm">
+                                {reservations.meta.total} {t('ui.info.total') || 'Total'}
+                            </div>
+                        )}
+                    </div>
+
 
                     <div className="w-full overflow-hidden">
                         {isLoading ? (
@@ -192,7 +187,7 @@ export default function ReservationsIndex() {
                             <div>
                                 <Table
                                     data={
-                                        loans ?? {
+                                        reservations ?? {
                                             data: [],
                                             meta: {
                                                 current_page: 1,

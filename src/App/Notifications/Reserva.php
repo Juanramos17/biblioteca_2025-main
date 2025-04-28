@@ -7,15 +7,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class Email extends Notification implements ShouldQueue
+class Reserva extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public string $title;
+    public string $author;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($title, $author)
     {
+        $this->title = $title;
+        $this->author = $author;
     }
 
     /**
@@ -33,10 +38,18 @@ class Email extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $titulo = $this->title; 
+        $autor = $this->author;   
+        $nombreUsuario = $notifiable->name;  
+        
         return (new MailMessage)
-                    ->line('Aqui es donde escribo llo que llega.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        ->greeting('Hola ' . $nombreUsuario)  // Saludo al usuario
+        ->line('¡Buenas noticias! El libro "' . $titulo . '" de ' . $autor . ' ya está disponible para su recogida.')
+        ->line('Puedes venir a recogerlo en cuanto quieras. No olvides traer tu identificación o el comprobante de reserva.')
+        ->action('Visitar nuestra página', url('/'))  // Enlace a la página para más información
+        ->line('¡Gracias por elegirnos! Si tienes alguna pregunta, no dudes en contactarnos.');
+
+
     }
 
     /**

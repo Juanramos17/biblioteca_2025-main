@@ -6,7 +6,10 @@ import LoanForm from "./components/LoanForm";
 import { PageProps } from "@/types";
 import { LoanLayout } from "@/layouts/loans/LoanLayout";
 
-export default function CreateFloor() {
+interface LoanProps extends PageProps{
+  lang: string
+}
+export default function CreateFloor({lang}: LoanProps) {
   const { t } = useTranslations();
   const url = window.location.href;
   const params = new URLSearchParams(window.location.search);
@@ -28,7 +31,7 @@ export default function CreateFloor() {
           </CardHeader>
 
 
-          <LoanForm/>
+          <LoanForm lang={lang}/>
         </div>
       </div>
 

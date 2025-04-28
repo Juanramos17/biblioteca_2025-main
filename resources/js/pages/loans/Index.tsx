@@ -7,13 +7,18 @@ import { Button } from '@/components/ui/button';
 import { Loan, useDeleteLoan, useLoans } from '@/hooks/loans/useLoans';
 import { useTranslations } from '@/hooks/use-translations';
 import { LoanLayout } from '@/layouts/loans/LoanLayout';
+import { PageProps } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { PencilIcon, PlusIcon, Repeat, TrashIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-export default function LoansIndex() {
+interface LoanProps extends PageProps{
+  lang: string
+}
+
+export default function LoansIndex({lang}: LoanProps) {
     const { t } = useTranslations();
     const { url } = usePage();
 
@@ -71,6 +76,15 @@ export default function LoansIndex() {
         setCurrentPage(1);
     };
 
+    const handleFilterChange = (newFilters: Record<string, any>) => {
+        const filtersChanged = newFilters!==filters;
+
+        if (filtersChanged) {
+            setCurrentPage(1);
+        }
+        setFilters(newFilters);
+        };
+
     const handleDeleteUser = async (id: string) => {
         try {
             await deleteUserMutation.mutateAsync(id);
@@ -111,10 +125,45 @@ export default function LoansIndex() {
                         return value ? t('ui.loans.filters.loaned') : t('ui.loans.filters.finished');
                     },
                 }),
-                createTextColumn<Loan>({
-                    id: 'overdue_message',
-                    header: t('ui.loans.columns.days') || 'Days overdue',
-                    accessorKey: 'overdue_message',
+                createActionsColumn<Loan>({
+                    id: 'time',
+                    header: t('ui.loans.columns.time') || 'Actions',
+                    renderActions: (loan) => {
+                        const dueDate = new Date(loan.due_date);
+                        const updatedAt = new Date(loan.updated_at);
+                        const today = new Date();
+                    
+                        dueDate.setHours(0, 0, 0, 0);
+                        updatedAt.setHours(0, 0, 0, 0);
+                        today.setHours(0, 0, 0, 0);
+                    
+                        let overdueMessage = '';
+                    
+                        if (loan.isLoaned) {
+                            if (dueDate < today) {
+                                const diffDays = Math.ceil(Math.abs(today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+                                overdueMessage = t('ui.loans.days_late', { days: diffDays });
+                            } else {
+                                overdueMessage = t('ui.loans.on_time');
+                            }
+                        } else {
+                            if (updatedAt > dueDate) {
+                                const diffDays = Math.ceil(Math.abs(updatedAt.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+                                const returnedDate = updatedAt.toISOString().split('T')[0];
+                                overdueMessage = t('ui.loans.returned_on', {
+                                    date: returnedDate,
+                                    days: diffDays
+                                });
+                            } else {
+                                overdueMessage = t('ui.loans.returned_on_time')+ ' : ' + updatedAt.toISOString().split('T')[0];
+                            }
+                        }
+                        return (
+                            <>
+                                <span>{overdueMessage}</span>
+                            </>
+                        );
+                    }
                 }),
                 createActionsColumn<Loan>({
                     id: 'actions',
@@ -132,7 +181,7 @@ export default function LoansIndex() {
                             </Button>
 
                             <Link href={`/loans/${loan.id}/edit?page=${currentPage}&perPage=${perPage}`}>
-                                <Button disabled={!loan.isLoaned} variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
+                                <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
                                     <PencilIcon className="h-4 w-4" />
                                 </Button>
                             </Link>
@@ -168,7 +217,7 @@ export default function LoansIndex() {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h1 className="text-3xl font-bold">{t('ui.loans.loans')}</h1>
-                        <Link href="/loans/create">
+                        <Link href="/books">
                             <Button>
                                 <PlusIcon className="mr-2 h-4 w-4" />
                                 {t('ui.loans.create')}
@@ -179,6 +228,7 @@ export default function LoansIndex() {
 
                     <div className="space-y-4">
                         <FiltersTable
+                            lang={lang}
                             filters={
                                 [
                                     {
@@ -217,9 +267,18 @@ export default function LoansIndex() {
                                     },
                                 ] as FilterConfig[]
                             }
-                            onFilterChange={setFilters}
+                            onFilterChange={handleFilterChange}
                             initialValues={filters}
+                            containerClassName="w-full"
                         />
+                    </div>
+
+                    <div>
+                        { (loans?.meta.total !== undefined && loans?.meta.total > 0) && (
+                            <div className="mt-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm">
+                                {loans.meta.total} {t('ui.info.total') || 'Total'}
+                            </div>
+                        )}
                     </div>
 
                     <div className="w-full overflow-hidden">

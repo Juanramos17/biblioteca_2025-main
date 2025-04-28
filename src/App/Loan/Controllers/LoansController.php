@@ -18,6 +18,7 @@ use Domain\Loans\Actions\LoanStoreAction;
 use Domain\Loans\Actions\LoanUpdateAction;
 use Domain\Loans\Model\Loan;
 use Domain\Users\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class LoansController extends Controller
 {
@@ -26,9 +27,10 @@ class LoansController extends Controller
      */
     public function index()
     {
+        $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
         $loans = Loan::all()->toArray();
 
-        return Inertia::render('loans/Index', ["loans" => $loans]);
+        return Inertia::render('loans/Index', ["loans" => $loans, 'lang' => $lang]);
     }
 
     /**
@@ -36,9 +38,10 @@ class LoansController extends Controller
      */
     public function create()
     {
+        $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
 
         return Inertia::render('loans/Create', [
-           
+           'lang' => $lang,
         ]);
     }
 
@@ -48,9 +51,9 @@ class LoansController extends Controller
     public function store(Request $request, LoanStoreAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'id' => ['required' ],
-            'email' => ['required'], 
-            'date' => ['required'], 
+            'id' => ['required', 'string', 'exists:books,id'],
+            'email' => ['required', 'email', 'max:255', 'exists:users,email'],
+            'date' => ['required', 'date'], 
         ]);
 
         if ($validator->fails()) {
@@ -77,6 +80,7 @@ class LoansController extends Controller
      */
     public function edit(Request $request, Loan $loan)
 {
+        $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
         $email = User::where('id', $loan->user_id)->first()->email;
         
         return Inertia::render('loans/Edit', [
@@ -88,6 +92,7 @@ class LoansController extends Controller
         ],
         'page' => $request->query('page'),
         'perPage' => $request->query('perPage'),
+        'lang' => $lang,
         ]);
 }
 
@@ -100,9 +105,9 @@ class LoansController extends Controller
 
         $validator = Validator::make($request->all(), [
             'id' => ['string'],
-            'email' => ['string'], 
-            'date' => ['date'], 
-            'name' => ['string'], 
+            'email' => ['string', 'email', 'max:255', 'exists:books,email'],
+            'date' => ['date', 'after_or_equal:today'],
+            'name' => ['string', 'max:255'],
             'borrow' => ['string'],
         ]);
 
@@ -122,7 +127,7 @@ class LoansController extends Controller
         }
 
         return redirect($redirectUrl)
-            ->with('success', __('ui.messages.loans.updated'));
+            ->with('success', __('ui.loans.updated'));
     }
 
     /**

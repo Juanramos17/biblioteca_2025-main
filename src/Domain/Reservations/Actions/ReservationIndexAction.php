@@ -13,9 +13,7 @@ class ReservationIndexAction
     {
         $title = $search[0];
         $user = $search[1];
-        $loan_date = $search[2];
-        $due_date = $search[3];
-        $isLoaned = $search[4];
+        $created_date = $search[2];
 
         $bookIds = [];
         if ($title !== "null") {
@@ -32,6 +30,15 @@ class ReservationIndexAction
         }
         
         $reservations = Reservation::query()
+            ->when(!empty($bookIds), function ($query) use ($bookIds) {
+                $query->whereIn('book_id', $bookIds);
+            })
+            ->when(!empty($userIds), function ($query) use ($userIds) {
+                $query->whereIn('user_id', $userIds);
+            })
+            ->when($created_date !== "null", function ($query) use ($created_date) {
+                $query->whereDate('created_at', '=', $created_date);
+            })
             ->latest()
             ->paginate($perPage);
 

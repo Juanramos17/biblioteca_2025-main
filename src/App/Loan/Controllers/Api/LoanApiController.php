@@ -12,6 +12,7 @@ class LoanApiController extends Controller
 {
     public function index(Request $request, LoanIndexAction $action)
     {
+        
         return response()->json($action($request->search, $request->integer('per_page', 10)));
     }
 

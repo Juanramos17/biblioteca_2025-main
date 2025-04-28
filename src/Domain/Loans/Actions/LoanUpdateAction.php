@@ -4,6 +4,7 @@ namespace Domain\Loans\Actions;
 
 use App\Notifications\Confirmacion;
 use App\Notifications\Email;
+use App\Notifications\Reserva;
 use Domain\Loans\Data\Resources\LoanResource;
 use Domain\Loans\Model\Loan;
 use Domain\Reservations\Actions\ReservationUpdateAction;
@@ -18,7 +19,7 @@ class LoanUpdateAction
             $updateData = [
                 'isLoaned' => false,
             ];
-            $user->notify(new Email);
+            $user->notify(new Confirmacion($loan->book->title, $loan->book->author));
 
             if($loan->book->reservations()->first()!== null){
                 $oldestReservationUserId = $loan->book->reservations()
@@ -26,7 +27,8 @@ class LoanUpdateAction
                 ->value('user_id');
 
                 $newUser = $user = User::where('id', $oldestReservationUserId)->first();
-                $newUser->notify(new Confirmacion);
+                $newUser->notify(new Reserva($loan->book->title, $loan->book->author));
+                $loan->book->reservations()->first()->delete();
             }
         }else{
             $user = User::where('email', $data['email'])->first()->id;
@@ -34,6 +36,7 @@ class LoanUpdateAction
                 'book_id' => $data['id'],
                 'user_id' => $user,
                 'due_date' => $data['date'],
+                'isLoaned' => true,
             ];
         }
 

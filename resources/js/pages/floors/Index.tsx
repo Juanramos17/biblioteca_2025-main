@@ -53,6 +53,15 @@ export default function FloorsIndex() {
     setCurrentPage(1); // Reset to first page when changing items per page
   };
 
+  const handleFilterChange = (newFilters: Record<string, any>) => {
+    const filtersChanged = newFilters!==filters;
+
+    if (filtersChanged) {
+        setCurrentPage(1);
+    }
+    setFilters(newFilters);
+    };
+
   const handleDeleteUser = async (id: string) => {
     try {
       await deleteUserMutation.mutateAsync(id);
@@ -147,10 +156,18 @@ export default function FloorsIndex() {
                                   },
                               ] as FilterConfig[]
                           }
-                          onFilterChange={setFilters}
+                          onFilterChange={handleFilterChange}
                           initialValues={filters}
                       />
                   </div>
+
+                  <div>
+                        { (floors?.meta.total !== undefined && floors?.meta.total > 0) && (
+                            <div className="mt-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm">
+                                {floors.meta.total} {t('ui.info.total') || 'Total'}
+                            </div>
+                        )}
+                    </div>
 
                   <div className="w-full overflow-hidden">
                       {isLoading ? (
