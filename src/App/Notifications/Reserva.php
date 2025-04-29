@@ -43,10 +43,10 @@ class Reserva extends Notification implements ShouldQueue
         $nombreUsuario = $notifiable->name;  
         
         return (new MailMessage)
-        ->greeting('Hola ' . $nombreUsuario)  // Saludo al usuario
+        ->greeting('Hola ' . $nombreUsuario)  
         ->line('¡Buenas noticias! El libro "' . $titulo . '" de ' . $autor . ' ya está disponible para su recogida.')
-        ->line('Puedes venir a recogerlo en cuanto quieras. No olvides traer tu identificación o el comprobante de reserva.')
-        ->action('Visitar nuestra página', url('/'))  // Enlace a la página para más información
+        ->line('Puedes venir a recogerlo en cuanto quieras. No olvides traer tu identificación y este email como comprobante de reserva.')
+        ->action('Visitar nuestra página', url('/'))  
         ->line('¡Gracias por elegirnos! Si tienes alguna pregunta, no dudes en contactarnos.');
 
 

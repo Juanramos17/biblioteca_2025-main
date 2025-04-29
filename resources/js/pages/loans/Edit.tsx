@@ -1,5 +1,5 @@
 
-import { Building2, User } from "lucide-react";
+import { Building2, Handshake, User } from "lucide-react";
 import { FloorLayout } from "@/layouts/floors/FloorLayout";
 import { useTranslations } from "@/hooks/use-translations";
 import { CardDescription, CardHeader } from "@/components/ui/card";
@@ -26,19 +26,26 @@ export default function CreateFloor({initialData, page, perPage, lang}:LoanProps
 
   return (
     <LoanLayout title={t("ui.loans.create")}>
-      <div className="flex flex-col items-center w-full">
-        <div className="w-[800px] flex flex-col bg-muted/50 rounded-lg">
-
-          <CardHeader className="w-full flex justify-start bg-muted p-4 rounded-t-lg">
-            <div className="flex space-x-2">
-              <Building2 size={20} className="text-blue-500" />
-              <h2 className="font-bold text-xl">{t("ui.loans.create")}</h2>
-            </div>
-              <p className="text-gray-500 text-sm mb-3">{t("ui.loans.info")}</p>
-              <CardDescription>{t("ui.loans.columns.book")}: {params.get('book_title')}</CardDescription>
-              <CardDescription>{t("ui.loans.columns.author")}: {params.get('book_author')}</CardDescription>
-              <CardDescription>{t("ui.loans.columns.ISBN")}: {params.get('book_ISBN')}</CardDescription>
-          </CardHeader>
+      <div className="flex w-full flex-col items-center px-4">
+                <div className="bg-muted/50 flex w-full max-w-3xl flex-col rounded-lg shadow-md">
+                    <CardHeader className="bg-muted flex w-full flex-col items-start space-y-2 rounded-t-lg p-6">
+                        <div className="flex items-center space-x-2">
+                            <Handshake size={20} className="text-blue-500" />
+                            <h2 className="text-2xl font-bold">{t('ui.loans.edit')}</h2>
+                        </div>
+                        <p className="text-sm text-gray-500">{t('ui.loans.info')}</p>
+                        <div className="space-y-1 text-sm text-gray-600">
+                            <CardDescription>
+                                {t('ui.loans.columns.book')}: {params.get('book_title')}
+                            </CardDescription>
+                            <CardDescription>
+                                {t('ui.loans.columns.author')}: {params.get('book_author')}
+                            </CardDescription>
+                            <CardDescription>
+                                {t('ui.loans.columns.ISBN')}: {params.get('book_ISBN')}
+                            </CardDescription>
+                        </div>
+                    </CardHeader>
 
 
           <LoanForm initialData={initialData} page={page} perPage={perPage} lang={lang}/>

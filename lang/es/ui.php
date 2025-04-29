@@ -438,6 +438,7 @@ return [
             'zone' => 'Zona perteneciente',
             'floor' => 'Piso perteneciente',
             'genres' => 'Generos',
+            'img_path' => 'Ruta de la imagen',
         ],
     ],
     'loans' => [
@@ -455,6 +456,7 @@ return [
         'on_time' => 'En tiempo',
         'days_late' => ':days días de retraso',
         'updated' => 'Préstamo actualizado correctamente',
+        'created' => 'Prestamo creada correctamente',
         'filters' => [
             'title' => 'Titulo del libro',
             'user' => 'Usuario del préstamo',
@@ -506,6 +508,7 @@ return [
         'reservation' => 'Reserva',
         'title' => 'Reservas',
         'create' => 'Crear Nueva Reserva',
+        'created' => 'Reserva creada correctamente',
         'delete' => 'Eliminar Reserva',
         'description' => 'Esta acción no se puede deshacer. Se eliminará permanentemente la reserva del sistema.',
         'deleted_error' => 'Error al eliminar la reserva',

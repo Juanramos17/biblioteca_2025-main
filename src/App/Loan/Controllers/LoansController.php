@@ -64,7 +64,7 @@ class LoansController extends Controller
         $action($validator->validated());
 
         return redirect()->route('loans.index')
-            ->with('success', __('ui.messages.bookshelves.created'));
+            ->with('success', __('ui.messages.loans.created'));
     }
 
     /**

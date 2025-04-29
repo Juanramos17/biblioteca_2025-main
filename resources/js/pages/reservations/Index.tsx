@@ -8,13 +8,18 @@ import { Reservation, useDeleteReservation, useReservations } from '@/hooks/rese
 import { useTranslations } from '@/hooks/use-translations';
 import { LoanLayout } from '@/layouts/loans/LoanLayout';
 import { ReservationLayout } from '@/layouts/reservations/ReservationLayout';
+import { PageProps } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { PencilIcon, PlusIcon, Repeat, TrashIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-export default function ReservationsIndex() {
+interface ReservationProps extends PageProps{
+  lang: string
+}
+
+export default function ReservationsIndex({ lang }: ReservationProps) {
     const { t } = useTranslations();
     const { url } = usePage();
 
@@ -136,6 +141,7 @@ export default function ReservationsIndex() {
 
                     <div className="space-y-4">
                         <FiltersTable
+                        lang={lang}
                             filters={
                                 [
                                     {
@@ -161,6 +167,7 @@ export default function ReservationsIndex() {
                             }
                             onFilterChange={handleFilterChange}
                             initialValues={filters}
+                            containerClassName="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
                         />
                     </div>
 

@@ -420,6 +420,8 @@ return [
             'category' => 'Book Categories',
             'created_at' => 'Creation Date',
             'actions' => 'Actions',
+            'available' => 'Available',
+            'not_available' => 'Not Available',
         ],
         'fields' => [
             'title' => 'Title',
@@ -430,6 +432,7 @@ return [
             'zone' => 'Belonging Zone',
             'floor' => 'Belonging Floor',
             'genres' => 'Genres',
+            'img_path' => 'Image path',
         ],
     ],
     'loans' => [
@@ -447,6 +450,7 @@ return [
         'on_time' => 'On time',
         'days_late' => ':days days late',
         'updated' => 'Loan updated successfully',
+        'created' => 'Loan created successfully',
         'filters' => [
             'title' => 'Book Title',
             'user' => 'Loan User',
@@ -502,6 +506,7 @@ return [
         'description' => 'This action cannot be undone. The reservation will be permanently deleted from the system.',
         'deleted_error' => 'Error deleting the reservation',
         'info' => 'Enter the new reservation information',
+        'created' => 'Reservation created successfully',
         'filters' => [
             'title' => 'Book Title',
             'user' => 'Reservation User',

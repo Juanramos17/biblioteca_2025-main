@@ -23,6 +23,8 @@ interface ReservationProps {
     perPage?: string;
 }
 
+
+
 // Field error display component
 function FieldInfo({ field }: { field: AnyFieldApi }) {
     return (
@@ -53,7 +55,6 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
             const data = {
                 ...value,
                 date: selected,
-
             };
             const options = {
                 onSuccess: () => {
@@ -77,7 +78,6 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                 },
             };
 
-
             if (initialData) {
                 router.put(`/reservations/${initialData.reservation_id}`, data, options);
             } else {
@@ -94,30 +94,29 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
     };
 
     return (
-
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div className="pr-4 pl-4">
+            <div className="px-4 sm:px-6 md:px-8">
                 <form.Field
                     name="id"
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
-                    
+
                             if (value === null || value === undefined || value.toString().trim() === '') {
                                 return t('ui.validation.required', {
                                     attribute: t('ui.books.fields.book').toLowerCase(),
                                 });
                             }
-                    
+
                             return undefined;
                         },
                     }}
                 >
                     {(field) => (
                         <>
-                            <div className="align-center m-1 flex">
+                            <div className="flex items-center mb-2">
                                 <Book size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.loans.fields.book')}</Label>
+                                <Label htmlFor={field.name} className="text-sm">{t('ui.loans.fields.book')}</Label>
                             </div>
                             <Input
                                 id={field.name}
@@ -129,6 +128,7 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                                 disabled={true}
                                 required={false}
                                 autoComplete="off"
+                                className="w-full sm:w-3/4 md:w-1/2"
                             />
                             <FieldInfo field={field} />
                         </>
@@ -136,7 +136,7 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                 </form.Field>
             </div>
 
-            <div className="pr-4 pl-4">
+            <div className="px-4 sm:px-6 md:px-8">
                 <form.Field
                     name="email"
                     validators={{
@@ -152,9 +152,9 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                 >
                     {(field) => (
                         <>
-                            <div className="align-center m-1 flex">
+                            <div className="flex items-center mb-2">
                                 <Mail size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.users.fields.email')}</Label>
+                                <Label htmlFor={field.name} className="text-sm">{t('ui.users.fields.email')}</Label>
                             </div>
                             <Input
                                 id={field.name}
@@ -167,6 +167,7 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                                 disabled={form.state.isSubmitting}
                                 required={false}
                                 autoComplete="off"
+                                className="w-full sm:w-3/4 md:w-1/2"
                             />
                             <FieldInfo field={field} />
                         </>
@@ -174,36 +175,38 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                 </form.Field>
             </div>
 
-           
-            <div className="bg-muted flex h-20 justify-between gap-4 rounded-b-lg p-5">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                        let url = '/loans';
-                        if (page) {
-                            url += `?page=${page}`;
-                            if (perPage) {
-                                url += `&per_page=${perPage}`;
-                            }
-                        }
-                        router.visit(url);
-                    }}
-                    disabled={form.state.isSubmitting}
-                >
-                    <X />
-                    {t('ui.users.buttons.cancel')}
-                </Button>
-
-                <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-                    {([canSubmit, isSubmitting]) => (
-                        <Button type="submit" disabled={!canSubmit} className="bg-blue-500 text-white">
-                            <Save />
-                            {isSubmitting ? t('ui.users.buttons.saving') : initialData ? t('ui.users.buttons.update') : t('ui.users.buttons.save')}
-                        </Button>
-                    )}
-                </form.Subscribe>
-            </div>
+             <div className="border-muted flex flex-col items-center justify-end gap-4 border-t p-4 sm:flex-row">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    let url = '/reservations';
+                                    if (page) {
+                                        url += `?page=${page}`;
+                                        if (perPage) url += `&per_page=${perPage}`;
+                                    }
+                                    router.visit(url);
+                                }}
+                                disabled={form.state.isSubmitting}
+                                className="flex w-full items-center justify-center sm:w-auto text-sm"
+                            >
+                                <X className="mr-2 h-4 w-4" />
+                                {t('ui.users.buttons.cancel')}
+                            </Button>
+            
+                            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+                                {([canSubmit, isSubmitting]) => (
+                                    <Button
+                                        type="submit"
+                                        disabled={!canSubmit}
+                                        className="flex w-full items-center justify-center bg-blue-500 text-white hover:bg-blue-600 sm:w-auto text-sm"
+                                    >
+                                        <Save className="mr-2 h-4 w-4" />
+                                        {isSubmitting ? t('ui.users.buttons.saving') : initialData ? t('ui.users.buttons.update') : t('ui.users.buttons.save')}
+                                    </Button>
+                                )}
+                            </form.Subscribe>
+                        </div>
         </form>
     );
 }

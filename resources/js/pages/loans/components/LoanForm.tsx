@@ -29,14 +29,13 @@ interface LoanProps {
     lang: string;
 }
 
-// Field error display component
 function FieldInfo({ field }: { field: AnyFieldApi }) {
     return (
         <>
             {field.state.meta.isTouched && field.state.meta.errors.length ? (
-                <p className="text-destructive mt-1 text-sm">{field.state.meta.errors.join(', ')}</p>
+                <p className="text-destructive text-xs mt-1">{field.state.meta.errors.join(', ')}</p>
             ) : null}
-            {field.state.meta.isValidating ? <p className="text-muted-foreground mt-1 text-sm">Validating...</p> : null}
+            {field.state.meta.isValidating ? <p className="text-muted-foreground text-xs mt-1">Validando...</p> : null}
         </>
     );
 }
@@ -44,36 +43,25 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
 export default function LoanForm({ initialData, page, perPage, lang }: LoanProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
-    const url = window.location.href;
-    const params = new URLSearchParams(window.location.search);
     const [date, setDate] = React.useState(initialData?.date || undefined);
 
     const form = useForm({
         defaultValues: {
-            id: initialData?.id ?? params.get('book_id') ?? '',
+            id: initialData?.id ?? new URLSearchParams(window.location.search).get('book_id') ?? '',
             email: initialData?.email ?? '',
             borrow: 'false',
             date: initialData?.date ?? '',
         },
         onSubmit: async ({ value }) => {
-            const data = {
-                ...value,
-                date: date,
-            };
+            const data = { ...value, date: date };
             const options = {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ['loans'] });
-
-                    // Construct URL with page parameters
                     let url = '/loans';
                     if (page) {
                         url += `?page=${page}`;
-                        if (perPage) {
-                            url += `&per_page=${perPage}`;
-                        }
+                        if (perPage) url += `&per_page=${perPage}`;
                     }
-
-                    // router.visit(url);
                 },
                 onError: (errors: Record<string, string>) => {
                     if (Object.keys(errors).length === 0) {
@@ -90,42 +78,38 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
         },
     });
 
-    // Form submission handler
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         e.stopPropagation();
         form.handleSubmit();
     };
 
-    const langMap = {
-        en:enUS, 
-        es:es
-    }
+    const langMap = { en: enUS, es: es };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div className="pr-4 pl-4">
+        <form onSubmit={handleSubmit} className="space-y-4 px-4 sm:px-6 md:px-8 lg:px-10" noValidate>
+            <div className="grid gap-3 pt-2">
                 <form.Field
                     name="id"
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
-                    
-                            if (value === null || value === undefined || value.toString().trim() === '') {
+                            if (!value?.toString().trim()) {
                                 return t('ui.validation.required', {
                                     attribute: t('ui.books.fields.book').toLowerCase(),
                                 });
                             }
-                    
                             return undefined;
                         },
                     }}
                 >
                     {(field) => (
                         <>
-                            <div className="align-center m-1 flex">
-                                <Book size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.loans.fields.book')}</Label>
+                            <div className="mb-1 flex items-center gap-1">
+                                <Book size={14} className="text-gray-500" />
+                                <Label htmlFor={field.name} className="text-sm">
+                                    {t('ui.loans.fields.book')}
+                                </Label>
                             </div>
                             <Input
                                 id={field.name}
@@ -134,17 +118,15 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                                 onChange={(e) => field.handleChange(e.target.value)}
                                 onBlur={field.handleBlur}
                                 placeholder={t('ui.loans.placeholders.book')}
-                                disabled={true}
-                                required={false}
+                                disabled
                                 autoComplete="off"
+                                className="w-full text-sm py-2"
                             />
                             <FieldInfo field={field} />
                         </>
                     )}
                 </form.Field>
-            </div>
 
-            <div className="pr-4 pl-4">
                 <form.Field
                     name="email"
                     validators={{
@@ -160,83 +142,85 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                 >
                     {(field) => (
                         <>
-                            <div className="align-center m-1 flex">
-                                <Mail size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name}>{t('ui.users.fields.email')}</Label>
+                            <div className="mb-1 flex items-center gap-1">
+                                <Mail size={14} className="text-gray-500" />
+                                <Label htmlFor={field.name} className="text-sm">
+                                    {t('ui.users.fields.email')}
+                                </Label>
                             </div>
                             <Input
                                 id={field.name}
                                 name={field.name}
-                                type="text"
+                                type="email"
                                 value={field.state.value}
                                 onChange={(e) => field.handleChange(e.target.value)}
                                 onBlur={field.handleBlur}
                                 placeholder={t('ui.users.placeholders.email')}
                                 disabled={form.state.isSubmitting}
-                                required={false}
                                 autoComplete="off"
+                                className="w-full text-sm py-2"
                             />
                             <FieldInfo field={field} />
                         </>
                     )}
                 </form.Field>
-            </div>
 
-            <div className="pr-4 pl-4">
-                <form.Field name="date"  validators={{
-                    onChangeAsync: async ({ value }) => {
-                    await new Promise((resolve) => setTimeout(resolve, 300));
+                <form.Field
+                    name="date"
+                    validators={{
+                        onChangeAsync: async ({ value }) => {
+                            await new Promise((resolve) => setTimeout(resolve, 300));
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const selectedDate = new Date(value);
+                            selectedDate.setHours(0, 0, 0, 0);
 
-                    const attribute = t('ui.loans.fields.date').toLowerCase();
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0); 
-
-
-                    const selectedDate = new Date(value);
-                    selectedDate.setHours(0, 0, 0, 0);
-
-                    if (selectedDate < today) {
-                        return t('ui.validation.after_or_equal', { attribute, date: t('ui.validation.today') || 'hoy' });
-                    }
-
-                    const nextYear = new Date();
-                    nextYear.setFullYear(today.getFullYear() + 1);
-
-                    if (selectedDate > nextYear) {
-                        return t('ui.validation.before_or_equal', {
-                        attribute,
-                        date: nextYear.toISOString().split('T')[0],
-                        });
-                    }
-
-                    return undefined;
-                    },
-                }}>
+                            if (selectedDate < today) {
+                                return t('ui.validation.after_or_equal', {
+                                    attribute: t('ui.loans.fields.date').toLowerCase(),
+                                    date: t('ui.validation.today'),
+                                });
+                            }
+                            const nextYear = new Date();
+                            nextYear.setFullYear(today.getFullYear() + 1);
+                            if (selectedDate > nextYear) {
+                                return t('ui.validation.before_or_equal', {
+                                    attribute: t('ui.loans.fields.date').toLowerCase(),
+                                    date: nextYear.toISOString().split('T')[0],
+                                });
+                            }
+                            return undefined;
+                        },
+                    }}
+                >
                     {(field) => (
                         <>
-                            <div className="align-center m-1 flex">
-                                <Label htmlFor={field.name}>{t('ui.loans.fields.date')}</Label>
+                            <div className="mb-1 flex items-center gap-1">
+                                <Label htmlFor={field.name} className="text-sm">
+                                    {t('ui.loans.fields.date')}
+                                </Label>
                             </div>
 
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
-                                        variant={'outline'}
-                                        className={cn('w-[240px] justify-start text-left font-normal', !date && 'text-muted-foreground')}
+                                        variant="outline"
+                                        className={cn('w-full justify-start text-left font-normal sm:w-[240px]', !date && 'text-muted-foreground')}
                                     >
-                                        <CalendarIcon />
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
                                         {date ? format(date, 'PPP') : <span>{t('ui.info.select')}</span>}
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar 
-                                    timeZone='Europe/Madrid'
-                                    disabled={[{ before: new Date()}, new Date(), isSunday]}
-                                    mode="single" 
-                                    locale={langMap[lang]}
-                                    selected={date} 
-                                    onSelect={setDate} 
-                                    initialFocus />
+                                    <Calendar
+                                        timeZone="Europe/Madrid"
+                                        disabled={[{ before: new Date() }, new Date(), isSunday]}
+                                        mode="single"
+                                        locale={langMap[lang]}
+                                        selected={date}
+                                        onSelect={setDate}
+                                        initialFocus
+                                    />
                                 </PopoverContent>
                             </Popover>
 
@@ -245,7 +229,7 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                     )}
                 </form.Field>
             </div>
-            <div className="bg-muted flex h-20 justify-between gap-4 rounded-b-lg p-5">
+            <div className="border-muted flex flex-col items-center justify-end gap-4 border-t p-4 sm:flex-row">
                 <Button
                     type="button"
                     variant="outline"
@@ -253,22 +237,25 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                         let url = '/loans';
                         if (page) {
                             url += `?page=${page}`;
-                            if (perPage) {
-                                url += `&per_page=${perPage}`;
-                            }
+                            if (perPage) url += `&per_page=${perPage}`;
                         }
                         router.visit(url);
                     }}
                     disabled={form.state.isSubmitting}
+                    className="flex w-full items-center justify-center sm:w-auto text-sm"
                 >
-                    <X />
+                    <X className="mr-2 h-4 w-4" />
                     {t('ui.users.buttons.cancel')}
                 </Button>
 
                 <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                     {([canSubmit, isSubmitting]) => (
-                        <Button type="submit" disabled={!canSubmit} className="bg-blue-500 text-white">
-                            <Save />
+                        <Button
+                            type="submit"
+                            disabled={!canSubmit}
+                            className="flex w-full items-center justify-center bg-blue-500 text-white hover:bg-blue-600 sm:w-auto text-sm"
+                        >
+                            <Save className="mr-2 h-4 w-4" />
                             {isSubmitting ? t('ui.users.buttons.saving') : initialData ? t('ui.users.buttons.update') : t('ui.users.buttons.save')}
                         </Button>
                     )}

@@ -16,25 +16,26 @@ export default function CreateFloor({lang}: LoanProps) {
 
   return (
     <LoanLayout title={t("ui.loans.create")}>
-      <div className="flex flex-col items-center w-full">
-        <div className="w-[800px] flex flex-col bg-muted/50 rounded-lg">
+  <div className="flex flex-col items-center w-full px-4">
+    <div className="w-full max-w-3xl flex flex-col bg-muted/50 rounded-lg shadow-md">
 
-          <CardHeader className="w-full flex justify-start bg-muted p-4 rounded-t-lg">
-            <div className="flex space-x-2">
-              <Handshake size={20} className="text-blue-500" />
-              <h2 className="font-bold text-xl">{t("ui.loans.create")}</h2>
-            </div>
-              <p className="text-gray-500 text-sm mb-3">{t("ui.loans.info")}</p>
-              <CardDescription>{t("ui.loans.columns.book")}: {params.get('book_title')}</CardDescription>
-              <CardDescription>{t("ui.loans.columns.author")}: {params.get('book_author')}</CardDescription>
-              <CardDescription>{t("ui.loans.columns.ISBN")}: {params.get('book_ISBN')}</CardDescription>
-          </CardHeader>
-
-
-          <LoanForm lang={lang}/>
+      <CardHeader className="w-full flex flex-col items-start bg-muted p-6 rounded-t-lg space-y-2">
+        <div className="flex items-center space-x-2">
+          <Handshake size={20} className="text-blue-500" />
+          <h2 className="font-bold text-2xl">{t("ui.loans.create")}</h2>
         </div>
-      </div>
+        <p className="text-gray-500 text-sm">{t("ui.loans.info")}</p>
+        <div className="space-y-1 text-sm text-gray-600">
+          <CardDescription>{t("ui.loans.columns.book")}: {params.get('book_title')}</CardDescription>
+          <CardDescription>{t("ui.loans.columns.author")}: {params.get('book_author')}</CardDescription>
+          <CardDescription>{t("ui.loans.columns.ISBN")}: {params.get('book_ISBN')}</CardDescription>
+        </div>
+      </CardHeader>
 
-    </LoanLayout>
+      <LoanForm lang={lang} />
+      
+    </div>
+  </div>
+</LoanLayout>
   );
 }

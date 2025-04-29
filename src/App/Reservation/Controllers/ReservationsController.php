@@ -14,6 +14,7 @@ use Domain\Reservations\Actions\ReservationStoreAction;
 use Domain\Reservations\Actions\ReservationUpdateAction;
 use Domain\Reservations\Model\Reservation;
 use Domain\Users\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationsController extends Controller
 {
@@ -22,9 +23,10 @@ class ReservationsController extends Controller
      */
     public function index()
     {
+        $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
         $reservations = Reservation::all()->toArray();
 
-        return Inertia::render('reservations/Index', ["reservations" => $reservations]);
+        return Inertia::render('reservations/Index', ["reservations" => $reservations, 'lang' => $lang]);
     }
 
     /**
@@ -44,7 +46,7 @@ class ReservationsController extends Controller
     public function store(Request $request, ReservationStoreAction $action)
     {
         $validator = Validator::make($request->all(), [
-            'id' => ['required', 'integer', 'exists:users,id'],
+            'id' => ['required', 'string', 'exists:books,id'],
             'email' => ['required', 'email', 'max:255', 'exists:users,email'],
         ]);
 
@@ -56,7 +58,7 @@ class ReservationsController extends Controller
         $action($validator->validated());
 
         return redirect()->route('reservations.index')
-            ->with('success', __('ui.messages.bookshelves.created'));
+            ->with('success', __('ui.messages.reservations.created'));
     }
 
     /**
