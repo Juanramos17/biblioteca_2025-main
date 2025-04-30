@@ -4,6 +4,8 @@ namespace App\Settings\Controllers;
 
 use App\Core\Controllers\Controller;
 use App\Settings\Requests\ProfileUpdateRequest;
+use Carbon\Carbon;
+use Domain\Loans\Model\Loan;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,9 +20,30 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $loans = Loan::where('user_id', Auth::id())->with('book')->get();
+
+        $loansArray = $loans->map(function ($loan) {
+            $dueDate = Carbon::parse($loan->due_date)->startOfDay();
+            $updatedAt = Carbon::parse($loan->updated_at)->startOfDay();
+            $today = Carbon::today();
+
+            if ($loan->isLoaned) {
+                $status = $dueDate->lt($today) ? true : false;
+            } else {
+                $status = $updatedAt->gt($dueDate) ? true : false;
+            }
+
+            $loan = $loan->toArray();
+            $loan['status'] = $status;
+
+            return $loan;
+        });
+
+
         return Inertia::render('settings/profile', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
+            'loans' => $loansArray,
         ]);
     }
 

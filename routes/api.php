@@ -2,6 +2,7 @@
 
 use App\Bookshelf\Controllers\Api\BookshelfApiController;
 use App\Book\Controllers\Api\BookApiController;
+use App\Timeline\Controllers\Api\TimelineApiController;
 use App\Users\Controllers\Api\UserApiController;
 use App\Floor\Controllers\Api\FloorApiController;
 use App\Loan\Controllers\Api\LoanApiController;
@@ -64,3 +65,4 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::put('/reservations/{reservation}', [ReservationApiController::class, 'update']);
     Route::delete('/reservations/{reservation}', [ReservationApiController::class, 'destroy']);
 });
+

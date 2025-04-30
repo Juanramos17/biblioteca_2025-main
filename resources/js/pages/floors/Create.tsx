@@ -10,6 +10,7 @@ interface FloorProps extends PageProps{
   floors?: number[];
 }
 
+
 export default function CreateFloor(floors:FloorProps) {
   const { t } = useTranslations();
 
