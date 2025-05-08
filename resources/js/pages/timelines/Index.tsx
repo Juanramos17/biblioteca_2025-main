@@ -57,10 +57,10 @@ export default function TimelineIndex({ loans }: TimelineProps) {
 
     const getLoanStatus = (item: any) => {
         const overdue = new Date(item.updated_at).getTime() > new Date(item.due_date).getTime();
-        if (item.isLoaned && overdue) return { status: t('ui.loans.status.overdue'), color: '#f87171', icon: <Hourglass /> };
-        if (item.isLoaned && !overdue) return { status: t('ui.loans.status.ontime'), color: '#34d399', icon: <CheckCircle /> };
-        if (!item.isLoaned && overdue) return { status: t('ui.loans.status.finished_late'), color: '#facc15', icon: <Clock /> };
-        return { status: t('ui.loans.status.finished_ontime'), color: '#60a5fa', icon: <CheckCircle /> };
+        if (item.isLoaned && overdue) return { status: t('ui.loans.status.overdue'), color: '#f87171' };
+        if (item.isLoaned && !overdue) return { status: t('ui.loans.status.ontime'), color: '#34d399' };
+        if (!item.isLoaned && overdue) return { status: t('ui.loans.status.finished_late'), color: '#facc15' };
+        return { status: t('ui.loans.status.finished_ontime'), color: '#60a5fa' };
     };
 
     const renderTimeline = (filteredLoans: any[], tab: string) => {
@@ -82,7 +82,7 @@ export default function TimelineIndex({ loans }: TimelineProps) {
                     return (
                         <VerticalTimelineElement
                             key={item.id}
-                            date={formatDate(item.created_at)}
+                            date={<span className="text-sm text-gray-500">{formatDate(item.created_at)}</span>}
                             iconStyle={{ background: color, color: '#fff' }}
                             icon={icon}
                             contentStyle={{
@@ -96,23 +96,27 @@ export default function TimelineIndex({ loans }: TimelineProps) {
                         >
                             <h3 className="mb-1 text-xl font-semibold text-gray-800">{item.book.title}</h3>
                             <p className="mb-4 text-sm text-gray-500">
-                                {item.type === 'loan' ? t('ui.loans.timeline.loan_label') : t('ui.loans.timeline.reservation_label')}
+                                {item.type === 'loan' ? t('ui.loans.loan') : t('ui.reservations.reservation')}
                             </p>
 
                             {item.image && <img src={item.image} alt={item.book.title} className="my-3 w-full max-w-xs rounded-lg shadow-md" />}
 
                             <div className="space-y-1 text-sm text-gray-700">
                                 <p>
-                                    <strong>{t('ui.book.author')}:</strong> {item.book.author}
+                                    <strong>{t('ui.books.fields.author')}:</strong> {item.book.author}
                                 </p>
                                 <p>
-                                    <strong>{t('ui.book.publisher')}:</strong> {item.book.publisher}
+                                    <strong>{t('ui.books.fields.publisher')}:</strong> {item.book.publisher}
                                 </p>
                                 <p>
-                                    <strong>{t('ui.book.isbn')}:</strong> {item.book.ISBN}
+                                    <strong>{t('ui.books.fields.ISBN')}:</strong> {item.book.ISBN}
                                 </p>
                                 <p>
-                                    <strong>{t('ui.book.genre')}:</strong> {item.book.genre}
+                                    <strong>{t('ui.books.fields.genres')}:</strong>{' '}
+                                    {item.book.genre
+                                        .split(', ')
+                                        .map((genre) => t(`ui.genres.${genre.toLowerCase()}`))
+                                        .join(', ')}
                                 </p>
                                 {item.type === 'reservation' ? (
                                     <p>
@@ -136,9 +140,9 @@ export default function TimelineIndex({ loans }: TimelineProps) {
     const reservationItems = loans.filter((item) => item.type === 'reservation');
 
     return (
-        <TimelineLayout title={t('ui.items.timelines')}>
+        <TimelineLayout title={t('ui.navigation.items.timelines')}>
             <div className="flex w-full flex-col items-center px-4 py-6">
-                <h2 className="mb-8 text-2xl font-bold text-gray-800">{t('ui.loans.timeline.information_title')}</h2>
+                <h2 className="mb-8 text-2xl font-bold text-primary">{t('ui.loans.timeline.title')}</h2>
 
                 <Tabs value={selectedTab} onValueChange={setSelectedTab} className="bg-muted/50 w-full rounded-xl p-4 shadow-md">
                     <TabsList className="mb-4 grid w-full grid-cols-3 gap-2">

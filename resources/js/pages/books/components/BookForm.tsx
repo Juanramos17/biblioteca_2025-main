@@ -217,7 +217,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                             <MultiSelect
                                 options={genres.map((genre) => ({
                                     value: genre.name,
-                                    label: t(`ui.genres.${genre.name.toLowerCase()}`), // Aquí estamos traduciendo el género
+                                    label: t(`ui.genres.${genre.name.toLowerCase()}`), 
                                 }))}
                                 value={field.state.value}
                                 onValueChange={(selected: string[]) => {

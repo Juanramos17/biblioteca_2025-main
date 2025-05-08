@@ -6,6 +6,7 @@ use Domain\Users\Models\UserSetting;
 
 use Database\Factories\UserFactory;
 use Domain\Loans\Model\Loan;
+use Domain\Reservations\Model\Reservation;
 use Domain\Users\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -79,4 +80,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Loan::class);
     }
+
+    public function reservations()
+{
+    return $this->hasMany(Reservation::class)->withTrashed(); // Incluye los soft deleted
+}
 }

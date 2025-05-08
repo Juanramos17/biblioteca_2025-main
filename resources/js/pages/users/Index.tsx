@@ -53,7 +53,7 @@ export default function UsersIndex() {
 
     const handlePerPageChange = (newPerPage: number) => {
         setPerPage(newPerPage);
-        setCurrentPage(1); // Reset to first page when changing items per page
+        setCurrentPage(1); 
     };
 
     function handleTimeline(user_id: string) {

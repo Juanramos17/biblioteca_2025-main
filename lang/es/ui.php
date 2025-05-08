@@ -1,5 +1,6 @@
 <?php
 
+use function React\Promise\all;
 
 return [
     'messages' => [
@@ -46,6 +47,10 @@ return [
             'loans' => 'Préstamos',
             'repository' => 'Repositorio',
             'documentation' => 'Documentación',
+            'timelines' => 'Cronología',
+            'graphs' => 'Gráficos',
+            'reservations' => 'Reservas',
+            'stadistics' => 'Estadísticas',
         ],
     ],
     'roles' => [
@@ -510,7 +515,20 @@ return [
         'finished_on_time' => 'Préstamo finalizado a tiempo',
         'due_date' => 'Fecha de vencimiento: :date', 
         'return_date' => 'Fecha de devolución: :date', 
+        'title' => 'Historial de acciones en la biblioteca',
+        "reserved_on"=> "Reservado el",
     ],
+
+    "status" => [
+        "overdue"=> "Con retraso",
+        "ontime"=> "En tiempo",
+        "finished_late"=> "Finalizado con retraso",
+        "finished_ontime"=> "Finalizado a tiempo",
+    ],
+   
+    "date"=> [
+      "invalid"=> "Fecha no válida",
+    ]
 ],
 
 
@@ -556,6 +574,18 @@ return [
             'book' => 'Id del libro',
             'date' => 'Fecha de devolución',
         ],
+    ],
+    'tabs' => [
+        "all" => 'Todo',
+        'loans' => 'Préstamos',
+        'reservations' => 'Reservas',
+    ],
+    "graph" => [
+        'title' => 'Gráficos',
+        'stadistics_title' => 'Estadísticas',
+        'top_zones' => 'Top 10 zonas más activas',
+        'top_books' => 'Top 10 libros más prestados',
+        'top_users' => 'Top 10 usuarios más activos',
     ],
 
     'users' => [

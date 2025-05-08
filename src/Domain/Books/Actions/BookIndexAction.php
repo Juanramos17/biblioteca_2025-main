@@ -24,7 +24,7 @@ class BookIndexAction
         $zone_name = $search[7];
         $status = $search[8];
 
-        $bookshelfId = null;
+        $bookshelfId = "null";
         if ($bookshelf_enumeration !== "null") {
             $bookshelf = Bookshelf::where('enumeration', $bookshelf_enumeration)->first();
             if ($bookshelf) {
@@ -32,7 +32,7 @@ class BookIndexAction
             }
         }
         
-        $floorId = null;
+        $floorId = "null";
         if ($floor_name !== "null") {
             $floor = Floor::where('name', $floor_name)->first();
             if ($floor) {
@@ -40,7 +40,7 @@ class BookIndexAction
             }
         }
         
-        $zoneId = null;
+        $zoneId = "null";
         if ($zone_name !== "null") {
             $zone = Zone::where('name', $zone_name)->first();
             if ($zone) {
@@ -54,8 +54,8 @@ class BookIndexAction
             ->when($title !== "null", function ($query) use ($title) {
                 $query->where('title', 'like', '%' . $title . '%');
             })
-            ->when($bookshelfId !== null, function ($query) use ($bookshelfId) {
-                $query->where('bookshelf_id', '=', $bookshelfId);
+            ->when($bookshelf_enumeration !== "null", function ($query) use ($bookshelfId) {
+                $query->where('bookshelf_id', 'like', $bookshelfId);
             })
             ->when($author !== "null", function ($query) use ($author) {
                 $query->where('author', 'like', '%' . $author . '%');
@@ -69,14 +69,14 @@ class BookIndexAction
             ->when($category !== "null", function ($query) use ($category) {
                 $query->where('genre', 'like', '%' . $category . '%');
             })
-            ->when($floorId !== null, function ($query) use ($floorId) {
+            ->when($floor_name !== "null", function ($query) use ($floorId) {
                 $query->whereHas('bookshelf.zone.floor', function ($query) use ($floorId) {
-                    $query->where('id', '=', $floorId);
+                    $query->where('id', 'like', $floorId);
                 });
             })
-            ->when($zoneId !== null, function ($query) use ($zoneId) {
+            ->when($zone_name !== "null", function ($query) use ($zoneId) {
                 $query->whereHas('bookshelf.zone', function ($query) use ($zoneId) {
-                    $query->where('id', '=', $zoneId);
+                    $query->where('id', 'like', $zoneId);
                 });
             })
             ->when($status == 'false', function ($query) use ($books_availables) {
