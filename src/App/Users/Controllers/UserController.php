@@ -3,7 +3,10 @@
 namespace App\Users\Controllers;
 
 use App\Core\Controllers\Controller;
+use Carbon\Carbon;
+use Domain\Loans\Model\Loan;
 use Domain\Permissions\Models\Permission;
+use Domain\Reservations\Model\Reservation;
 use Domain\Users\Actions\UserDestroyAction;
 use Domain\Users\Actions\UserIndexAction;
 use Domain\Users\Actions\UserStoreAction;
@@ -15,6 +18,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Domain\Roles\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -23,6 +27,43 @@ class UserController extends Controller
         return Inertia::render('users/Index');
     }
 
+    public function show(Request $request, User $user){
+        $loans = Loan::where('user_id', $user->id)->with('book')->get();
+
+        $reservations = Reservation::where('user_id', Auth::id())->with('book')->withTrashed()->get();
+
+        $combined = $loans->merge($reservations)
+            ->sortByDesc('created_at')
+            ->values();
+            
+
+        $loansArray = $combined->map(function ($loanOrReservation) {
+            $dueDate = Carbon::parse($loanOrReservation->due_date)->startOfDay();
+            $today = Carbon::today();
+
+            if ($loanOrReservation instanceof Loan) {
+                $status = $dueDate->lt($today) ? true : false;
+                $type = 'loan';
+            } else {
+                $status = false;
+                $type = 'reservation';
+            }
+
+            $book = $loanOrReservation->book;
+            $image = $book->getFirstMediaUrl('images');
+
+            $loanArray = $loanOrReservation->toArray();
+            $loanArray['status'] = $status;
+            $loanArray['image'] = $image;
+            $loanArray['type'] = $type;
+
+            return $loanArray;
+        });
+
+        return Inertia::render('timelines/Index', [
+            'loans' => $loansArray,
+        ]);
+    }
     public function create()
 {
     $roles = Role::pluck('name')->toArray();

@@ -1,12 +1,12 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslations } from '@/hooks/use-translations';
-import { PageProps } from '@/types';
-import { CheckCircle, Clock, BookOpen, Hourglass } from 'lucide-react';
-import { format } from 'date-fns';
 import { TimelineLayout } from '@/layouts/timeline/TimelineLayout';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@radix-ui/react-tabs';
-import './TimelineDemo.css';
-import { Timeline } from 'primereact/timeline';
-
+import { PageProps } from '@/types';
+import { format } from 'date-fns';
+import { BookOpen, CheckCircle, Clock, Hourglass, Info } from 'lucide-react';
+import { useState } from 'react';
+import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
+import 'react-vertical-timeline-component/style.min.css';
 
 interface TimelineProps extends PageProps {
     loans: {
@@ -28,145 +28,134 @@ interface TimelineProps extends PageProps {
         };
         status: boolean;
         image: string;
-        type: string; // Agrega tipo (loan o reservation)
-    }[]; 
+        type: string;
+    }[];
 }
 
 export default function TimelineIndex({ loans }: TimelineProps) {
     const { t } = useTranslations();
+    const [selectedTab, setSelectedTab] = useState('all');
 
-    const loanEvents = loans.filter((loan) => loan.type === 'loan');
-    const reservationEvents = loans.filter((loan) => loan.type === 'reservation');
+    const getIconAndColor = (item: any) => {
+        if (item.type === 'loan') {
+            if (item.isLoaned && item.status) return { icon: <Hourglass />, color: '#f87171' };
+            if (item.isLoaned && !item.status) return { icon: <CheckCircle />, color: '#34d399' };
+            if (!item.isLoaned && item.status) return { icon: <Clock />, color: '#facc15' };
+            return { icon: <CheckCircle />, color: '#60a5fa' };
+        }
+        return { icon: <BookOpen />, color: '#a78bfa' };
+    };
 
-    const getStatus = (loan: any) => {
-        const overdueStatus = loan.status;
-        const isLoaned = loan.isLoaned;
-        let statusMessage = '';
-        let markerColor = '';
-        let icon = null;
+    const isValidDate = (date: string) => {
+        const parsedDate = new Date(date);
+        return !isNaN(parsedDate.getTime());
+    };
 
-        if (loan.type === 'loan') {
-            if (isLoaned) {
-                if (overdueStatus) {
-                    statusMessage = t('ui.loans.days_late', { days: loan.updated_at });
-                    markerColor = 'bg-red-500';
-                    icon = <Hourglass className="text-white" />;
-                } else {
-                    statusMessage = t('ui.loans.on_time');
-                    markerColor = 'bg-green-500';
-                    icon = <CheckCircle className="text-white" />;
-                }
-            } else {
-                if (overdueStatus) {
-                    statusMessage = t('ui.loans.finished_late');
-                    markerColor = 'bg-yellow-500';
-                    icon = <Clock className="text-white" />;
-                } else {
-                    statusMessage = t('ui.loans.finished_on_time');
-                    markerColor = 'bg-blue-500';
-                    icon = <CheckCircle className="text-white" />;
-                }
-            }
-        } else if (loan.type === 'reservation') {
-            statusMessage = t('ui.reservations.pending');
-            markerColor = 'bg-purple-500';
-            icon = <Clock className="text-white" />;
+    const formatDate = (date: string) => {
+        return isValidDate(date) ? format(new Date(date), 'dd MMM yyyy') : t('ui.date.invalid');
+    };
+
+    const getLoanStatus = (item: any) => {
+        const overdue = new Date(item.updated_at).getTime() > new Date(item.due_date).getTime();
+        if (item.isLoaned && overdue) return { status: t('ui.loans.status.overdue'), color: '#f87171', icon: <Hourglass /> };
+        if (item.isLoaned && !overdue) return { status: t('ui.loans.status.ontime'), color: '#34d399', icon: <CheckCircle /> };
+        if (!item.isLoaned && overdue) return { status: t('ui.loans.status.finished_late'), color: '#facc15', icon: <Clock /> };
+        return { status: t('ui.loans.status.finished_ontime'), color: '#60a5fa', icon: <CheckCircle /> };
+    };
+
+    const renderTimeline = (filteredLoans: any[], tab: string) => {
+        if (filteredLoans.length === 0) {
+            return (
+                <div className="flex flex-col items-center py-10 text-gray-500">
+                    <Info className="mb-2 h-12 w-12" />
+                    <p>{t('ui.tabs.empty')}</p>
+                </div>
+            );
         }
 
-        return { statusMessage, markerColor, icon };
-    };
-
-    const customizedContent = (item: any) => {
-        const { statusMessage, markerColor, icon } = getStatus(item);
-
         return (
-            <div className="relative w-full max-w-xs sm:max-w-sm bg-white border border-gray-200 shadow-lg rounded-lg p-4 mx-auto transition hover:scale-[1.015] duration-200">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-100 p-1 rounded-full shadow-sm">
-                    <BookOpen className="h-4 w-4 text-indigo-600" />
-                </div>
-                <h4 className="font-semibold text-base text-indigo-800 text-center">{item.book.title}</h4>
-                <p className="text-gray-700 text-xs mt-1 text-center">{statusMessage}</p>
-                
-                {item.image && (
-                    <img
-                        src={item.image}
-                        alt={item.book.title}
-                        className="w-full h-auto max-w-[200px] mx-auto my-2 rounded-lg object-cover shadow-md"
-                    />
-                )}
+            <VerticalTimeline>
+                {filteredLoans.map((item) => {
+                    const { icon, color } = getIconAndColor(item);
+                    const { status, icon: statusIcon } = getLoanStatus(item);
 
-            <div className="mt-2 text-xs text-gray-500 space-y-1 text-center">
-                {item.type === 'reservation' ? (
-                    <p>{t('ui.reservations.timeline.reserved_on', { date: item.loan_date })}</p>
-                ) : (
-                    <>
-                        <p>{t('ui.loans.timeline.loaned_on', { date: format(new Date(item.created_at), 'dd MMMM yyyy') })}</p>
-                        <p>
-                            {item.isLoaned 
-                                ? t('ui.loans.timeline.return_date', { date: format(new Date(item.updated_at), 'dd MMMM yyyy') }) 
-                                : t('ui.loans.timeline.due_date', { date: format(new Date(item.due_date), 'dd MMMM yyyy') })
-                            }
-                        </p>
-                    </>
-                )}
-            </div>
-            </div>
+                    return (
+                        <VerticalTimelineElement
+                            key={item.id}
+                            date={formatDate(item.created_at)}
+                            iconStyle={{ background: color, color: '#fff' }}
+                            icon={icon}
+                            contentStyle={{
+                                background: '#ffffff',
+                                color: '#1f2937',
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                                borderRadius: '1rem',
+                                padding: '1.5rem',
+                            }}
+                            contentArrowStyle={{ borderRight: `7px solid ${color}` }}
+                        >
+                            <h3 className="mb-1 text-xl font-semibold text-gray-800">{item.book.title}</h3>
+                            <p className="mb-4 text-sm text-gray-500">
+                                {item.type === 'loan' ? t('ui.loans.timeline.loan_label') : t('ui.loans.timeline.reservation_label')}
+                            </p>
+
+                            {item.image && <img src={item.image} alt={item.book.title} className="my-3 w-full max-w-xs rounded-lg shadow-md" />}
+
+                            <div className="space-y-1 text-sm text-gray-700">
+                                <p>
+                                    <strong>{t('ui.book.author')}:</strong> {item.book.author}
+                                </p>
+                                <p>
+                                    <strong>{t('ui.book.publisher')}:</strong> {item.book.publisher}
+                                </p>
+                                <p>
+                                    <strong>{t('ui.book.isbn')}:</strong> {item.book.ISBN}
+                                </p>
+                                <p>
+                                    <strong>{t('ui.book.genre')}:</strong> {item.book.genre}
+                                </p>
+                                {item.type === 'reservation' ? (
+                                    <p>
+                                        <strong>{t('ui.loans.timeline.reserved_on')}:</strong> {formatDate(item.created_at)}
+                                    </p>
+                                ) : (
+                                    <p>
+                                        <strong>{status}:</strong> {statusIcon} {formatDate(item.updated_at)}
+                                    </p>
+                                )}
+                            </div>
+                        </VerticalTimelineElement>
+                    );
+                })}
+            </VerticalTimeline>
         );
     };
 
-    const customizedMarker = (item: any) => {
-        const { markerColor, icon } = getStatus(item);
-
-        return (
-            <div className={`w-8 h-8 rounded-full ${markerColor} flex items-center justify-center shadow-md z-10`}>
-                {icon}
-            </div>
-        );
-    };
+    const allLoans = loans;
+    const loanItems = loans.filter((item) => item.type === 'loan');
+    const reservationItems = loans.filter((item) => item.type === 'reservation');
 
     return (
         <TimelineLayout title={t('ui.items.timelines')}>
             <div className="flex w-full flex-col items-center px-4 py-6">
-                <h2 className="text-xl font-semibold mb-6 text-gray-800">
-                    {t('ui.loans.timeline.information_title')}
-                </h2>
+                <h2 className="mb-8 text-2xl font-bold text-gray-800">{t('ui.loans.timeline.information_title')}</h2>
 
-                <Tabs defaultValue="all" className="w-full max-w-5xl bg-muted/50 rounded-xl shadow-md p-4">
-                    <TabsList className="p-tabs">
-                        <TabsTrigger className="p-tabs-trigger" value="all">Todos</TabsTrigger>
-                        <TabsTrigger className="p-tabs-trigger" value="loans">Préstamos</TabsTrigger>
-                        <TabsTrigger className="p-tabs-trigger" value="reservations">Reservas</TabsTrigger>
+                <Tabs value={selectedTab} onValueChange={setSelectedTab} className="bg-muted/50 w-full rounded-xl p-4 shadow-md">
+                    <TabsList className="mb-4 grid w-full grid-cols-3 gap-2">
+                        <TabsTrigger className="w-full" value="all">
+                            {t('ui.tabs.all')}
+                        </TabsTrigger>
+                        <TabsTrigger className="w-full" value="loans">
+                            {t('ui.tabs.loans')}
+                        </TabsTrigger>
+                        <TabsTrigger className="w-full" value="reservations">
+                            {t('ui.tabs.reservations')}
+                        </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="all">
-                        <Timeline
-                            value={[...loanEvents, ...reservationEvents]}
-                            align="alternate"
-                            className="customized-timeline"
-                            marker={customizedMarker}
-                            content={customizedContent}
-                        />
-                    </TabsContent>
-
-                    <TabsContent value="loans">
-                        <Timeline
-                            value={loanEvents}
-                            align="alternate"
-                            className="customized-timeline"
-                            marker={customizedMarker}
-                            content={customizedContent}
-                        />
-                    </TabsContent>
-
-                    <TabsContent value="reservations">
-                        <Timeline
-                            value={reservationEvents}
-                            align="alternate"
-                            className="customized-timeline"
-                            marker={customizedMarker}
-                            content={customizedContent}
-                        />
-                    </TabsContent>
+                    <TabsContent value="all">{renderTimeline(allLoans, 'all')}</TabsContent>
+                    <TabsContent value="loans">{renderTimeline(loanItems, 'loans')}</TabsContent>
+                    <TabsContent value="reservations">{renderTimeline(reservationItems, 'reservations')}</TabsContent>
                 </Tabs>
             </div>
         </TimelineLayout>

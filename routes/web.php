@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('loans', \App\Loan\Controllers\LoansController::class);
     Route::resource('reservations', \App\Reservation\Controllers\ReservationsController::class);
     Route::resource('timelines', \App\Timeline\TimelineController::class);
+    Route::resource('graphs', \App\Graph\GraphController::class);
 });
 
 require __DIR__.'/settings.php';

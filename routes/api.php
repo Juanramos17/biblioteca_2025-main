@@ -7,6 +7,7 @@ use App\Users\Controllers\Api\UserApiController;
 use App\Floor\Controllers\Api\FloorApiController;
 use App\Loan\Controllers\Api\LoanApiController;
 use App\Reservation\Controllers\Api\ReservationApiController;
+use App\Timeline\TimelineController;
 use App\Zone\Controllers\Api\ZoneApiController;
 use Illuminate\Support\Facades\Route;
 
@@ -64,5 +65,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/reservations', [ReservationApiController::class, 'store']);
     Route::put('/reservations/{reservation}', [ReservationApiController::class, 'update']);
     Route::delete('/reservations/{reservation}', [ReservationApiController::class, 'destroy']);
+});
+
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/timelines', [TimelineApiController::class, 'index']);
 });
 

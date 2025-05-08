@@ -4,16 +4,8 @@ namespace App\Loan\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Core\Controllers\Controller;
-use Domain\Books\Model\Book;
-use Domain\Bookshelves\Actions\BookshelfStoreAction;
-use Domain\Bookshelves\Actions\BookshelfUpdateAction;
-use Domain\Bookshelves\Model\Bookshelf;
-use Domain\Floors\Model\Floor;
-use Domain\Zones\Model\Zone;
-use Domain\Genres\Model\Genre;
 use Domain\Loans\Actions\LoanStoreAction;
 use Domain\Loans\Actions\LoanUpdateAction;
 use Domain\Loans\Model\Loan;
