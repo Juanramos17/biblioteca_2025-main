@@ -15,6 +15,8 @@ class TimelineController extends Controller
 {
     public function index(): Response
     {
+        $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
+
         $loans = Loan::where('user_id', Auth::id())->with('book')->get();
 
         $reservations = Reservation::where('user_id', Auth::id())->with('book')->withTrashed()->get();
@@ -49,6 +51,8 @@ class TimelineController extends Controller
 
         return Inertia::render('timelines/Index', [
             'loans' => $loansArray,
+            'name' => Auth::user()->name,
+            'lang' => $lang,
         ]);
     }
 }

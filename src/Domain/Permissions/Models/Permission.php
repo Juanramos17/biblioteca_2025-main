@@ -21,4 +21,5 @@ class Permission extends SpatiePermission
     {
         return $this->hasMany(Permission::class, 'parent_id');
     }
+
 }

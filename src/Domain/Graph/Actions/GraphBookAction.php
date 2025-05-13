@@ -12,10 +12,16 @@ class GraphBookAction
             ->groupBy('ISBN')
             ->map(function ($books) {
                 $total = $books->sum('loans_count');
+
+                if ($total === 0) {
+                    return null;
+                }
+
                 $book = $books->first();
                 $book->loans_count = $total;
                 return $book;
             })
+            ->filter() 
             ->sortByDesc('loans_count')
             ->take(10)
             ->values()
@@ -31,6 +37,6 @@ class GraphBookAction
             })
             ->toArray();
 
-            return $topBooks;
+        return $topBooks;
     }
 }

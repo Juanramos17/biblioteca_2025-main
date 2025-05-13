@@ -40,8 +40,6 @@ export default function LoansIndex({lang}: LoanProps) {
         filters.isLoaned ? filters.isLoaned : 'null',
     ];
 
-    console.log(combinedSearch);
-
     const {
         data: loans,
         isLoading,

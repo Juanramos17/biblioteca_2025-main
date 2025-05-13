@@ -4,9 +4,10 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { useTranslations } from '@/hooks/use-translations';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, Users, Building2, MapPin, Library, Book, Handshake, Calendar, Clock, ChartNoAxesCombined } from 'lucide-react';
 import AppLogo from './app-logo';
+
 
 const mainNavItems = (t: (key: string) => string): NavItem[] => [
     {

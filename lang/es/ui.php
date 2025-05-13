@@ -583,9 +583,9 @@ return [
     "graph" => [
         'title' => 'Gráficos',
         'stadistics_title' => 'Estadísticas',
-        'top_zones' => 'Top 10 zonas más activas',
-        'top_books' => 'Top 10 libros más prestados',
-        'top_users' => 'Top 10 usuarios más activos',
+        'top_zones' => 'Top zonas más activas',
+        'top_books' => 'Top libros más prestados',
+        'top_users' => 'Top usuarios más activos',
     ],
 
     'users' => [

@@ -13,9 +13,18 @@ import { Clock, PencilIcon, PlusIcon, TrashIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+interface PageProps {
+    auth: {
+        user: any,
+        permissions: string[],
+    }
+}
+
 export default function UsersIndex() {
     const { t } = useTranslations();
     const { url } = usePage();
+    const page = usePage<{ props: PageProps }>();
+    const auth = page.props.auth;
 
     // Obtener los parámetros de la URL actual
     const urlParams = new URLSearchParams(url.split('?')[1] || '');
@@ -32,8 +41,6 @@ export default function UsersIndex() {
         filters.name ? `${filters.name}` : 'null',
         filters.email ? `${filters.email}` : 'null',
     ];
-
-    console.log(combinedSearch);
 
     const {
         data: users,
@@ -105,37 +112,51 @@ export default function UsersIndex() {
                     header: t('ui.users.columns.actions') || 'Actions',
                     renderActions: (user) => (
                         <>
-                          
+                          {auth.permissions.includes('settings.access') && auth.permissions.includes("report.view") ?(
                             <Link href={`/users/${user.id}?page=${currentPage}&perPage=${perPage}`}>
-                                <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
+                                <Button variant="outline" size="icon" title={t('ui.navigation.items.timelines') || 'Timeline'}>
                                     <Clock className="h-4 w-4" />
                                 </Button>
                             </Link>
+                            ):(
+                                <Button disabled={true} variant="outline" size="icon" title={t('ui.navigation.items.timelines') || 'Timeline'}>
+                                    <Clock className="h-4 w-4" />
+                                </Button>
+                            )}
 
                             <Link href={`/users/${user.id}/edit?page=${currentPage}&perPage=${perPage}`}>
                                 <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
                                     <PencilIcon className="h-4 w-4" />
                                 </Button>
                             </Link>
+                      
+                     
 
-                            <DeleteDialog
-                                id={user.id}
-                                onDelete={handleDeleteUser}
-                                title={t('ui.users.delete.title') || 'Delete user'}
-                                description={
-                                    t('ui.users.delete.description') || 'Are you sure you want to delete this user? This action cannot be undone.'
-                                }
-                                trigger={
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="text-destructive hover:text-destructive"
-                                        title={t('ui.users.buttons.delete') || 'Delete user'}
-                                    >
-                                        <TrashIcon className="h-4 w-4" />
-                                    </Button>
-                                }
-                            />
+                            {auth.permissions.includes('users.delete') ? (
+                               <DeleteDialog
+                               id={user.id}
+                               onDelete={handleDeleteUser}
+                               title={t('ui.users.delete.title') || 'Delete user'}
+                               description={
+                                   t('ui.users.delete.description') || 'Are you sure you want to delete this user? This action cannot be undone.'
+                               }
+                               trigger={
+                                   <Button
+                                       variant="outline"
+                                       size="icon"
+                                       className="text-destructive hover:text-destructive"
+                                       title={t('ui.users.buttons.delete') || 'Delete user'}
+                                   >
+                                       <TrashIcon className="h-4 w-4" />
+                                   </Button>
+                               }
+                           />
+                            ) : (
+                                <Button disabled={true} variant="outline" size="icon" title={t('ui.users.buttons.delete') || 'Delete user'}>
+                                    <TrashIcon className="h-4 w-4" />
+                                </Button>
+                            )}
+                           
                         </>
                     ),
                 }),
@@ -149,12 +170,19 @@ export default function UsersIndex() {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h1 className="text-3xl font-bold">{t('ui.users.title')}</h1>
-                        <Link href="/users/create">
-                            <Button>
+                        {auth.permissions.includes('users.create') ? (
+                            <Link href="/users/create">
+                                <Button>
+                                    <PlusIcon className="mr-2 h-4 w-4" />
+                                    {t('ui.users.buttons.new')}
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Button disabled={true}>
                                 <PlusIcon className="mr-2 h-4 w-4" />
                                 {t('ui.users.buttons.new')}
                             </Button>
-                        </Link>
+                        )}
                     </div>
                     <div></div>
 

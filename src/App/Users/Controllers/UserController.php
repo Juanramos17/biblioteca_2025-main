@@ -28,6 +28,10 @@ class UserController extends Controller
     }
 
     public function show(Request $request, User $user){
+        $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
+
+        $name = User::where('id', $user->id)->pluck('name')->first();
+
         $loans = Loan::where('user_id', $user->id)->with('book')->get();
 
         $reservations = Reservation::where('user_id', Auth::id())->with('book')->withTrashed()->get();
@@ -62,10 +66,13 @@ class UserController extends Controller
 
         return Inertia::render('timelines/Index', [
             'loans' => $loansArray,
+            'name' => $name,
+            'lang' => $lang,
         ]);
     }
-    public function create()
+    public function create(Request $request): Response
 {
+
     $roles = Role::pluck('name')->toArray();
 
     $permissions = Permission::pluck('name')->toArray();
@@ -146,7 +153,6 @@ class UserController extends Controller
 
         $redirectUrl = route('users.index');
         
-        // Añadir parámetros de página a la redirección si existen
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');
             if ($request->has('perPage')) {

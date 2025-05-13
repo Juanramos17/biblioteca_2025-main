@@ -6,6 +6,7 @@ use Domain\Users\Models\UserSetting;
 
 use Database\Factories\UserFactory;
 use Domain\Loans\Model\Loan;
+use Domain\Permissions\Models\Permission;
 use Domain\Reservations\Model\Reservation;
 use Domain\Users\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
