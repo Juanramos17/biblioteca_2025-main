@@ -8,6 +8,7 @@ use Domain\Loans\Model\Loan;
 use Domain\Reservations\Model\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,6 +16,8 @@ class TimelineController extends Controller
 {
     public function index(): Response
     {
+        Gate::authorize('settings.access');
+
         $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
 
         $loans = Loan::where('user_id', Auth::id())->with('book')->get();

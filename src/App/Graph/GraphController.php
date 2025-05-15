@@ -11,11 +11,14 @@ use Domain\Graph\Actions\GraphZoneAction;
 use Domain\Users\Models\User;
 use Domain\Zones\Model\Zone;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class GraphController extends Controller
 {
     public function index(GraphBookAction $graphBookAction, GraphUserAction $graphUserAction, GraphZoneAction $graphZoneAction)
     {
+        Gate::authorize('settings.access');
+
         $topBooks = $graphBookAction();
         $topUsers = $graphUserAction();
         $topZones = $graphZoneAction();

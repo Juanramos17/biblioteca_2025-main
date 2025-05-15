@@ -15,6 +15,7 @@ use Domain\Zones\Model\Zone;
 use Domain\Genres\Model\Genre;
 use Domain\Zones\Actions\ZoneStoreAction;
 use Domain\Zones\Actions\ZoneUpdateAction;
+use Illuminate\Support\Facades\Gate;
 
 class BookshelvesController extends Controller
 {
@@ -23,6 +24,8 @@ class BookshelvesController extends Controller
      */
     public function index()
     {
+        Gate::authorize('report.view');
+
         $bookshelves = Bookshelf::withCount('books')->orderBy('enumeration')->get();
 
         $results = $bookshelves->map(function ($bookshelf) {
@@ -44,26 +47,28 @@ class BookshelvesController extends Controller
      */
     public function create()
     {
+        Gate::authorize('report.print');
+
         $genres = Genre::all();
 
-        $floors = Floor::withCount('zones') 
+        $floors = Floor::withCount('zones')
             ->with(['zones' => function ($query) {
-                $query->select('id', 'floor_id', 'category','name');
+                $query->select('id', 'floor_id', 'category', 'name');
             }])
             ->orderBy('name')
             ->get();
 
-        $zones = Zone::withCount('bookshelves') 
+        $zones = Zone::withCount('bookshelves')
             ->with([
                 'bookshelves' => function ($query) {
-                    $query->select('id', 'zone_id', 'category'); 
+                    $query->select('id', 'zone_id', 'category');
                 },
-                'floor' => function ($query) { 
+                'floor' => function ($query) {
                     $query->select('id', 'name');
-        }
-    ])
-    ->orderBy('category')
-    ->get();
+                }
+            ])
+            ->orderBy('category')
+            ->get();
 
         return Inertia::render('bookshelves/Create', [
             "genres" => $genres,
@@ -77,6 +82,8 @@ class BookshelvesController extends Controller
      */
     public function store(Request $request, BookshelfStoreAction $action)
     {
+        Gate::authorize('report.print');
+
         $validator = Validator::make($request->all(), [
             'enumeration' => [
                 'required',
@@ -86,9 +93,9 @@ class BookshelvesController extends Controller
                     return $query->where('zone_id', $request->zone_id);
                 })
             ],
-            'category' => ['required', 'string', 'max:255'], 
-            'n_books' => ['required', 'integer', 'min:0'], 
-            'zone_id' => ['required', 'exists:zones,id'], 
+            'category' => ['required', 'string', 'max:255'],
+            'n_books' => ['required', 'integer', 'min:0'],
+            'zone_id' => ['required', 'exists:zones,id'],
         ]);
 
         if ($validator->fails()) {
@@ -114,45 +121,47 @@ class BookshelvesController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, Bookshelf $bookshelf)
-{
-    $genres = Genre::all();
+    {
+        Gate::authorize('report.print');
 
-    $currentZoneId = $bookshelf->zone_id; 
+        $genres = Genre::all();
 
-    $floors = Floor::withCount(['zones' => function ($query) use ($currentZoneId) {
-            $query->where('id', '!=', $currentZoneId); 
+        $currentZoneId = $bookshelf->zone_id;
+
+        $floors = Floor::withCount(['zones' => function ($query) use ($currentZoneId) {
+            $query->where('id', '!=', $currentZoneId);
         }])
-        ->with(['zones' => function ($query) use ($currentZoneId) {
-            $query->select('id', 'floor_id', 'category')
-                  ->where('id', '!=', $currentZoneId); 
-        }])
-        ->orderBy('name')
-        ->get();
+            ->with(['zones' => function ($query) use ($currentZoneId) {
+                $query->select('id', 'floor_id', 'category')
+                    ->where('id', '!=', $currentZoneId);
+            }])
+            ->orderBy('name')
+            ->get();
 
-    $zones = Zone::withCount(['bookshelves' => function ($query) use ($currentZoneId) {
-            $query->where('zone_id', '!=', $currentZoneId); 
+        $zones = Zone::withCount(['bookshelves' => function ($query) use ($currentZoneId) {
+            $query->where('zone_id', '!=', $currentZoneId);
         }])
-        ->with([
-            'bookshelves' => function ($query) {
-                $query->select('id', 'zone_id', 'category');
-            },
-            'floor' => function ($query) {
-                $query->select('id', 'name');
-            }
-        ])
-        ->orderBy('category')
-        ->get();
+            ->with([
+                'bookshelves' => function ($query) {
+                    $query->select('id', 'zone_id', 'category');
+                },
+                'floor' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->orderBy('category')
+            ->get();
 
-    return Inertia::render('bookshelves/Edit', [
-        'initialData' => $bookshelf,
-        'floor_id' => $bookshelf->zone->floor->id,
-        'page' => $request->query('page'),
-        'perPage' => $request->query('perPage'),
-        "genres" => $genres,
-        "floors" => $floors,
-        "zones" => $zones,
-    ]);
-}
+        return Inertia::render('bookshelves/Edit', [
+            'initialData' => $bookshelf,
+            'floor_id' => $bookshelf->zone->floor->id,
+            'page' => $request->query('page'),
+            'perPage' => $request->query('perPage'),
+            "genres" => $genres,
+            "floors" => $floors,
+            "zones" => $zones,
+        ]);
+    }
 
 
     /**
@@ -160,6 +169,8 @@ class BookshelvesController extends Controller
      */
     public function update(Request $request, Bookshelf $bookshelf, BookshelfUpdateAction $action)
     {
+        Gate::authorize('report.print');
+
         $validator = Validator::make($request->all(), [
             'enumeration' => [
                 'required',
@@ -169,7 +180,7 @@ class BookshelvesController extends Controller
                     ->where(function ($query) use ($request) {
                         return $query->where('zone_id', $request->zone_id);
                     })
-                    ->ignore($request->route('bookshelf')),  
+                    ->ignore($request->route('bookshelf')),
             ],
             'category' => ['required', 'string', 'max:255'],
             'n_books' => ['required', 'integer', 'min:0'],
@@ -183,7 +194,7 @@ class BookshelvesController extends Controller
         $action($bookshelf, $validator->validated());
 
         $redirectUrl = route('bookshelves.index');
-        
+
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');
             if ($request->has('perPage')) {
@@ -200,6 +211,7 @@ class BookshelvesController extends Controller
      */
     public function destroy(string $id)
     {
+        Gate::authorize('report.print');
         //
     }
 }

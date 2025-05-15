@@ -14,13 +14,22 @@ import { PencilIcon, PlusIcon, Repeat, TrashIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-interface LoanProps extends PageProps{
-  lang: string
+
+interface PageProps {
+    lang: string
+    auth: {
+        user: any;
+        permissions: string[];
+    };
 }
 
-export default function LoansIndex({lang}: LoanProps) {
+
+
+export default function LoansIndex({lang}: PageProps) {
     const { t } = useTranslations();
     const { url } = usePage();
+    const page = usePage<{ props: PageProps }>();
+    const auth = page.props.auth;
 
     // Obtener los parámetros de la URL actual
     const urlParams = new URLSearchParams(url.split('?')[1] || '');
@@ -168,6 +177,7 @@ export default function LoansIndex({lang}: LoanProps) {
                     header: t('ui.loans.columns.actions') || 'Actions',
                     renderActions: (loan) => (
                         <>
+                        {auth.permissions.includes('report.export') ? (
                             <Button
                                 onClick={() => handleChangeStatus(loan.id, loan.user_id)}
                                 variant="outline"
@@ -177,13 +187,31 @@ export default function LoansIndex({lang}: LoanProps) {
                             >
                                 <Repeat className="h-4 w-4 text-green-500" />
                             </Button>
+                        ) : (
+                            <Button
+                                onClick={() => handleChangeStatus(loan.id, loan.user_id)}
+                                variant="outline"
+                                size="icon"
+                                title={t('ui.loans.buttons.loan') || 'Loan'}
+                                disabled={true}
+                            >
+                                <Repeat className="h-4 w-4 text-green-500" />
+                            </Button>
+                        )}
 
+                        {auth.permissions.includes('report.print') ? (
                             <Link href={`/loans/${loan.id}/edit?page=${currentPage}&perPage=${perPage}`}>
                                 <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
                                     <PencilIcon className="h-4 w-4" />
                                 </Button>
                             </Link>
+                        ) : (
+                            <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'} disabled>
+                                <PencilIcon className="h-4 w-4" />
+                            </Button>
+                        )}
 
+                        {auth.permissions.includes('report.print') ? (
                             <DeleteDialog
                                 id={loan.id}
                                 onDelete={handleDeleteUser}
@@ -202,6 +230,18 @@ export default function LoansIndex({lang}: LoanProps) {
                                     </Button>
                                 }
                             />
+                        ) : (
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="text-destructive hover:text-destructive"
+                                title={t('ui.users.buttons.delete') || 'Delete user'}
+                                disabled
+                            >
+                                <TrashIcon className="h-4 w-4" />
+                            </Button>
+                        )}
+
                         </>
                     ),
                 }),
@@ -215,12 +255,19 @@ export default function LoansIndex({lang}: LoanProps) {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h1 className="text-3xl font-bold">{t('ui.loans.loans')}</h1>
+                        {auth.permissions.includes('report.print') ? (
                         <Link href="/books">
                             <Button>
                                 <PlusIcon className="mr-2 h-4 w-4" />
                                 {t('ui.loans.create')}
                             </Button>
                         </Link>
+                        ) : (
+                            <Button disabled>
+                                <PlusIcon className="mr-2 h-4 w-4" />
+                                {t('ui.loans.create')}
+                            </Button>
+                        )}
                     </div>
                     <div></div>
 

@@ -124,11 +124,17 @@ export default function UsersIndex() {
                                 </Button>
                             )}
 
-                            <Link href={`/users/${user.id}/edit?page=${currentPage}&perPage=${perPage}`}>
-                                <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
+                            {auth.permissions.includes('users.edit') ? (
+                                <Link href={`/users/${user.id}/edit?page=${currentPage}&perPage=${perPage}`}>
+                                    <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
+                                        <PencilIcon className="h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            ) : (
+                                <Button disabled={true} variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
                                     <PencilIcon className="h-4 w-4" />
                                 </Button>
-                            </Link>
+                            )}
                       
                      
 

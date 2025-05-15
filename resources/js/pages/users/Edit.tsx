@@ -13,32 +13,49 @@ interface EditUserProps extends PageProps {
   };
   page?: string;
   perPage?: string;
-  roles?: string[];          
-  permissions?: string[]; 
+  roles?: string[];
+  permissions?: string[];
   categories?: string[];
   userPermissions?: string[];
 }
 
-export default function EditUser({ user, page, perPage, roles, permissions, categories, userPermissions }: EditUserProps) {
+export default function EditUser({
+  user,
+  page,
+  perPage,
+  roles,
+  permissions,
+  categories,
+  userPermissions,
+}: EditUserProps) {
   const { t } = useTranslations();
+
   return (
+    <UserLayout title={t("ui.users.edit")}>
+      <div className="flex flex-col items-center w-full">
+        <div className="w-full sm:w-[800px] flex flex-col bg-muted/50 rounded-lg">
 
-<UserLayout title={t("ui.users.edit")}>
-<div className="flex flex-col items-center w-full">
-  <div className="w-[1000px] flex flex-col bg-muted/50 rounded-lg">
+          <CardHeader className="w-full flex justify-start bg-muted p-4 rounded-t-lg">
+            <div className="flex space-x-2">
+              <User size={20} className="text-blue-500" />
+              <h2 className="font-bold text-xl">{t("ui.info.edit")}</h2>
+            </div>
+            <p className="text-gray-500 text-sm mb-3">
+              {t("ui.info.info")}
+            </p>
+          </CardHeader>
 
-    <CardHeader className="w-full flex justify-start bg-muted p-4 rounded-t-lg">
-      <div className="flex space-x-2">
-        <User size={20} className="text-blue-500" />
-        <h2 className="font-bold text-xl">{t("ui.info.edit")}</h2>
+          <UserForm
+            initialData={user}
+            page={page}
+            perPage={perPage}
+            roles={roles}
+            permissions={permissions}
+            categories={categories}
+            userPermissions={userPermissions}
+          />
+        </div>
       </div>
-        <p className="text-gray-500 text-sm mb-3">{t("ui.info.info")}</p>
-    </CardHeader>
-
-    <UserForm initialData={user} page={page} perPage={perPage} roles={roles} permissions={permissions} categories={categories} userPermissions={userPermissions}/>
-  </div>
-</div>
-
-</UserLayout>
+    </UserLayout>
   );
 }

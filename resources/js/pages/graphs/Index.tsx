@@ -1,11 +1,12 @@
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslations } from '@/hooks/use-translations';
 import { GraphLayout } from '@/layouts/graphs/GraphLayout';
-import { PageProps } from '@/types';
+import { usePage } from '@inertiajs/react';
 import React from 'react';
 import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-interface GraphProps extends PageProps {
+
+interface PageProps {
     topBooks: {
         title: string;
         value: number;
@@ -27,10 +28,17 @@ interface GraphProps extends PageProps {
         reservations: number;
         floor: string;
     }[];
+
+    auth: {
+        user: any;
+        permissions: string[];
+    };
 }
 
-export default function GraphIndex({ topBooks, topUsers, topZones }: GraphProps) {
+export default function GraphIndex({ topBooks, topUsers, topZones }: PageProps) {
     const { t } = useTranslations();
+    const page = usePage<{ props: PageProps }>();
+    const auth = page.props.auth;
 
     const bookData = topBooks.map((book, index) => ({
         name: `Top ${index + 1}`,
@@ -114,7 +122,7 @@ export default function GraphIndex({ topBooks, topUsers, topZones }: GraphProps)
                                 fill={color1}
                                 barSize={70}
                                 name="Préstamos"
-                                animationDuration={1000}
+                                animationDuration={500}
                                 animationEasing="linear"
                             />
                             <Bar
@@ -123,8 +131,8 @@ export default function GraphIndex({ topBooks, topUsers, topZones }: GraphProps)
                                 fill={color2}
                                 barSize={30}
                                 name="Reservas"
-                                animationBegin={1000}
-                                animationDuration={1000}
+                                animationBegin={500}
+                                animationDuration={500}
                                 animationEasing="linear"
                             />
                         </BarChart>
@@ -142,28 +150,38 @@ export default function GraphIndex({ topBooks, topUsers, topZones }: GraphProps)
 
     return (
         <GraphLayout title={t('ui.graph.title')}>
-            <div className="flex w-full flex-col items-start justify-center px-4 sm:items-center sm:px-6">
-                <h2 className="text-primary mb-6 text-2xl font-bold sm:text-3xl">{t('ui.graph.stadistics_title')}</h2>
-                <Select value={selectedGraph} onValueChange={handleSelectChange}>
-                    <SelectTrigger className="bg-muted mb-4 w-full max-w-[220px] sm:max-w-[400px]">
-                        <SelectValue placeholder={t('ui.graph.select_graph')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectItem value="books">{t('ui.graph.top_books')}</SelectItem>
-                            <SelectItem value="users">{t('ui.graph.top_users')}</SelectItem>
-                            <SelectItem value="zones">{t('ui.graph.top_zones')}</SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-            </div>
+            {auth.permissions.includes('settings.access') ? (
+            
+            <div>
+                <div className="flex w-full flex-col items-start justify-center px-4 sm:items-center sm:px-6">
+                    
+                    <h2 className="text-primary mb-6 text-2xl font-bold sm:text-3xl">{t('ui.graph.stadistics_title')}</h2>
+                    <Select value={selectedGraph} onValueChange={handleSelectChange}>
+                        <SelectTrigger className="bg-muted mb-4 w-full max-w-[220px] sm:max-w-[400px]">
+                            <SelectValue placeholder={t('ui.graph.select_graph')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="books">{t('ui.graph.top_books')}</SelectItem>
+                                <SelectItem value="users">{t('ui.graph.top_users')}</SelectItem>
+                                <SelectItem value="zones">{t('ui.graph.top_zones')}</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-            <div className="mx-auto w-full max-w-screen-lg px-4">
-                
-                {selectedGraph === 'books' && renderChart(bookData, t('ui.graph.top_books'), '#4CAF50', '#9C27B0')}
-                {selectedGraph === 'users' && renderChart(userData, t('ui.graph.top_users'), '#4CAF50', '#9C27B0')}
-                {selectedGraph === 'zones' && renderChart(zoneData, t('ui.graph.top_zones'), '#4CAF50', '#9C27B0')}
+                <div className="mx-auto w-full max-w-screen-lg px-4">
+                    
+                    {selectedGraph === 'books' && renderChart(bookData, t('ui.graph.top_books'), '#4CAF50', '#9C27B0')}
+                    {selectedGraph === 'users' && renderChart(userData, t('ui.graph.top_users'), '#4CAF50', '#9C27B0')}
+                    {selectedGraph === 'zones' && renderChart(zoneData, t('ui.graph.top_zones'), '#4CAF50', '#9C27B0')}
+                </div>
             </div>
+            ) : (
+                <div className="flex w-full flex-col items-start justify-center px-4 sm:items-center sm:px-6">
+                    <h2 className="text-primary mb-6 text-2xl font-bold sm:text-3xl">{t('ui.graph.stadistics_title')}</h2>
+                </div>
+            )}
         </GraphLayout>
     );
 }

@@ -19,15 +19,19 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Domain\Roles\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
     public function index()
     {
+        Gate::authorize('users.view');
         return Inertia::render('users/Index');
     }
 
     public function show(Request $request, User $user){
+        Gate::authorize('settings.access');
+
         $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
 
         $name = User::where('id', $user->id)->pluck('name')->first();
@@ -73,6 +77,8 @@ class UserController extends Controller
     public function create(Request $request): Response
 {
 
+    Gate::authorize('users.create');
+
     $roles = Role::pluck('name')->toArray();
 
     $permissions = Permission::pluck('name')->toArray();
@@ -89,6 +95,8 @@ class UserController extends Controller
 
     public function store(Request $request, UserStoreAction $action)
     {
+        Gate::authorize('users.create');
+
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -108,6 +116,8 @@ class UserController extends Controller
 
     public function edit(Request $request, User $user)
     {
+        Gate::authorize('users.edit');
+
         $roles = Role::pluck('name')->toArray();
 
         $permissions = Permission::pluck('name')->toArray();
@@ -132,6 +142,8 @@ class UserController extends Controller
 
     public function update(Request $request, User $user, UserUpdateAction $action)
     {
+        Gate::authorize('users.edit');
+
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -166,6 +178,8 @@ class UserController extends Controller
 
     public function destroy(User $user, UserDestroyAction $action)
     {
+        Gate::authorize('users.delete');
+
         $action($user);
 
         return redirect()->route('users.index')

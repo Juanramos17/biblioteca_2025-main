@@ -88,148 +88,155 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4 px-4 sm:px-6 md:px-8 lg:px-10" noValidate>
-            <div className="grid gap-3 pt-2">
-                <form.Field
-                    name="id"
-                    validators={{
-                        onChangeAsync: async ({ value }) => {
-                            await new Promise((resolve) => setTimeout(resolve, 500));
-                            if (!value?.toString().trim()) {
-                                return t('ui.validation.required', {
-                                    attribute: t('ui.books.fields.book').toLowerCase(),
-                                });
-                            }
-                            return undefined;
-                        },
-                    }}
-                >
-                    {(field) => (
-                        <>
-                            <div className="mb-1 flex items-center gap-1">
-                                <Book size={14} className="text-gray-500" />
-                                <Label htmlFor={field.name} className="text-sm">
-                                    {t('ui.loans.fields.book')}
-                                </Label>
-                            </div>
-                            <Input
-                                id={field.name}
-                                name={field.name}
-                                value={field.state.value}
-                                onChange={(e) => field.handleChange(e.target.value)}
-                                onBlur={field.handleBlur}
-                                placeholder={t('ui.loans.placeholders.book')}
-                                disabled
-                                autoComplete="off"
-                                className="w-full text-sm py-2"
-                            />
-                            <FieldInfo field={field} />
-                        </>
-                    )}
-                </form.Field>
+            <div className="grid gap-4 pt-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+                <div className="col-span-1">
+                    <form.Field
+                        name="id"
+                        validators={{
+                            onChangeAsync: async ({ value }) => {
+                                await new Promise((resolve) => setTimeout(resolve, 500));
+                                if (!value?.toString().trim()) {
+                                    return t('ui.validation.required', {
+                                        attribute: t('ui.books.fields.book').toLowerCase(),
+                                    });
+                                }
+                                return undefined;
+                            },
+                        }}
+                    >
+                        {(field) => (
+                            <>
+                                <div className="mb-1 flex items-center gap-1">
+                                    <Book size={14} className="text-gray-500" />
+                                    <Label htmlFor={field.name} className="text-sm">
+                                        {t('ui.loans.fields.book')}
+                                    </Label>
+                                </div>
+                                <Input
+                                    id={field.name}
+                                    name={field.name}
+                                    value={field.state.value}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    onBlur={field.handleBlur}
+                                    placeholder={t('ui.loans.placeholders.book')}
+                                    disabled
+                                    autoComplete="off"
+                                    className="w-full text-sm py-2"
+                                />
+                                <FieldInfo field={field} />
+                            </>
+                        )}
+                    </form.Field>
+                </div>
 
-                <form.Field
-                    name="email"
-                    validators={{
-                        onChangeAsync: async ({ value }) => {
-                            await new Promise((resolve) => setTimeout(resolve, 500));
-                            return !value
-                                ? t('ui.validation.required', { attribute: t('ui.users.fields.email').toLowerCase() })
-                                : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-                                  ? t('ui.validation.email', { attribute: t('ui.users.fields.email').toLowerCase() })
-                                  : undefined;
-                        },
-                    }}
-                >
-                    {(field) => (
-                        <>
-                            <div className="mb-1 flex items-center gap-1">
-                                <Mail size={14} className="text-gray-500" />
-                                <Label htmlFor={field.name} className="text-sm">
-                                    {t('ui.users.fields.email')}
-                                </Label>
-                            </div>
-                            <Input
-                                id={field.name}
-                                name={field.name}
-                                type="email"
-                                value={field.state.value}
-                                onChange={(e) => field.handleChange(e.target.value)}
-                                onBlur={field.handleBlur}
-                                placeholder={t('ui.users.placeholders.email')}
-                                disabled={form.state.isSubmitting}
-                                autoComplete="off"
-                                className="w-full text-sm py-2"
-                            />
-                            <FieldInfo field={field} />
-                        </>
-                    )}
-                </form.Field>
+                <div className="col-span-1">
+                    <form.Field
+                        name="email"
+                        validators={{
+                            onChangeAsync: async ({ value }) => {
+                                await new Promise((resolve) => setTimeout(resolve, 500));
+                                return !value
+                                    ? t('ui.validation.required', { attribute: t('ui.users.fields.email').toLowerCase() })
+                                    : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                                      ? t('ui.validation.email', { attribute: t('ui.users.fields.email').toLowerCase() })
+                                      : undefined;
+                            },
+                        }}
+                    >
+                        {(field) => (
+                            <>
+                                <div className="mb-1 flex items-center gap-1">
+                                    <Mail size={14} className="text-gray-500" />
+                                    <Label htmlFor={field.name} className="text-sm">
+                                        {t('ui.users.fields.email')}
+                                    </Label>
+                                </div>
+                                <Input
+                                    id={field.name}
+                                    name={field.name}
+                                    type="email"
+                                    value={field.state.value}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    onBlur={field.handleBlur}
+                                    placeholder={t('ui.users.placeholders.email')}
+                                    disabled={form.state.isSubmitting}
+                                    autoComplete="off"
+                                    className="w-full text-sm py-2"
+                                />
+                                <FieldInfo field={field} />
+                            </>
+                        )}
+                    </form.Field>
+                </div>
 
-                <form.Field
-                    name="date"
-                    validators={{
-                        onChangeAsync: async ({ value }) => {
-                            await new Promise((resolve) => setTimeout(resolve, 300));
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            const selectedDate = new Date(value);
-                            selectedDate.setHours(0, 0, 0, 0);
+                <div className="col-span-1">
+                    <form.Field
+                        name="date"
+                        validators={{
+                            onChangeAsync: async ({ value }) => {
+                                await new Promise((resolve) => setTimeout(resolve, 300));
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                const selectedDate = new Date(value);
+                                selectedDate.setHours(0, 0, 0, 0);
 
-                            if (selectedDate < today) {
-                                return t('ui.validation.after_or_equal', {
-                                    attribute: t('ui.loans.fields.date').toLowerCase(),
-                                    date: t('ui.validation.today'),
-                                });
-                            }
-                            const nextYear = new Date();
-                            nextYear.setFullYear(today.getFullYear() + 1);
-                            if (selectedDate > nextYear) {
-                                return t('ui.validation.before_or_equal', {
-                                    attribute: t('ui.loans.fields.date').toLowerCase(),
-                                    date: nextYear.toISOString().split('T')[0],
-                                });
-                            }
-                            return undefined;
-                        },
-                    }}
-                >
-                    {(field) => (
-                        <>
-                            <div className="mb-1 flex items-center gap-1">
-                                <Label htmlFor={field.name} className="text-sm">
-                                    {t('ui.loans.fields.date')}
-                                </Label>
-                            </div>
+                                if (selectedDate < today) {
+                                    return t('ui.validation.after_or_equal', {
+                                        attribute: t('ui.loans.fields.date').toLowerCase(),
+                                        date: t('ui.validation.today'),
+                                    });
+                                }
+                                const nextYear = new Date();
+                                nextYear.setFullYear(today.getFullYear() + 1);
+                                if (selectedDate > nextYear) {
+                                    return t('ui.validation.before_or_equal', {
+                                        attribute: t('ui.loans.fields.date').toLowerCase(),
+                                        date: nextYear.toISOString().split('T')[0],
+                                    });
+                                }
+                                return undefined;
+                            },
+                        }}
+                    >
+                        {(field) => (
+                            <>
+                                <div className="mb-1 flex items-center gap-1">
+                                    <Label htmlFor={field.name} className="text-sm">
+                                        {t('ui.loans.fields.date')}
+                                    </Label>
+                                </div>
 
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className={cn('w-full justify-start text-left font-normal sm:w-[240px]', !date && 'text-muted-foreground')}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {date ? format(date, 'PPP') : <span>{t('ui.info.select')}</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        timeZone="Europe/Madrid"
-                                        disabled={[{ before: new Date() }, new Date(), isSunday]}
-                                        mode="single"
-                                        locale={langMap[lang]}
-                                        selected={date}
-                                        onSelect={setDate}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className={cn('w-full justify-start text-left font-normal sm:w-[240px]', !date && 'text-muted-foreground')}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {date ? format(date, 'PPP') : <span>{t('ui.info.select')}</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            timeZone="Europe/Madrid"
+                                            disabled={[{ before: new Date() }, new Date(), isSunday]}
+                                            mode="single"
+                                            locale={langMap[lang]}
+                                            selected={date}
+                                            onSelect={setDate}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
 
-                            <FieldInfo field={field} />
-                        </>
-                    )}
-                </form.Field>
+                                <FieldInfo field={field} />
+                            </>
+                        )}
+                    </form.Field>
+                </div>
             </div>
-            <div className="border-muted flex flex-col items-center justify-end gap-4 border-t p-4 sm:flex-row">
+
+            <div className="border-muted flex items-center justify-end gap-4 border-t p-4 sm:flex-row">
                 <Button
                     type="button"
                     variant="outline"

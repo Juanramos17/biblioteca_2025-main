@@ -23,8 +23,6 @@ interface ReservationProps {
     perPage?: string;
 }
 
-
-
 // Field error display component
 function FieldInfo({ field }: { field: AnyFieldApi }) {
     return (
@@ -128,7 +126,7 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                                 disabled={true}
                                 required={false}
                                 autoComplete="off"
-                                className="w-full sm:w-3/4 md:w-1/2"
+                                className="w-full"
                             />
                             <FieldInfo field={field} />
                         </>
@@ -167,7 +165,7 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                                 disabled={form.state.isSubmitting}
                                 required={false}
                                 autoComplete="off"
-                                className="w-full sm:w-3/4 md:w-1/2"
+                                className="w-full"
                             />
                             <FieldInfo field={field} />
                         </>
@@ -175,38 +173,38 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                 </form.Field>
             </div>
 
-             <div className="border-muted flex flex-col items-center justify-end gap-4 border-t p-4 sm:flex-row">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                    let url = '/reservations';
-                                    if (page) {
-                                        url += `?page=${page}`;
-                                        if (perPage) url += `&per_page=${perPage}`;
-                                    }
-                                    router.visit(url);
-                                }}
-                                disabled={form.state.isSubmitting}
-                                className="flex w-full items-center justify-center sm:w-auto text-sm"
-                            >
-                                <X className="mr-2 h-4 w-4" />
-                                {t('ui.users.buttons.cancel')}
-                            </Button>
-            
-                            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-                                {([canSubmit, isSubmitting]) => (
-                                    <Button
-                                        type="submit"
-                                        disabled={!canSubmit}
-                                        className="flex w-full items-center justify-center bg-blue-500 text-white hover:bg-blue-600 sm:w-auto text-sm"
-                                    >
-                                        <Save className="mr-2 h-4 w-4" />
-                                        {isSubmitting ? t('ui.users.buttons.saving') : initialData ? t('ui.users.buttons.update') : t('ui.users.buttons.save')}
-                                    </Button>
-                                )}
-                            </form.Subscribe>
-                        </div>
+            <div className="border-muted flex items-center justify-end gap-4 border-t p-4 sm:flex-row ">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                        let url = '/reservations';
+                        if (page) {
+                            url += `?page=${page}`;
+                            if (perPage) url += `&per_page=${perPage}`;
+                        }
+                        router.visit(url);
+                    }}
+                    disabled={form.state.isSubmitting}
+                    className="flex w-full items-center justify-center sm:w-auto text-sm"
+                >
+                    <X className="mr-2 h-4 w-4" />
+                    {t('ui.users.buttons.cancel')}
+                </Button>
+
+                <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+                    {([canSubmit, isSubmitting]) => (
+                        <Button
+                            type="submit"
+                            disabled={!canSubmit}
+                            className="flex w-full items-center justify-center bg-blue-500 text-white hover:bg-blue-600 sm:w-auto text-sm"
+                        >
+                            <Save className="mr-2 h-4 w-4" />
+                            {isSubmitting ? t('ui.users.buttons.saving') : initialData ? t('ui.users.buttons.update') : t('ui.users.buttons.save')}
+                        </Button>
+                    )}
+                </form.Subscribe>
+            </div>
         </form>
     );
 }

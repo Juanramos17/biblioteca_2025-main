@@ -1,5 +1,5 @@
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
-import { Users, User, Building2, MapPin, Library, Book, Handshake, Calendar, Clock } from 'lucide-react';
+import { Users, User, Building2, MapPin, Library, Book, Handshake, Calendar, Clock, ChartNoAxesCombined } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
@@ -137,6 +137,17 @@ export default function Dashboard() {
                         description="Ve tu historial de préstamos y reservas"
                         href="/timelines"
                         icon={Clock}
+                    />
+                ) : (
+                    ""
+                )}
+
+                {auth.permissions.includes('settings.access') ? (
+                    <DashboardCard
+                        title="Graph"
+                        description="Revisa los graficos de la biblioteca"
+                        href="/graphs"
+                        icon={ChartNoAxesCombined}
                     />
                 ) : (
                     ""

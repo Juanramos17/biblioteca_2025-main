@@ -11,9 +11,11 @@ import 'react-vertical-timeline-component/style.min.css';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { usePage } from '@inertiajs/react';
 
-interface TimelineProps extends PageProps {
-  loans: {
+
+interface PageProps {
+   loans: {
     id: string;
     book_id: string;
     user_id: string;
@@ -36,13 +38,19 @@ interface TimelineProps extends PageProps {
   }[];
   name?: string;
   lang: string;
+    auth: {
+        user: any;
+        permissions: string[];
+    };
 }
 
-export default function TimelineIndex({ loans, name, lang }: TimelineProps) {
+export default function TimelineIndex({ loans, name, lang }: PageProps) {
   const { t } = useTranslations();
   const [selectedTab, setSelectedTab] = useState('all');
   const [selectedStart, setSelectedStart] = useState<Date | undefined>();
   const [selectedEnd, setSelectedEnd] = useState<Date | undefined>();
+  const page = usePage<{ props: PageProps }>();
+  const auth = page.props.auth;
 
   const getIconAndColor = (item: any) => {
     if (item.type === 'loan') {
@@ -175,6 +183,7 @@ export default function TimelineIndex({ loans, name, lang }: TimelineProps) {
 
   return (
     <TimelineLayout title={t('ui.navigation.items.timelines')}>
+      {auth.permissions.includes('settings.access') ? (
       <div className="flex w-full flex-col items-center px-4 py-6">
         <h2 className="text-primary mb-8 text-2xl font-bold">{t('ui.loans.timeline.title')}</h2>
 
@@ -245,6 +254,9 @@ export default function TimelineIndex({ loans, name, lang }: TimelineProps) {
           <TabsContent value="reservations">{renderTimeline(reservationItems)}</TabsContent>
         </Tabs>
       </div>
+      ) : (
+        ""
+      )}
     </TimelineLayout>
   );
 }

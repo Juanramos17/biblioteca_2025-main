@@ -84,6 +84,8 @@ class User extends Authenticatable
 
     public function reservations()
 {
-    return $this->hasMany(Reservation::class)->withTrashed(); // Incluye los soft deleted
+    return $this->hasMany(Reservation::class)->withTrashed(); 
 }
+
+
 }

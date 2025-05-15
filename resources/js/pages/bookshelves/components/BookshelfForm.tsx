@@ -17,7 +17,7 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-  } from "@/components/ui/select";
+} from "@/components/ui/select";
 import { floor } from "lodash";
 import { useState } from "react";
 
@@ -31,12 +31,10 @@ interface BookshelfProps {
     };
     floor_id?: string;
     floors: { id: string; name: string, n_zones:number, zones_count:number, zones:{category:string, floor_id:string, id:string, name:number}[] }[];  
-    zones: { id: string; name: string, n_bookshelves:number,floor:{id:string, name:number}, bookshelves_count:number, category:string, bookshelves:{category:string, zone_id:string, id:string}[] }[];
+    zones: { id: string; name: string, n_bookshelves:number,floor:{id:string, name:number}, bookshelves_count:number, category:string, bookshelves:{category:string, zone_id:string, id:string}[] }[]; 
     page?: string;
     perPage?: string;  
 }
-
-
 
 // Field error display component
 function FieldInfo({ field }: { field: AnyFieldApi }) {
@@ -54,7 +52,7 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export default function FloorForm({ zones, floors,floor_id, initialData, page, perPage }: BookshelfProps) {
+export default function FloorForm({ zones, floors, floor_id, initialData, page, perPage }: BookshelfProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const form = useForm({
@@ -64,21 +62,16 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                 n_books: initialData?.n_books ?? "",
                 zone_id: initialData?.zone_id ?? "",
                 floor_id: floor_id ?? "",
-                
             },
             onSubmit: async ({ value }) => {
-                
-               
                 const data = {
                     ...value,
                     category: zones.find((zone) => zone.id === value.zone_id)?.category || '', 
                 };
                 const options = {
-
                     onSuccess: () => {
                         queryClient.invalidateQueries({ queryKey: ["bookshelves"] });
                         
-                        // Construct URL with page parameters
                         let url = "/bookshelves";
                         if (page) {
                             url += `?page=${page}`;
@@ -94,8 +87,6 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                     },
                 };
 
-    
-                // Submit with Inertia
                 if (initialData) {
                     router.put(`/bookshelves/${initialData.id}`, data, options);
                 } else {
@@ -103,49 +94,44 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                 }
             },
         });
-        
-    
-        // Form submission handler
-        const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-        };
 
-        const [selectedFloor, setSelectedFloor] = useState<string>(floor_id??"");
-    
+    // Form submission handler
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+    };
+
+    const [selectedFloor, setSelectedFloor] = useState<string>(floor_id ?? "");
+
     return (
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div className='pl-4 pr-4'>
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <div className="pl-4 pr-4">
                 <form.Field
                     name="enumeration"
                     validators={{
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
-                    
                             if (value === null || value === undefined || value.toString().trim() === "") {
                                 return t("ui.validation.required", { attribute: t("ui.bookshelves.fields.enumeration").toLowerCase() });
                             }
-                    
                             const numValue = Number(value);
-                    
                             if (isNaN(numValue)) {
                                 return t("ui.validation.required", { attribute: t("ui.floors.fields.name").toLowerCase() });
                             }
-                    
                             if (numValue < 1) {
                                 return t("ui.validation.min.numeric", { attribute: t("ui.floors.fields.name").toLowerCase(), min: "1" });
                             }
-
                             return undefined;
                         },
                     }}
                 >
                     {(field) => (
                         <>
-                        <div className="flex m-1 align-center ">
-                            <Building2 size={16} className='mr-2 text-gray-500 '/><Label htmlFor={field.name}>{t("ui.bookshelves.fields.enumeration")}</Label>
-                        </div>
+                            <div className="flex m-1 align-center ">
+                                <Building2 size={16} className="mr-2 text-gray-500 "/>
+                                <Label htmlFor={field.name}>{t("ui.bookshelves.fields.enumeration")}</Label>
+                            </div>
                             <Input
                                 id={field.name}
                                 name={field.name}
@@ -163,45 +149,47 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                 </form.Field>
             </div>
 
-            <div className='pl-4 pr-4'>
+            <div className="pl-4 pr-4">
                 <form.Field
                     name="floor_id"
-                        validators={{
-                            onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.bookshelves.fields.floor").toLowerCase() }),
-                        }}
-                    >
-                        {(field) => (
-                            <>
-                           <div className="flex m-1 align-center">
+                    validators={{
+                        onChange: ({ value }) => value ? undefined : t("ui.validation.required", { attribute: t("ui.bookshelves.fields.floor").toLowerCase() }),
+                    }}
+                >
+                    {(field) => (
+                        <>
+                            <div className="flex m-1 align-center">
                                 <MapPin size={16} className="mr-2 text-gray-500" />
                                 <Label htmlFor={field.name}>{t("ui.bookshelves.fields.floor")}</Label>
                             </div>
-                                <Select value={field.state.value} onValueChange={(value) => {field.handleChange(value);setSelectedFloor(value);}}
-            >
+                            <Select 
+                                value={field.state.value} 
+                                onValueChange={(value) => {field.handleChange(value); setSelectedFloor(value);}}
+                            >
                                 <SelectTrigger className="w-full max-w-[770px] bg-muted">
                                     <SelectValue placeholder={t("ui.bookshelves.placeholders.floor")} />
                                 </SelectTrigger>
-                                 <SelectContent>
+                                <SelectContent>
                                     <SelectGroup>
                                         {floors.map((floor) => (
                                             <SelectItem 
-                                                 key={floor.id} 
-                                                 value={floor.id} 
-                                                 disabled={floor.n_zones == floor.zones_count}  
-                                             >
+                                                key={floor.id} 
+                                                value={floor.id} 
+                                                disabled={floor.n_zones === floor.zones_count}  
+                                            >
                                                 {t("ui.floors.floor")} {floor.name}
-                                             </SelectItem>
-                                          ))}
+                                            </SelectItem>
+                                        ))}
                                     </SelectGroup>
-                                   </SelectContent>
-                               </Select>
-                             <FieldInfo field={field} />
-                                          </>
-                                       )}
-                  </form.Field>
+                                </SelectContent>
+                            </Select>
+                            <FieldInfo field={field} />
+                        </>
+                    )}
+                </form.Field>
             </div>
 
-            <div className='pl-4 pr-4'>
+            <div className="pl-4 pr-4">
                 <form.Field
                     name="zone_id"
                     validators={{
@@ -218,7 +206,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                                 value={field.state.value} 
                                 defaultValue={initialData?.zone_id}
                                 onValueChange={(value) => field.handleChange(value)}
-                                disabled={selectedFloor==""} 
+                                disabled={selectedFloor === ""} 
                             >
                                 <SelectTrigger className="w-full max-w-[770px] bg-muted">
                                     <SelectValue placeholder={t("ui.bookshelves.placeholders.zone")} />
@@ -245,7 +233,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                 </form.Field>
             </div>
 
-            <div className='pl-4 pr-4'>
+            <div className="pl-4 pr-4">
                 <form.Field
                     name="n_books"
                     validators={{
@@ -254,13 +242,10 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                             if (value === null || value === undefined || value.toString().trim() === "") {
                                 return t("ui.validation.required", { attribute: t("ui.bookshelves.fields.books").toLowerCase() });
                             }
-                    
                             const numValue = Number(value);
-                    
                             if (isNaN(numValue)) {
                                 return t("ui.validation.required", { attribute: t("ui.bookshelves.fields.books").toLowerCase() });
                             }
-                    
                             if (numValue < 1) {
                                 return t("ui.validation.min.numeric", { attribute: t("ui.bookshelves.fields.books").toLowerCase(), min: "1" });
                             }
@@ -290,6 +275,7 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                     )}
                 </form.Field>
             </div>
+
             <div className="flex justify-between gap-4 bg-muted h-20 p-5 rounded-b-lg">
                 <Button
                     type="button"
@@ -314,19 +300,17 @@ export default function FloorForm({ zones, floors,floor_id, initialData, page, p
                     selector={(state) => [state.canSubmit, state.isSubmitting]}
                 >
                     {([canSubmit, isSubmitting]) => (
-                        <Button type="submit" disabled={!canSubmit} className='bg-blue-500 text-white'>
+                        <Button type="submit" disabled={!canSubmit} className="bg-blue-500 text-white">
                             <Save />
                             {isSubmitting
                                 ? t("ui.users.buttons.saving")
                                 : initialData
                                     ? t("ui.users.buttons.update")
                                     : t("ui.users.buttons.save")}
-                                    
                         </Button>
                     )}
                 </form.Subscribe>
             </div>
-            </form>
-    )
+        </form>
+    );
 }
-

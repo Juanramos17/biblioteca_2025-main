@@ -11,6 +11,8 @@ use App\Timeline\TimelineController;
 use App\Zone\Controllers\Api\ZoneApiController;
 use Illuminate\Support\Facades\Route;
 
+
+
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/users', [UserApiController::class, 'index']);
     Route::get('/users/{user}', [UserApiController::class, 'show']);

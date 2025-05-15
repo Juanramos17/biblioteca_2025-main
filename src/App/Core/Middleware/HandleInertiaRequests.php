@@ -2,6 +2,7 @@
 
 namespace App\Core\Middleware;
 
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -44,7 +45,7 @@ class HandleInertiaRequests extends Middleware
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
-                'permissions' => $request->user()->permissions->pluck('name'),
+                'permissions' => $request->user() ? $request->user()->permissions->pluck('name') : [],
             
             ],
             'flash' => [

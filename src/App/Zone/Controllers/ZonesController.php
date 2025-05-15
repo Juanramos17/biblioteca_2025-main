@@ -12,6 +12,7 @@ use Domain\Zones\Model\Zone;
 use Domain\Genres\Model\Genre;
 use Domain\Zones\Actions\ZoneStoreAction;
 use Domain\Zones\Actions\ZoneUpdateAction;
+use Illuminate\Support\Facades\Gate;
 
 class ZonesController extends Controller
 {
@@ -20,6 +21,8 @@ class ZonesController extends Controller
      */
     public function index()
     {
+        Gate::authorize('report.view');
+
         $zones = Zone::withCount('bookshelves')->orderBy('name')->get();
 
         $results = $zones->map(function ($zone) {
@@ -41,6 +44,8 @@ class ZonesController extends Controller
      */
     public function create()
     {
+        Gate::authorize('report.print');
+
         $genres = Genre::all();
 
         $floors = Floor::withCount('zones')
@@ -61,6 +66,8 @@ class ZonesController extends Controller
      */
     public function store(Request $request, ZoneStoreAction $action)
     {
+        Gate::authorize('report.print');
+
         $validator = Validator::make($request->all(), [
             'name' => [
                 'required',
@@ -99,6 +106,8 @@ class ZonesController extends Controller
      */
     public function edit(Request $request, Zone $zone)
     {
+        Gate::authorize('report.print');
+        
         $genres = Genre::all();
 
         $categoryToExclude = $zone->category;
@@ -132,6 +141,8 @@ class ZonesController extends Controller
      */
     public function update(Request $request, Zone $zone, ZoneUpdateAction $action)
     {
+        Gate::authorize('report.print');
+
         $validator = Validator::make($request->all(), [
             'name' => [
                 'required',
@@ -165,11 +176,9 @@ class ZonesController extends Controller
             ->with('success', __('ui.messages.zones.updated'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
+        Gate::authorize('report.print');
         //
     }
 }

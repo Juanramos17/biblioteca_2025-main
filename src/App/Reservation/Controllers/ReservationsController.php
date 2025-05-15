@@ -15,6 +15,7 @@ use Domain\Reservations\Actions\ReservationUpdateAction;
 use Domain\Reservations\Model\Reservation;
 use Domain\Users\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ReservationsController extends Controller
 {
@@ -23,6 +24,8 @@ class ReservationsController extends Controller
      */
     public function index()
     {
+        Gate::authorize('report.view');
+
         $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
         $reservations = Reservation::all()->toArray();
 
@@ -35,6 +38,8 @@ class ReservationsController extends Controller
     public function create()
     {
 
+        Gate::authorize('report.print');
+
         return Inertia::render('reservations/Create', [
            
         ]);
@@ -45,6 +50,8 @@ class ReservationsController extends Controller
      */
     public function store(Request $request, ReservationStoreAction $action)
     {
+        Gate::authorize('report.print');
+
         $validator = Validator::make($request->all(), [
             'id' => ['required', 'string', 'exists:books,id'],
             'email' => ['required', 'email', 'max:255', 'exists:users,email'],
@@ -123,6 +130,6 @@ class ReservationsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Gate::authorize('report.print');
     }
 }

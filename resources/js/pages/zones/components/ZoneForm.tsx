@@ -71,47 +71,38 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
         },
     });
 
-    console.log(floors);
-    
-    if(initialData){
-        floors.forEach(floor => {
-            floor.zones_count==floor.zones_count--;
-        });
-        
-    }
-    
     return (
         <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }} className="space-y-4" noValidate>
-            <div className='pl-4 pr-4'>
+            {/* Campo para el nombre */}
+            <div className="pl-4 pr-4">
                 <form.Field
-                     name="name"
-                     validators={{
-                         onChangeAsync: async ({ value }) => {
-                             await new Promise((resolve) => setTimeout(resolve, 500));
-                     
-                             if (value === null || value === undefined || value.toString().trim() === "") {
-                                 return t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() });
-                             }
-                     
-                             const numValue = Number(value);
-                     
-                             if (isNaN(numValue)) {
-                                 return t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() });
-                             }
-                     
-                             if (numValue < 1) {
-                                 return t("ui.validation.min.numeric", { attribute: t("ui.zones.fields.name").toLowerCase(), min: "1" });
-                             }
-                     
-                     
-                             return undefined;
-                         },
-                     }}
+                    name="name"
+                    validators={{
+                        onChangeAsync: async ({ value }) => {
+                            await new Promise((resolve) => setTimeout(resolve, 500));
+
+                            if (value === null || value === undefined || value.toString().trim() === "") {
+                                return t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() });
+                            }
+
+                            const numValue = Number(value);
+
+                            if (isNaN(numValue)) {
+                                return t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() });
+                            }
+
+                            if (numValue < 1) {
+                                return t("ui.validation.min.numeric", { attribute: t("ui.zones.fields.name").toLowerCase(), min: "1" });
+                            }
+
+                            return undefined;
+                        },
+                    }}
                 >
                     {(field) => (
                         <>
-                            <div className="flex m-1 align-center ">
-                                <List size={16} className='mr-2 text-gray-500 '/>
+                            <div className="flex m-1 align-center">
+                                <List size={16} className="mr-2 text-gray-500" />
                                 <Label htmlFor={field.name}>{t("ui.zones.fields.name")}</Label>
                             </div>
                             <Input
@@ -125,6 +116,7 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
                                 autoComplete="off"
                                 required={false}
                                 min={1}
+                                className="w-full" // Asegura que el input sea 100% en pantallas pequeñas
                             />
                             <FieldInfo field={field} />
                         </>
@@ -132,54 +124,55 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
                 </form.Field>
             </div>
 
-
-            <div className='pl-4 pr-4'>
-            <form.Field
-    name="category"
-    validators={{
-        onChangeAsync: async ({ value }) => {
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            return !value
-                ? t("ui.validation.required", { attribute: t("ui.zones.fields.category").toLowerCase() })
-                : undefined;
-        },
-    }}
->
-    {(field) => (
-        <>
-            <div className="flex m-1 align-center">
-                <Layers size={16} className="mr-2 text-gray-500" />
-                <Label htmlFor={field.name}>{t("ui.zones.fields.category")}</Label>
-            </div>
-            <Select 
-                value={field.state.value} 
-                onValueChange={(value) => {
-                    field.handleChange(value); 
-                }}
-            >
-                <SelectTrigger className="w-full max-w-[770px] bg-muted">
-                    <SelectValue placeholder={t("ui.zones.placeholders.category")} />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        {genres.map((genre) => (
-                            <SelectItem
-                                key={genre.id}
-                                value={genre.name}
+            {/* Campo para la categoría */}
+            <div className="pl-4 pr-4">
+                <form.Field
+                    name="category"
+                    validators={{
+                        onChangeAsync: async ({ value }) => {
+                            await new Promise((resolve) => setTimeout(resolve, 500));
+                            return !value
+                                ? t("ui.validation.required", { attribute: t("ui.zones.fields.category").toLowerCase() })
+                                : undefined;
+                        },
+                    }}
+                >
+                    {(field) => (
+                        <>
+                            <div className="flex m-1 align-center">
+                                <Layers size={16} className="mr-2 text-gray-500" />
+                                <Label htmlFor={field.name}>{t("ui.zones.fields.category")}</Label>
+                            </div>
+                            <Select
+                                value={field.state.value}
+                                onValueChange={(value) => {
+                                    field.handleChange(value);
+                                }}
                             >
-                                {t(`ui.genres.${genre.name.toLowerCase()}`)}  {/* Aquí se traducen los géneros */}
-                            </SelectItem>
-                        ))}
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-            <FieldInfo field={field} />
-        </>
-    )}
-</form.Field>
+                                <SelectTrigger className="w-full max-w-[770px] bg-muted">
+                                    <SelectValue placeholder={t("ui.zones.placeholders.category")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {genres.map((genre) => (
+                                            <SelectItem
+                                                key={genre.id}
+                                                value={genre.name}
+                                            >
+                                                {t(`ui.genres.${genre.name.toLowerCase()}`)}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <FieldInfo field={field} />
+                        </>
+                    )}
+                </form.Field>
             </div>
-            
-            <div className='pl-4 pr-4'>
+
+            {/* Campo para el número de estanterías */}
+            <div className="pl-4 pr-4">
                 <form.Field
                     name="n_bookshelves"
                     validators={{
@@ -188,13 +181,13 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
                             if (value === null || value === undefined || value.toString().trim() === "") {
                                 return t("ui.validation.required", { attribute: t("ui.zones.fields.name").toLowerCase() });
                             }
-                    
+
                             const numValue = Number(value);
-                    
+
                             if (isNaN(numValue)) {
                                 return t("ui.validation.required", { attribute: t("ui.zones.fields.bookshelves").toLowerCase() });
                             }
-                    
+
                             if (numValue < 1) {
                                 return t("ui.validation.min.numeric", { attribute: t("ui.zones.fields.bookshelves").toLowerCase(), min: "1" });
                             }
@@ -218,6 +211,7 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
                                 autoComplete="off"
                                 required
                                 min={1}
+                                className="w-full" // Asegura que el input sea 100% en pantallas pequeñas
                             />
                             <FieldInfo field={field} />
                         </>
@@ -225,8 +219,8 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
                 </form.Field>
             </div>
 
-
-            <div className='pl-4 pr-4'>
+            {/* Campo para el piso */}
+            <div className="pl-4 pr-4">
                 <form.Field
                     name="floor_id"
                     validators={{
@@ -235,23 +229,21 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
                 >
                     {(field) => (
                         <>
-                              <div className="flex m-1 align-center">
+                            <div className="flex m-1 align-center">
                                 <MapPin size={16} className="mr-2 text-gray-500" />
                                 <Label htmlFor={field.name}>{t("ui.zones.fields.floor")}</Label>
                             </div>
-                            <Select value={field.state.value} onValueChange={(value) => {field.handleChange(value); }}
->
+                            <Select value={field.state.value} onValueChange={(value) => {field.handleChange(value); }}>
                                 <SelectTrigger className="w-full max-w-[770px] bg-muted">
                                     <SelectValue placeholder={t("ui.zones.placeholders.floor")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         {floors.map((floor) => (
-
-                                            <SelectItem 
-                                                key={floor.id} 
-                                                value={floor.id} 
-                                                disabled={floor.n_zones == floor.zones_count}  
+                                            <SelectItem
+                                                key={floor.id}
+                                                value={floor.id}
+                                                disabled={floor.n_zones == floor.zones_count}
                                             >
                                                 {t("ui.floors.floor")} {floor.name}
                                             </SelectItem>
@@ -260,12 +252,12 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
                                 </SelectContent>
                             </Select>
                             <FieldInfo field={field} />
-                                        </>
-                                    )}
+                        </>
+                    )}
                 </form.Field>
             </div>
 
-
+            {/* Botones de cancelar y guardar */}
             <div className="flex justify-between gap-4 bg-muted h-20 p-5 rounded-b-lg">
                 <Button
                     type="button"
@@ -290,14 +282,13 @@ export default function ZoneForm({ initialData, genres, floors, zones, page, per
                     selector={(state) => [state.canSubmit, state.isSubmitting]}
                 >
                     {([canSubmit, isSubmitting]) => (
-                        <Button type="submit" disabled={!canSubmit} className='bg-blue-500 text-white'>
+                        <Button type="submit" disabled={!canSubmit} className="bg-blue-500 text-white">
                             <Save />
                             {isSubmitting
                                 ? t("ui.zones.buttons.saving")
                                 : initialData
                                     ? t("ui.zones.buttons.update")
                                     : t("ui.zones.buttons.save")}
-                                    
                         </Button>
                     )}
                 </form.Subscribe>

@@ -11,6 +11,7 @@ use Domain\Floors\Model\Floor;
 use Domain\Genres\Model\Genre;
 use Domain\Floors\Actions\FloorStoreAction;
 use Domain\Floors\Actions\FloorUpdateAction;
+use Illuminate\Support\Facades\Gate;
 
 class FloorsController extends Controller
 {
@@ -19,6 +20,8 @@ class FloorsController extends Controller
      */
     public function index()
     {
+         Gate::authorize('report.view');
+
         $floors = Floor::withCount('zones')->orderBy('name')->get();
 
         $results = $floors->map(function ($floor) {
@@ -40,6 +43,7 @@ class FloorsController extends Controller
      */
     public function create()
     {
+        Gate::authorize('report.print');
         $floors = Floor::all()->pluck('name');
 
         return Inertia::render('floors/Create', ["floors" => $floors]);
@@ -50,6 +54,7 @@ class FloorsController extends Controller
      */
     public function store(Request $request, FloorStoreAction $action)
     {
+        Gate::authorize('report.print');
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'integer', 'min:1', 'unique:floors,name'],
             'n_zones' => ['required', 'integer', 'min:1'],
@@ -79,6 +84,7 @@ class FloorsController extends Controller
      */
     public function edit(Request $request, Floor $floor)
     {
+        Gate::authorize('report.print');
         $floors = Floor::where('name', '!=', $floor->name)->pluck('name');
 
         return Inertia::render('floors/Edit', [
@@ -94,6 +100,7 @@ class FloorsController extends Controller
      */
     public function update(Request $request, Floor $floor, FloorUpdateAction $action)
     {
+        Gate::authorize('report.print');
         $validator = Validator::make($request->all(), [
             'name' => [
                 'required',
@@ -128,6 +135,7 @@ class FloorsController extends Controller
      */
     public function destroy(string $id)
     {
+        Gate::authorize('report.print');
         //
     }
 }

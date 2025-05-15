@@ -15,10 +15,18 @@ import { FiltersTable, FilterConfig } from "@/components/stack-table/FiltersTabl
 import { toast } from "sonner";
 import { ColumnDef, Row } from "@tanstack/react-table";
 
+interface PageProps {
+    auth: {
+        user: any;
+        permissions: string[];
+    };
+}
 
 export default function ZonesIndex() {
   const { t } = useTranslations();
   const { url } = usePage();
+  const page = usePage<{ props: PageProps }>();
+  const auth = page.props.auth;
 
   // Obtener los parámetros de la URL actual
   const urlParams = new URLSearchParams(url.split('?')[1] || '');
@@ -115,11 +123,19 @@ export default function ZonesIndex() {
       header: t("ui.floors.columns.actions") || "Actions",
       renderActions: (zone) => (
         <>
+        {auth.permissions.includes('report.print') ? (
           <Link href={`/zones/${zone.id}/edit?page=${currentPage}&perPage=${perPage}`}>
             <Button variant="outline" size="icon" title={t("ui.users.buttons.edit") || "Edit user"}>
               <PencilIcon className="h-4 w-4" />
             </Button>
           </Link>
+        ) : (
+          <Button variant="outline" size="icon" disabled title={t("ui.users.buttons.edit") || "Edit user"}>
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        )}
+
+        {auth.permissions.includes('report.print') ? (
           <DeleteDialog
             id={zone.id}
             onDelete={handleDeleteUser}
@@ -131,6 +147,11 @@ export default function ZonesIndex() {
               </Button>
             }
           />
+        ) : (
+          <Button variant="outline" size="icon" disabled className="text-destructive hover:text-destructive" title={t("ui.users.buttons.delete") || "Delete user"}>
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        )}
         </>
       ),
     }),
@@ -142,12 +163,19 @@ export default function ZonesIndex() {
               <div className="space-y-6">
                   <div className="flex items-center justify-between">
                       <h1 className="text-3xl font-bold">{t('ui.zones.title')}</h1>
+                      {auth.permissions.includes('report.print') ? (
                       <Link href="/zones/create">
                           <Button>
                               <PlusIcon className="mr-2 h-4 w-4" />
                               {t('ui.zones.buttons.new')}
                           </Button>
                       </Link>
+                      ) : (
+                          <Button disabled>
+                              <PlusIcon className="mr-2 h-4 w-4" />
+                              {t('ui.zones.buttons.new')}
+                          </Button>
+                      )}
                   </div>
                   <div></div>
 

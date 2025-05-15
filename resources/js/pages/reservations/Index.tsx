@@ -15,13 +15,20 @@ import { PencilIcon, PlusIcon, Repeat, TrashIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-interface ReservationProps extends PageProps{
-  lang: string
+
+interface PageProps {
+    lang: string
+    auth: {
+        user: any;
+        permissions: string[];
+    };
 }
 
-export default function ReservationsIndex({ lang }: ReservationProps) {
+export default function ReservationsIndex({ lang }: PageProps) {
     const { t } = useTranslations();
     const { url } = usePage();
+    const page = usePage<{ props: PageProps }>();
+    const auth = page.props.auth;
 
     // Obtener los parámetros de la URL actual
     const urlParams = new URLSearchParams(url.split('?')[1] || '');
@@ -103,8 +110,7 @@ export default function ReservationsIndex({ lang }: ReservationProps) {
                     header: t('ui.reservations.columns.actions') || 'Actions',
                     renderActions: (reservation) => (
                         <>
-                           
-
+                           {auth.permissions.includes('report.print') ? (
                             <DeleteDialog
                                 id={reservation.id}
                                 onDelete={handleDeleteUser}
@@ -123,6 +129,17 @@ export default function ReservationsIndex({ lang }: ReservationProps) {
                                     </Button>
                                 }
                             />
+                            ) : (
+                                <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="text-destructive hover:text-destructive"
+                                        title={t('ui.users.buttons.delete') || 'Delete user'}
+                                        disabled
+                                    >
+                                        <TrashIcon className="h-4 w-4" />
+                                    </Button>
+                            )}
                         </>
                     ),
                 }),

@@ -11,6 +11,7 @@ use Domain\Loans\Actions\LoanUpdateAction;
 use Domain\Loans\Model\Loan;
 use Domain\Users\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class LoansController extends Controller
 {
@@ -19,6 +20,8 @@ class LoansController extends Controller
      */
     public function index()
     {
+        Gate::authorize('report.view');
+
         $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
         $loans = Loan::all()->toArray();
 
@@ -30,6 +33,8 @@ class LoansController extends Controller
      */
     public function create()
     {
+        Gate::authorize('report.print');
+
         $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
 
         return Inertia::render('loans/Create', [
@@ -42,6 +47,8 @@ class LoansController extends Controller
      */
     public function store(Request $request, LoanStoreAction $action)
     {
+        Gate::authorize('report.print');
+
         $validator = Validator::make($request->all(), [
             'id' => ['required', 'string', 'exists:books,id'],
             'email' => ['required', 'email', 'max:255', 'exists:users,email'],
@@ -72,6 +79,8 @@ class LoansController extends Controller
      */
     public function edit(Request $request, Loan $loan)
 {
+    Gate::authorize('report.print');
+
         $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
         $email = User::where('id', $loan->user_id)->first()->email;
         
@@ -94,6 +103,7 @@ class LoansController extends Controller
      */
     public function update(Request $request, Loan $loan, LoanUpdateAction $action)
     {
+        Gate::authorize('report.print');
 
         $validator = Validator::make($request->all(), [
             'id' => ['string'],
@@ -127,6 +137,7 @@ class LoansController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Gate::authorize('report.print');
+
     }
 }
