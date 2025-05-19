@@ -15,7 +15,7 @@ class PermissionSeeder extends Seeder
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        Permission::truncate(); // Borra todos los permisos
+        Permission::truncate(); 
 
         $user_permission = Permission::create(attributes: [
             'name' => 'users.view',

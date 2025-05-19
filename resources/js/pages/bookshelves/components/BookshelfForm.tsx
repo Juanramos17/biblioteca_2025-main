@@ -175,7 +175,7 @@ export default function FloorForm({ zones, floors, floor_id, initialData, page, 
                                             <SelectItem 
                                                 key={floor.id} 
                                                 value={floor.id} 
-                                                disabled={floor.n_zones === floor.zones_count}  
+                                                
                                             >
                                                 {t("ui.floors.floor")} {floor.name}
                                             </SelectItem>

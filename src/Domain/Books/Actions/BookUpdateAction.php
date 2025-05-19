@@ -19,8 +19,9 @@ class BookUpdateAction
             'bookshelf_id' => $data['bookshelf_id'],
         ];
 
-        $book->clearMediaCollection('images');
+
         foreach($images as $file){
+            $book->clearMediaCollection('images');
             $book->addMedia($file)->toMediaCollection('images', 'images');
         };
     

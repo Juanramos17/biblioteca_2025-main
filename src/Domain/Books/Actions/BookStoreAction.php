@@ -20,11 +20,28 @@ class BookStoreAction
             'bookshelf_id' => $data['bookshelf_id'],
         ]);
 
-        foreach($images as $file){
-            $book->addMedia($file)->toMediaCollection('images', 'images');
-        };
+        if ($images->count() > 0) {
+            foreach ($images as $file) {
+                $book->addMedia($file)->toMediaCollection('images', 'images');
+            }
+        } else {
+            $otherBookWithImage = Book::where('ISBN', $data['ISBN'])
+                ->where('id', '!=', $book->id)
+                ->get()
+                ->filter(fn($b) => $b->getFirstMedia('images'))
+                ->first();
+
+            if ($otherBookWithImage) {
+                $media = $otherBookWithImage->getFirstMedia('images');
+                if ($media) {
+                    $book->addMedia($media->getPath())
+                         ->preservingOriginal()
+                         ->toMediaCollection('images', 'images');
+                }
+            }
+        }
    
-        $genreNames = explode(',', $data['genre']);  
+        $genreNames = explode(', ', $data['genre']);  
 
        
         $genreNames = array_map('trim', $genreNames);
@@ -36,6 +53,7 @@ class BookStoreAction
                                       
     
         $book->genres()->sync($genreIds);
+
     
         return BookResource::fromModel($book);
     }

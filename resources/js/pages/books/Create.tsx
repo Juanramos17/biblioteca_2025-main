@@ -37,27 +37,34 @@ interface BookProps extends PageProps {
   }[];
   page?: string;
   perPage?: string;
+  books:{
+        ISBN: string;
+        author: string;
+        title: string;
+        genre: string;
+        publisher: string;
+        path: string;
+    }
 }
 
-export default function CreateBookshelf({ zones, floors, genres }: BookProps) {
+export default function CreateBookshelf({ zones, floors, genres, books }: BookProps) {
   const { t } = useTranslations();
 
   return (
     <BookLayout title={t("ui.books.create")}>
-      <div className="flex flex-col items-center w-full px-4 sm:px-6 md:px-8">
-        <div className="w-full max-w-[900px] bg-muted/50 rounded-lg shadow-md">
+      <div className="flex flex-col items-center w-full px-4">
+        <div className="ww-full sm:w-[800px] flex flex-col bg-muted/50 rounded-lg">
 
-          <CardHeader className="w-full flex justify-start bg-muted p-4 rounded-t-lg">
-            <div className="flex items-center space-x-2">
+          <CardHeader className="w-full flex flex-col justify-start bg-muted p-4 rounded-t-lg">
+            <div className="flex items-center space-x-2 mb-2">
               <Building2 size={20} className="text-blue-500" />
               <h2 className="font-bold text-xl">{t("ui.books.create")}</h2>
             </div>
             <p className="text-gray-500 text-sm mb-3">{t("ui.books.info")}</p>
           </CardHeader>
 
-          <div className="p-4">
-            <BookForm zones={zones} floors={floors} genres={genres} />
-          </div>
+            <BookForm zones={zones} floors={floors} genres={genres} books={books} />
+          
         </div>
       </div>
     </BookLayout>

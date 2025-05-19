@@ -10,7 +10,12 @@ import { Book, Building2, Calendar, Mail, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { enUS, es } from 'date-fns/locale';
+import { Check, ChevronsUpDown } from 'lucide-react';
 
 interface ReservationProps {
     initialData?: {
@@ -21,6 +26,9 @@ interface ReservationProps {
     };
     page?: string;
     perPage?: string;
+    emails: {
+        email: string;
+    }[];
 }
 
 // Field error display component
@@ -35,12 +43,14 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export default function ReservationForm({ initialData, page, perPage }: ReservationProps) {
+export default function ReservationForm({ initialData, page, perPage, emails }: ReservationProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const url = window.location.href;
     const params = new URLSearchParams(window.location.search);
     const [selected, setSelected] = useState(initialData?.date || undefined);
+    const [open, setOpen] = React.useState(false);
+    const [value, setValue] = React.useState('');
 
     const form = useForm({
         defaultValues: {
@@ -149,26 +159,49 @@ export default function ReservationForm({ initialData, page, perPage }: Reservat
                     }}
                 >
                     {(field) => (
-                        <>
-                            <div className="flex items-center mb-2">
-                                <Mail size={16} className="mr-2 text-gray-500" />
-                                <Label htmlFor={field.name} className="text-sm">{t('ui.users.fields.email')}</Label>
-                            </div>
-                            <Input
-                                id={field.name}
-                                name={field.name}
-                                type="text"
-                                value={field.state.value}
-                                onChange={(e) => field.handleChange(e.target.value)}
-                                onBlur={field.handleBlur}
-                                placeholder={t('ui.users.placeholders.email')}
-                                disabled={form.state.isSubmitting}
-                                required={false}
-                                autoComplete="off"
-                                className="w-full"
-                            />
-                            <FieldInfo field={field} />
-                        </>
+                       <>
+                                <div className="mb-1 flex items-center gap-1">
+                                    <Mail size={14} className="text-gray-500" />
+                                    <Label htmlFor={field.name} className="text-sm">
+                                        {t('ui.users.fields.email')}
+                                    </Label>
+                                </div>
+                                <Popover open={open} onOpenChange={setOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" role="combobox" aria-expanded={open} className="w-auto justify-between">
+                                            {value ? emails.find((email) => email.email === value)?.email : 'Select framework...'}
+                                            <ChevronsUpDown className="opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[200px] p-0">
+                                        <Command>
+                                            <CommandInput placeholder="Search framework..." className="h-9 w-auto" />
+                                            <CommandList>
+                                                <CommandEmpty>No framework found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {emails.map((email) => (
+                                                        <CommandItem
+                                                            key={email.email}
+                                                            value={email.email}
+                                                            onSelect={(currentValue) => {
+                                                                setValue(currentValue === value ? '' : currentValue);
+                                                                setOpen(false);
+                                                                field.handleChange(currentValue);
+                                                            }}
+                                                        >
+                                                            {email.email}
+                                                            <Check
+                                                                className={cn('ml-auto', value === email.email ? 'opacity-100' : 'opacity-0')}
+                                                            />
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                                <FieldInfo field={field} />
+                            </>
                     )}
                 </form.Field>
             </div>

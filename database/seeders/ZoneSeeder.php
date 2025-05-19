@@ -12,10 +12,8 @@ class ZoneSeeder extends Seeder
      */
     public function run(): void
     {
-        // Limpiar la tabla de zonas antes de insertar datos
         Zone::truncate();
 
-        // Crear 10 zonas utilizando el factory
-        Zone::factory()->count(10)->create();
+        Zone::factory()->count(20)->create();
     }
 }

@@ -38,9 +38,17 @@ interface BookProps extends PageProps {
     perPage?: string;
     image_path: string;
     image: File;
+    books:{
+        ISBN: string;
+        author: string;
+        title: string;
+        genre: string;
+        publisher: string;
+        path: string;
+    }
 }
 
-export default function EditBook({ zones, floors, floor_id, zone_id, genres, initialData, page, perPage, image_path, image }: BookProps) {
+export default function EditBook({ zones, floors, floor_id, zone_id, genres, initialData, page, perPage, image_path, image, books }: BookProps) {
     const { t } = useTranslations();
 
     return (
@@ -56,7 +64,7 @@ export default function EditBook({ zones, floors, floor_id, zone_id, genres, ini
                     </CardHeader>
 
                     <div className="p-4">
-                        <BookForm genres={genres} zones={zones} floors={floors} floor_id={floor_id} zone_id={zone_id} initialData={initialData} page={page} perPage={perPage} image_path={image_path} image={image}/>
+                        <BookForm genres={genres} zones={zones} floors={floors} floor_id={floor_id} zone_id={zone_id} initialData={initialData} page={page} perPage={perPage} image_path={image_path} image={image} books={books}/>
                     </div>
                 </div>
             </div>

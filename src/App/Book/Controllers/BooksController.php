@@ -15,6 +15,9 @@ use Domain\Floors\Model\Floor;
 use Domain\Zones\Model\Zone;
 use Domain\Genres\Model\Genre;
 use Domain\Zones\Actions\ZoneUpdateAction;
+use Illuminate\Support\Facades\Gate;
+
+use function PHPSTORM_META\map;
 
 class BooksController extends Controller
 {
@@ -23,6 +26,7 @@ class BooksController extends Controller
      */
     public function index()
     {
+        Gate::authorize('product.view');
         $books = Book::all();
 
 
@@ -34,6 +38,7 @@ class BooksController extends Controller
      */
     public function create()
     {
+        Gate::authorize('product.create');
         $genres = Genre::all();
 
         $floors = Floor::withCount('zones')
@@ -55,11 +60,17 @@ class BooksController extends Controller
             ->orderBy('category')
             ->get();
 
+        $books = Book::all()->map(function ($book) {
+            $book['path'] = $book->getFirstMediaUrl('images');
+            return $book;
+        })->toArray();
+
 
         return Inertia::render('books/Create', [
             "genres" => $genres,
             "zones" => $zones,
             "floors" => $floors,
+            'books' => $books,
         ]);
     }
 
@@ -68,12 +79,13 @@ class BooksController extends Controller
      */
     public function store(Request $request, BookStoreAction $action)
     {
+        Gate::authorize('product.create');
 
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
             'publisher' => ['required', 'string', 'max:255'],
-            'ISBN' => ['required','string','max:20',],
+            'ISBN' => ['required','string','max:20'],
             'genre' => ['required', 'string', 'max:255'],
             'bookshelf_id' => ['required', 'exists:bookshelves,id'],
         ]);
@@ -101,6 +113,8 @@ class BooksController extends Controller
      */
     public function edit(Request $request, Book $book)
     {
+        Gate::authorize('product.edit');
+
         $genres = Genre::all();
 
         $floors = Floor::withCount('zones')
@@ -122,7 +136,9 @@ class BooksController extends Controller
             ->orderBy('category')
             ->get();
 
-        $image = $book->getFirstMediaUrl('images');
+        $image_path = $book->getFirstMediaUrl('images');
+
+
 
         return Inertia::render('books/Edit', [
             'initialData' => $book,
@@ -133,7 +149,8 @@ class BooksController extends Controller
             "zones" => $zones,
             'floor_id' => $book->bookshelf->zone->floor->id,
             'zone_id' => $book->bookshelf->zone->id,
-            'image_path' => $image,
+            'image_path' => $image_path,
+            // 'image' => $image,
         ]);
     }
 
@@ -142,6 +159,7 @@ class BooksController extends Controller
      */
     public function update(Request $request, Book $book, BookUpdateAction $action)
     {
+        Gate::authorize('product.edit');
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
@@ -149,7 +167,7 @@ class BooksController extends Controller
             'ISBN' => ['required','string','max:20'],
             'genre' => ['required', 'string', 'max:255'],
             'bookshelf_id' => ['required', 'exists:bookshelves,id'],
-            
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ]);
 
         if ($validator->fails()) {
@@ -175,6 +193,6 @@ class BooksController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Gate::authorize('product.delete');
     }
 }

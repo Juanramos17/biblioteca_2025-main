@@ -126,6 +126,7 @@ export default function FloorsIndex() {
                             {auth.permissions.includes('report.print') ? (
                                 <DeleteDialog
                                     id={floor.id}
+                                    successMessage={t('messages.floors.deleted')}
                                     onDelete={handleDeleteUser}
                                     title={t('ui.floors.delete') || 'Delete Floor'}
                                     description={

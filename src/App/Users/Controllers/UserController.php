@@ -25,6 +25,7 @@ class UserController extends Controller
 {
     public function index()
     {
+        
         Gate::authorize('users.view');
         return Inertia::render('users/Index');
     }

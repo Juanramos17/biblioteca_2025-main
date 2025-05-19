@@ -1,7 +1,5 @@
 <?php
 
-use function React\Promise\all;
-
 return [
     'messages' => [
         'users' => [
@@ -390,6 +388,9 @@ return [
             'floor' => 'Piso al que pertenece',
             'zone' => 'Zona al que pertenece',
             'status' => 'Estado del libro',
+            'available' => 'Disponible',
+            'not_available' => 'No disponible',
+            'select_all' => 'Seleccionar todos',
         ],
         'placeholders' => [
             'title' => 'Titulo del libro',
@@ -470,6 +471,8 @@ return [
         'isLoaned' => 'Estado del préstamo',
         'loaned' => 'Prestado',
         'finished' => 'Finalizado',
+        "to" => "Fecha hasta",
+        "from" => "Fecha desde",
     ],
     'placeholders' => [
         'title' => 'Título del libro',
@@ -528,6 +531,10 @@ return [
    
     "date"=> [
       "invalid"=> "Fecha no válida",
+    ],
+
+    "utils" =>[
+        "pickDate"=> "Seleccionar fecha",
     ]
 ],
 
@@ -546,6 +553,7 @@ return [
             'title' => 'Titulo del libro',
             'user' => 'Usuario del préstamo',
             'loan_date' => 'Fecha de la reserva',
+            
         ],
         'placeholders' => [
             'title' => 'Titulo del libro',

@@ -8,6 +8,7 @@ import { router } from '@inertiajs/react';
 import type { AnyFieldApi } from '@tanstack/react-form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
+import { set } from 'lodash';
 import { Barcode, BookOpen, Factory, FileText, ImageIcon, MapPin, Save, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -45,6 +46,14 @@ interface BookProps {
     perPage?: string;
     image: File;
     image_path: string;
+    books: {
+        ISBN: string;
+        author: string;
+        title: string;
+        genre: string;
+        publisher: string;
+        path: string;
+    };
 }
 
 // Field error display component
@@ -59,11 +68,15 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
     );
 }
 
-export default function FloorForm({ zones, floors, floor_id, genres, zone_id, initialData, page, perPage, image, image_path }: BookProps) {
+export default function BookForm({ zones, floors, floor_id, genres, zone_id, initialData, page, perPage, image, image_path, books }: BookProps) {
     const { t } = useTranslations();
-    const [selectedImage, setSelectedImage] = useState(image??'');
+    const [selectedImage, setSelectedImage] = useState(image ?? '');
     const queryClient = useQueryClient();
-    console.log(image_path);
+    const [image2, setValueImg2] = useState<string>();
+    const [selectedGenres, setSelectedGenres] = useState<string[]>(initialData?.genre ? initialData.genre.split(',').map((g) => g.trim()) : []);
+
+    const [ISBNSelected, setISBNSelected] = useState<boolean>(false);
+
     const form = useForm({
         defaultValues: {
             title: initialData?.title ?? '',
@@ -74,14 +87,13 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
             bookshelf_id: initialData?.bookshelf_id ?? '',
             floor_id: floor_id ?? '',
             zone_id: zone_id ?? '',
-            image:"",
-
+            image: '',
         },
 
         onSubmit: async ({ value }) => {
             const formData = new FormData();
             formData.append('title', value.title);
-            formData.append('genre', value.genre);
+            formData.append('genre', selectedGenres.join(', '));
             formData.append('publisher', value.publisher);
             formData.append('author', value.author);
             formData.append('ISBN', value.ISBN);
@@ -90,6 +102,8 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
             formData.append('zone_id', value.zone_id);
             formData.append('image', selectedImage);
             formData.append('_method', 'PUT');
+
+            value.genre = selectedGenres.join(', ');
 
             const options = {
                 onSuccess: () => {
@@ -126,8 +140,6 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
         form.handleSubmit();
     };
 
-    const [selectedGenres, setSelectedGenres] = useState<string[]>(initialData?.genre ? initialData.genre.split(',').map((g) => g.trim()) : []);
-
     const [selectedFloor, setSelectedFloor] = useState<string>(floor_id ?? '');
     useEffect(() => {
         if (floor_id) {
@@ -142,8 +154,26 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
             setSelectedZone(zone_id);
         }
     }, [zone_id]);
-
     
+    function handleISBN(ISBN: string) {
+        if (ISBN.length == 13) {
+            const confirmAction = window.confirm('¿Deseás rellenar el formulario con los datos del libro con mismo ISBN?');
+
+            if (!confirmAction) return;
+
+            books.map((book) => {
+                if (book.ISBN == ISBN) {
+                    form.setFieldValue('title', book.title);
+                    setSelectedGenres(book.genre.split(', ').map((g) => g.trim()));
+                    console.log(selectedGenres);
+                    form.setFieldValue('publisher', book.publisher);
+                    form.setFieldValue('author', book.author);
+                    setValueImg2(book.path);
+                    setISBNSelected(true);
+                }
+            });
+        }
+    }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -183,7 +213,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                                 onChange={(e) => field.handleChange(e.target.value)}
                                 onBlur={field.handleBlur}
                                 placeholder={t('ui.books.placeholders.title')}
-                                disabled={form.state.isSubmitting}
+                                disabled={form.state.isSubmitting || ISBNSelected}
                                 required
                                 autoComplete="off"
                             />
@@ -199,12 +229,6 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                         onChangeAsync: async ({ value }) => {
                             await new Promise((resolve) => setTimeout(resolve, 500));
 
-                            if (!value || value.length === 0) {
-                                return t('ui.validation.required', {
-                                    attribute: t('ui.books.fields.genres').toLowerCase(),
-                                });
-                            }
-
                             return undefined;
                         },
                     }}
@@ -217,18 +241,15 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                             <MultiSelect
                                 options={genres.map((genre) => ({
                                     value: genre.name,
-                                    label: t(`ui.genres.${genre.name.toLowerCase()}`), 
+                                    label: genre.name,
                                 }))}
-                                value={field.state.value}
-                                onValueChange={(selected: string[]) => {
-                                    setSelectedGenres(selected);
-                                    field.handleChange(selected.join(', '));
-                                }}
-                                defaultValue={selectedGenres}
-                                onBlur={field.handleBlur}
-                                placeholder={t('ui.books.placeholders.selectGenres')}
+                                onValueChange={setSelectedGenres}
+                                value={selectedGenres}
+                                placeholder={t('ui.books.placeholders.genres')}
                                 variant="inverted"
+                                animation={2}
                                 maxCount={5}
+                                disabled={form.state.isSubmitting || ISBNSelected}
                             />
                             <FieldInfo field={field} />
                         </>
@@ -380,7 +401,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                                 onChange={(e) => field.handleChange(e.target.value)}
                                 onBlur={field.handleBlur}
                                 placeholder={t('ui.books.placeholders.author')}
-                                disabled={form.state.isSubmitting}
+                                disabled={form.state.isSubmitting || ISBNSelected}
                                 autoComplete="off"
                                 className="bg-muted w-full max-w-[770px]"
                             />
@@ -415,7 +436,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                                 onChange={(e) => field.handleChange(e.target.value)}
                                 onBlur={field.handleBlur}
                                 placeholder={t('ui.books.placeholders.publisher')}
-                                disabled={form.state.isSubmitting}
+                                disabled={form.state.isSubmitting || ISBNSelected}
                                 autoComplete="off"
                                 className="bg-muted w-full max-w-[770px]"
                             />
@@ -444,7 +465,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                                 });
                             }
 
-                            if (trimmed.length !== 10 && trimmed.length !== 13) {
+                            if (trimmed.length !== 13) {
                                 return t('ui.validation.length', {
                                     attribute: t('ui.books.fields.ISBN').toLowerCase(),
                                     length: '10 o 13',
@@ -465,10 +486,12 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                                 id={field.name}
                                 name={field.name}
                                 value={field.state.value}
-                                onChange={(e) => field.handleChange(e.target.value)}
+                                onChange={(e) => {
+                                    field.handleChange(e.target.value), handleISBN(e.target.value);
+                                }}
                                 onBlur={field.handleBlur}
                                 placeholder={t('ui.books.placeholders.ISBN')}
-                                disabled={form.state.isSubmitting}
+                                disabled={form.state.isSubmitting || ISBNSelected}
                                 autoComplete="off"
                                 className="bg-muted w-full max-w-[770px]"
                             />
@@ -483,8 +506,6 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                     name="image"
                     validators={{
                         onChange: ({ value }) => {
-                           
-
                             return undefined;
                         },
                     }}
@@ -496,34 +517,40 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                                 <Label htmlFor={field.name}>{t('ui.books.fields.img_path')}</Label>
                             </div>
                             <Input
-                                            id={field.name}
-                                            name={field.name}
-                                            type="file"
-                                            // value={field.state.value}
-                                            onChange={(e) => {
-                                                field.handleChange(e.target.files[0]);
-                                                console.log(e.target.files[0]);
-                                                setSelectedImage(e.target.files[0]);
-                                            }}
-                                            onBlur={field.handleBlur}
-                                            placeholder={t('ui.books.placeholders.img_path')}
-                                            disabled={form.state.isSubmitting}
-                                            required={true}
-                                            autoComplete="off"
-                                            accept="image/*"
-                                        />
+                                id={field.name}
+                                name={field.name}
+                                type="file"
+                                // value={field.state.value}
+                                onChange={(e) => {
+                                    field.handleChange(e.target.files[0]);
+                                    console.log(e.target.files[0]);
+                                    setSelectedImage(e.target.files[0]);
+                                }}
+                                onBlur={field.handleBlur}
+                                placeholder={t('ui.books.placeholders.img_path')}
+                                disabled={form.state.isSubmitting}
+                                required={true}
+                                autoComplete="off"
+                                accept="image/*"
+                            />
 
-                                        {selectedImage && (
-                                            <img
-                                                src={URL.createObjectURL(selectedImage)}
-                                                alt="Preview"
-                                                style={{ width: '200px', height: 'auto', marginTop: '10px' }}
-                                            />
-                                        )}
+                            {selectedImage && (
+                                <img
+                                    src={URL.createObjectURL(selectedImage)}
+                                    alt="Preview"
+                                    style={{ width: '200px', height: 'auto', marginTop: '10px' }}
+                                />
+                            )}
 
                             {initialData && !selectedImage && (
                                 <span>
                                     <img src={image_path} alt="Preview" style={{ width: '200px', height: 'auto', marginTop: '10px' }} />
+                                </span>
+                            )}
+
+                            {image2 && (
+                                <span>
+                                    <img src={image2} alt="Preview" style={{ width: '200px', height: 'auto', marginTop: '10px' }} />
                                 </span>
                             )}
                         </>
@@ -531,7 +558,7 @@ export default function FloorForm({ zones, floors, floor_id, genres, zone_id, in
                 </form.Field>
             </div>
 
-            <div className="bg-muted flex h-20 justify-between gap-4 rounded-b-lg p-5">
+            <div className="flex  sm:flex-row justify-between gap-4 bg-muted h-20 p-5 rounded-b-lg w-full">
                 <Button
                     type="button"
                     variant="outline"

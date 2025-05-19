@@ -37,8 +37,11 @@ class LoansController extends Controller
 
         $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
 
+        $emails = User::all()->toArray();
+
         return Inertia::render('loans/Create', [
-           'lang' => $lang,
+            'lang' => $lang,
+            'emails' => $emails,
         ]);
     }
 
@@ -52,7 +55,7 @@ class LoansController extends Controller
         $validator = Validator::make($request->all(), [
             'id' => ['required', 'string', 'exists:books,id'],
             'email' => ['required', 'email', 'max:255', 'exists:users,email'],
-            'date' => ['required', 'date'], 
+            'date' => ['required', 'date'],
         ]);
 
         if ($validator->fails()) {
@@ -78,24 +81,27 @@ class LoansController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, Loan $loan)
-{
-    Gate::authorize('report.print');
+    {
+        Gate::authorize('report.print');
+
+        $emails = User::all()->toArray();
 
         $lang = Auth::user()->settings ? Auth::user()->settings->preferences['locale'] : 'en';
         $email = User::where('id', $loan->user_id)->first()->email;
-        
+
         return Inertia::render('loans/Edit', [
             'initialData' => [
-            'id' => $loan->book_id, 
-            'loan_id' => $loan->id,
-            'email' => $email,
-            'date' => $loan->due_date,
-        ],
-        'page' => $request->query('page'),
-        'perPage' => $request->query('perPage'),
-        'lang' => $lang,
+                'id' => $loan->book_id,
+                'loan_id' => $loan->id,
+                'email' => $email,
+                'date' => $loan->due_date,
+            ],
+            'page' => $request->query('page'),
+            'perPage' => $request->query('perPage'),
+            'lang' => $lang,
+            'emails' => $emails,
         ]);
-}
+    }
 
 
     /**
@@ -120,7 +126,7 @@ class LoansController extends Controller
         $action($loan, $validator->validated());
 
         $redirectUrl = route('loans.index');
-        
+
         if ($request->has('page')) {
             $redirectUrl .= "?page=" . $request->query('page');
             if ($request->has('perPage')) {
@@ -138,6 +144,5 @@ class LoansController extends Controller
     public function destroy(string $id)
     {
         Gate::authorize('report.print');
-
     }
 }

@@ -13,9 +13,18 @@ import { ClipboardCheck, Handshake, PencilIcon, PlusIcon, TrashIcon } from 'luci
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+interface PageProps {
+    auth: {
+        user: any;
+        permissions: string[];
+    };
+}
+
 export default function BooksIndex() {
     const { t } = useTranslations();
     const { url } = usePage();
+    const page = usePage<{ props: PageProps }>();
+    const auth = page.props.auth;
 
     // Obtener los parámetros de la URL actual
     const urlParams = new URLSearchParams(url.split('?')[1] || '');
@@ -38,8 +47,6 @@ export default function BooksIndex() {
         filters.zone ? `${filters.zone}` : 'null',
         filters.status ? `${filters.status}` : 'null',
     ];
-
-    console.log('Combined Search:', combinedSearch);
 
     const {
         data: books,
@@ -66,13 +73,13 @@ export default function BooksIndex() {
     };
 
     const handleFilterChange = (newFilters: Record<string, any>) => {
-        const filtersChanged = newFilters!==filters;
+        const filtersChanged = newFilters !== filters;
 
         if (filtersChanged) {
             setCurrentPage(1);
         }
         setFilters(newFilters);
-        };
+    };
 
     const handlePerPageChange = (newPerPage: number) => {
         setPerPage(newPerPage);
@@ -161,50 +168,81 @@ export default function BooksIndex() {
                     header: t('ui.floors.columns.actions') || 'Actions',
                     renderActions: (book) => (
                         <>
-                            {!book.is_available ? (
-                                <Button
-                                    variant="outline"
-                                    onClick={() => handleCreateReservation(book.id, book.ISBN, book.author, book.title)}
-                                    size="icon"
-                                    title={t('ui.books.buttons.reservation') || 'Reserve book'}
-                                >
-                                    <ClipboardCheck className="h-4 w-4 text-blue-400" />
-                                </Button>
+                            {auth.permissions.includes('report.export') ? (
+                                !book.is_available ? (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleCreateReservation(book.id, book.ISBN, book.author, book.title)}
+                                        size="icon"
+                                        title={t('ui.books.buttons.reservation') || 'Reserve book'}
+                                    >
+                                        <ClipboardCheck className="h-4 w-4 text-blue-400" />
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleCreate(book.id, book.ISBN, book.author, book.title)}
+                                        size="icon"
+                                        title={t('ui.books.buttons.loan') || 'Loan book'}
+                                        disabled={!book.is_available}
+                                    >
+                                        <Handshake className="h-4 w-4 text-orange-400" />
+                                    </Button>
+                                )
                             ) : (
-                                <Button
-                                    variant="outline"
-                                    onClick={() => handleCreate(book.id, book.ISBN, book.author, book.title)}
-                                    size="icon"
-                                    title={t('ui.books.buttons.loan') || 'Loan book'}
-                                    disabled={!book.is_available}
-                                >
-                                    <Handshake className="h-4 w-4 text-orange-400" />
+                                <Button variant="outline" size="icon" title={t('ui.books.buttons.loan') || 'Loan book'} disabled>
+                                    {book.is_available ? (
+                                        <Handshake className="h-4 w-4 text-orange-400" />
+                                    ) : (
+                                        <ClipboardCheck className="h-4 w-4 text-blue-400" />
+                                    )}
                                 </Button>
                             )}
 
-                            <Link href={`/books/${book.id}/edit?page=${currentPage}&perPage=${perPage}`}>
-                                <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
+                            {auth.permissions.includes('product.edit') ? (
+                                <Link href={`/books/${book.id}/edit?page=${currentPage}&perPage=${perPage}`}>
+                                    <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'}>
+                                        <PencilIcon className="h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            ) : (
+                                <Button variant="outline" size="icon" title={t('ui.users.buttons.edit') || 'Edit user'} disabled>
                                     <PencilIcon className="h-4 w-4" />
                                 </Button>
-                            </Link>
+                            )}
 
-                            <DeleteDialog
-                                id={book.id}
-                                onDelete={handleDeleteUser}
-                                title={t('ui.books.delete') || 'Delete bookshelf'}
-                                description={t('ui.books.description') || 'Are you sure you want to delete this book? This action cannot be undone.'}
-                                trigger={
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="text-destructive hover:text-destructive"
-                                        title={t('ui.books.buttons.delete') || 'Delete user'}
-                                        disabled={!book.is_available}
-                                    >
-                                        <TrashIcon className="h-4 w-4" />
-                                    </Button>
-                                }
-                            />
+                            {auth.permissions.includes('product.delete') ? (
+                                <DeleteDialog
+                                    id={book.id}
+                                    successMessage={t('messages.books.deleted')}
+                                    onDelete={handleDeleteUser}
+                                    title={t('ui.books.delete') || 'Delete bookshelf'}
+                                    description={
+                                        t('ui.books.description') || 'Are you sure you want to delete this book? This action cannot be undone.'
+                                    }
+                                    trigger={
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="text-destructive hover:text-destructive"
+                                            title={t('ui.books.buttons.delete') || 'Delete user'}
+                                            disabled={!book.is_available}
+                                        >
+                                            <TrashIcon className="h-4 w-4" />
+                                        </Button>
+                                    }
+                                />
+                            ) : (
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="text-destructive hover:text-destructive"
+                                    title={t('ui.books.buttons.delete') || 'Delete user'}
+                                    disabled
+                                >
+                                    <TrashIcon className="h-4 w-4" />
+                                </Button>
+                            )}
                         </>
                     ),
                 }),
@@ -218,12 +256,19 @@ export default function BooksIndex() {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h1 className="text-3xl font-bold">{t('ui.books.title')}</h1>
-                        <Link href="/books/create">
-                            <Button>
+                        {auth.permissions.includes('product.create') ? (
+                            <Link href="/books/create">
+                                <Button>
+                                    <PlusIcon className="mr-2 h-4 w-4" />
+                                    {t('ui.books.buttons.new')}
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Button disabled>
                                 <PlusIcon className="mr-2 h-4 w-4" />
                                 {t('ui.books.buttons.new')}
                             </Button>
-                        </Link>
+                        )}
                     </div>
                     <div></div>
 
@@ -294,12 +339,11 @@ export default function BooksIndex() {
                             onFilterChange={handleFilterChange}
                             initialValues={filters}
                             containerClassName="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-
                         />
                     </div>
 
                     <div>
-                        { (books?.meta.total !== undefined && books?.meta.total > 0) && (
+                        {books?.meta.total !== undefined && books?.meta.total > 0 && (
                             <div className="mt-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm">
                                 {books.meta.total} {t('ui.info.total') || 'Total'}
                             </div>

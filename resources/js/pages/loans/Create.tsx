@@ -7,9 +7,13 @@ import LoanForm from './components/LoanForm';
 
 interface LoanProps extends PageProps {
     lang: string;
-}
+    emails:{
+        email: string;
+    }[];
+};
 
-export default function CreateLoan({ lang }: LoanProps) {
+
+export default function CreateLoan({ lang, emails }: LoanProps) {
     const { t } = useTranslations();
     const url = window.location.href;
     const params = new URLSearchParams(window.location.search);
@@ -38,8 +42,7 @@ export default function CreateLoan({ lang }: LoanProps) {
                     </CardHeader>
 
                     <div className="pr-4 pl-4 w-full">
-                        {/* Aquí se elimina el grid de columnas y se hace que todo se ajuste en una sola columna */}
-                        <LoanForm lang={lang} />
+                        <LoanForm lang={lang} emails={emails}/>
                     </div>
                 </div>
             </div>

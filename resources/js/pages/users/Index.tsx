@@ -141,6 +141,7 @@ export default function UsersIndex() {
                             {auth.permissions.includes('users.delete') ? (
                                <DeleteDialog
                                id={user.id}
+                               successMessage={t('messages.users.deleted')}
                                onDelete={handleDeleteUser}
                                title={t('ui.users.delete.title') || 'Delete user'}
                                description={

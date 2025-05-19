@@ -13,9 +13,11 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { enUS, es } from 'date-fns/locale';
+import { Check, ChevronsUpDown } from 'lucide-react';
 
 interface LoanProps {
     initialData?: {
@@ -27,23 +29,29 @@ interface LoanProps {
     page?: string;
     perPage?: string;
     lang: string;
-}
+    emails: {
+        email: string;
+    }[];
+    };
+
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
     return (
         <>
             {field.state.meta.isTouched && field.state.meta.errors.length ? (
-                <p className="text-destructive text-xs mt-1">{field.state.meta.errors.join(', ')}</p>
+                <p className="text-destructive mt-1 text-xs">{field.state.meta.errors.join(', ')}</p>
             ) : null}
-            {field.state.meta.isValidating ? <p className="text-muted-foreground text-xs mt-1">Validando...</p> : null}
+            {field.state.meta.isValidating ? <p className="text-muted-foreground mt-1 text-xs">Validando...</p> : null}
         </>
     );
 }
 
-export default function LoanForm({ initialData, page, perPage, lang }: LoanProps) {
+export default function LoanForm({ initialData, page, perPage, lang, emails }: LoanProps) {
     const { t } = useTranslations();
     const queryClient = useQueryClient();
     const [date, setDate] = React.useState(initialData?.date || undefined);
+    const [open, setOpen] = React.useState(false);
+    const [value, setValue] = React.useState('');
 
     const form = useForm({
         defaultValues: {
@@ -121,7 +129,7 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                                     placeholder={t('ui.loans.placeholders.book')}
                                     disabled
                                     autoComplete="off"
-                                    className="w-full text-sm py-2"
+                                    className="w-full py-2 text-sm"
                                 />
                                 <FieldInfo field={field} />
                             </>
@@ -151,18 +159,40 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                                         {t('ui.users.fields.email')}
                                     </Label>
                                 </div>
-                                <Input
-                                    id={field.name}
-                                    name={field.name}
-                                    type="email"
-                                    value={field.state.value}
-                                    onChange={(e) => field.handleChange(e.target.value)}
-                                    onBlur={field.handleBlur}
-                                    placeholder={t('ui.users.placeholders.email')}
-                                    disabled={form.state.isSubmitting}
-                                    autoComplete="off"
-                                    className="w-full text-sm py-2"
-                                />
+                                <Popover open={open} onOpenChange={setOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" role="combobox" aria-expanded={open} className="w-auto justify-between">
+                                            {value ? emails.find((email) => email.email === value)?.email : 'Select framework...'}
+                                            <ChevronsUpDown className="opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[200px] p-0">
+                                        <Command>
+                                            <CommandInput placeholder="Search framework..." className="h-9 w-auto" />
+                                            <CommandList>
+                                                <CommandEmpty>No framework found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {emails.map((email) => (
+                                                        <CommandItem
+                                                            key={email.email}
+                                                            value={email.email}
+                                                            onSelect={(currentValue) => {
+                                                                setValue(currentValue === value ? '' : currentValue);
+                                                                setOpen(false);
+                                                                field.handleChange(currentValue);
+                                                            }}
+                                                        >
+                                                            {email.email}
+                                                            <Check
+                                                                className={cn('ml-auto', value === email.email ? 'opacity-100' : 'opacity-0')}
+                                                            />
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
                                 <FieldInfo field={field} />
                             </>
                         )}
@@ -210,7 +240,10 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className={cn('w-full justify-start text-left font-normal sm:w-[240px]', !date && 'text-muted-foreground')}
+                                            className={cn(
+                                                'w-full justify-start text-left font-normal sm:w-[240px]',
+                                                !date && 'text-muted-foreground',
+                                            )}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
                                             {date ? format(date, 'PPP') : <span>{t('ui.info.select')}</span>}
@@ -249,7 +282,7 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                         router.visit(url);
                     }}
                     disabled={form.state.isSubmitting}
-                    className="flex w-full items-center justify-center sm:w-auto text-sm"
+                    className="flex w-full items-center justify-center text-sm sm:w-auto"
                 >
                     <X className="mr-2 h-4 w-4" />
                     {t('ui.users.buttons.cancel')}
@@ -260,7 +293,7 @@ export default function LoanForm({ initialData, page, perPage, lang }: LoanProps
                         <Button
                             type="submit"
                             disabled={!canSubmit}
-                            className="flex w-full items-center justify-center bg-blue-500 text-white hover:bg-blue-600 sm:w-auto text-sm"
+                            className="flex w-full items-center justify-center bg-blue-500 text-sm text-white hover:bg-blue-600 sm:w-auto"
                         >
                             <Save className="mr-2 h-4 w-4" />
                             {isSubmitting ? t('ui.users.buttons.saving') : initialData ? t('ui.users.buttons.update') : t('ui.users.buttons.save')}

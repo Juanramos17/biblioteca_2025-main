@@ -3,8 +3,16 @@ import { useTranslations } from "@/hooks/use-translations";
 import { CardDescription, CardHeader } from "@/components/ui/card";
 import ReservationForm from "./components/ReservationForm";
 import { ReservationLayout } from "@/layouts/reservations/ReservationLayout";
+import { PageProps } from "@/types";
 
-export default function CreateReservation() {
+interface LoanProps extends PageProps {
+    lang: string;
+    emails:{
+        email: string;
+    }[];
+};
+
+export default function CreateReservation({emails}: LoanProps) {
   const { t } = useTranslations();
   const url = window.location.href;
   const params = new URLSearchParams(window.location.search);
@@ -33,7 +41,7 @@ export default function CreateReservation() {
           </CardHeader>
 
           <div className="pr-4 pl-4 w-full">
-            <ReservationForm />
+            <ReservationForm emails={emails}/>
           </div>
         </div>
       </div>

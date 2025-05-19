@@ -40,8 +40,10 @@ class ReservationsController extends Controller
 
         Gate::authorize('report.print');
 
+        $emails = User::all()->toArray();
+
         return Inertia::render('reservations/Create', [
-           
+           'emails' => $emails,
         ]);
     }
 

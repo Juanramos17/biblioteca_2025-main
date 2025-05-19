@@ -189,7 +189,7 @@ export default function TimelineIndex({ loans, name, lang }: PageProps) {
 
         <div className="mb-6 flex w-full flex-wrap items-center justify-center gap-4">
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700">{t('ui.filters.from')}</label>
+            <label className="text-sm font-medium text-gray-700">{t('ui.loans.filters.from')}</label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant={'outline'} className="w-[240px] justify-start text-left font-normal">
@@ -209,7 +209,7 @@ export default function TimelineIndex({ loans, name, lang }: PageProps) {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700">{t('ui.filters.to')}</label>
+            <label className="text-sm font-medium text-gray-700">{t('ui.loans.filters.to')}</label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant={'outline'} className="w-[240px] justify-start text-left font-normal">

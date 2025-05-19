@@ -138,6 +138,7 @@ export default function ZonesIndex() {
         {auth.permissions.includes('report.print') ? (
           <DeleteDialog
             id={zone.id}
+            successMessage={t('messages.zones.deleted')}
             onDelete={handleDeleteUser}
             title={t("ui.zones.delete") || "Delete zone"}
             description={t("ui.zones.description") || "Are you sure you want to delete this zone? This action cannot be undone."}

@@ -1,10 +1,24 @@
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { useTranslations } from '@/hooks/use-translations';
 import { GraphLayout } from '@/layouts/graphs/GraphLayout';
 import { usePage } from '@inertiajs/react';
 import React from 'react';
-import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
+import {
+    Bar,
+    BarChart,
+    Legend,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
 
 interface PageProps {
     topBooks: {
@@ -28,7 +42,6 @@ interface PageProps {
         reservations: number;
         floor: string;
     }[];
-
     auth: {
         user: any;
         permissions: string[];
@@ -78,16 +91,8 @@ export default function GraphIndex({ topBooks, topUsers, topZones }: PageProps) 
                 <div className="w-[300px] rounded-md border border-gray-200 bg-white p-4 text-sm text-gray-800 shadow-lg">
                     <p className="text-base font-semibold">{label}</p>
                     {data.title && <p>{data.title}</p>}
-                    {data.zone && (
-                        <p>
-                            {t('ui.zones.zone')} {data.zone}
-                        </p>
-                    )}
-                    {data.floor && (
-                        <p>
-                            {t('ui.floors.floor')} {data.floor}
-                        </p>
-                    )}
+                    {data.zone && <p>{t('ui.zones.zone')} {data.zone}</p>}
+                    {data.floor && <p>{t('ui.floors.floor')} {data.floor}</p>}
                     {data.isbn && <p>ISBN: {data.isbn}</p>}
                     {data.author && <p>Autor: {data.author}</p>}
                     {data.publisher && <p>Editorial: {data.publisher}</p>}
@@ -109,10 +114,23 @@ export default function GraphIndex({ topBooks, topUsers, topZones }: PageProps) 
         <div className="w-full rounded-2xl p-4 shadow-md sm:p-6">
             <h3 className="text-primary mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">{title}</h3>
             <div className="overflow-x-auto">
-                <div className="h-[400px] min-w-[700px]">
+                <div className="h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data} margin={{ top: 5, right: 30, left: 10, bottom: 60 }}>
-                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#999999' }} interval={0} />
+                            <XAxis
+                                dataKey="name"
+                                interval={0}
+                                tick={({ x, y, payload }) => (
+                                    <text
+                                        x={x}
+                                        y={y + 10}
+                                        textAnchor="middle"
+                                        className="fill-gray-400 text-[8px] sm:text-[10px] md:text-xs"
+                                    >
+                                        {payload.value}
+                                    </text>
+                                )}
+                            />
                             <YAxis tick={{ fill: '#999999' }} domain={[0, handleDomain(data[0].total)]} allowDecimals={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="circle" />
@@ -151,32 +169,31 @@ export default function GraphIndex({ topBooks, topUsers, topZones }: PageProps) 
     return (
         <GraphLayout title={t('ui.graph.title')}>
             {auth.permissions.includes('settings.access') ? (
-            
-            <div>
-                <div className="flex w-full flex-col items-start justify-center px-4 sm:items-center sm:px-6">
-                    
-                    <h2 className="text-primary mb-6 text-2xl font-bold sm:text-3xl">{t('ui.graph.stadistics_title')}</h2>
-                    <Select value={selectedGraph} onValueChange={handleSelectChange}>
-                        <SelectTrigger className="bg-muted mb-4 w-full max-w-[220px] sm:max-w-[400px]">
-                            <SelectValue placeholder={t('ui.graph.select_graph')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem value="books">{t('ui.graph.top_books')}</SelectItem>
-                                <SelectItem value="users">{t('ui.graph.top_users')}</SelectItem>
-                                <SelectItem value="zones">{t('ui.graph.top_zones')}</SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                </div>
+                <div>
+                    <div className="flex w-full flex-col items-start justify-center px-4 sm:items-center sm:px-6">
+                        <h2 className="text-primary mb-6 text-2xl font-bold sm:text-3xl">
+                            {t('ui.graph.stadistics_title')}
+                        </h2>
+                        <Select value={selectedGraph} onValueChange={handleSelectChange}>
+                            <SelectTrigger className="bg-muted mb-4 w-full max-w-[220px] sm:max-w-[400px]">
+                                <SelectValue placeholder={t('ui.graph.select_graph')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value="books">{t('ui.graph.top_books')}</SelectItem>
+                                    <SelectItem value="users">{t('ui.graph.top_users')}</SelectItem>
+                                    <SelectItem value="zones">{t('ui.graph.top_zones')}</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
 
-                <div className="mx-auto w-full max-w-screen-lg px-4">
-                    
-                    {selectedGraph === 'books' && renderChart(bookData, t('ui.graph.top_books'), '#4CAF50', '#9C27B0')}
-                    {selectedGraph === 'users' && renderChart(userData, t('ui.graph.top_users'), '#4CAF50', '#9C27B0')}
-                    {selectedGraph === 'zones' && renderChart(zoneData, t('ui.graph.top_zones'), '#4CAF50', '#9C27B0')}
+                    <div className="mx-auto w-full max-w-screen-lg px-4">
+                        {selectedGraph === 'books' && renderChart(bookData, t('ui.graph.top_books'), '#4CAF50', '#9C27B0')}
+                        {selectedGraph === 'users' && renderChart(userData, t('ui.graph.top_users'), '#4CAF50', '#9C27B0')}
+                        {selectedGraph === 'zones' && renderChart(zoneData, t('ui.graph.top_zones'), '#4CAF50', '#9C27B0')}
+                    </div>
                 </div>
-            </div>
             ) : (
                 <div className="flex w-full flex-col items-start justify-center px-4 sm:items-center sm:px-6">
                     <h2 className="text-primary mb-6 text-2xl font-bold sm:text-3xl">{t('ui.graph.stadistics_title')}</h2>

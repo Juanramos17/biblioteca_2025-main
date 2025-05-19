@@ -12,10 +12,8 @@ class BookshelfSeeder extends Seeder
      */
     public function run(): void
     {
-        // Limpiar la tabla de zonas antes de insertar datos
         Bookshelf::truncate();
 
-        // Crear 10 zonas utilizando el factory
-        Bookshelf::factory()->count(10)->create();
+        Bookshelf::factory()->count(20)->create();
     }
 }

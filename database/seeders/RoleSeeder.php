@@ -12,7 +12,7 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::truncate(); // Borra todos los roles
+        Role::truncate(); 
         $rol = Role::create([
             'name' => 'admin',
             'display_name' => 'Administrador',

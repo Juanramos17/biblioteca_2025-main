@@ -147,6 +147,7 @@ export default function BookshelvesIndex() {
                             {auth.permissions.includes('report.print') ? (
                                 <DeleteDialog
                                     id={bookshelf.id}
+                                    successMessage={t('messages.bookshelves.deleted')}
                                     onDelete={handleDeleteUser}
                                     title={t('ui.bookshelves.delete') || 'Delete bookshelf'}
                                     description={

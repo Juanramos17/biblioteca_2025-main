@@ -20,7 +20,7 @@ class BookshelfFactory extends Factory
 
         return [
             'id' => fake()->uuid(),
-            'enumeration' => fake()->numberBetween(1, 10),
+            'enumeration' => fake()->numberBetween(1, 20),
             'category' => $zone->category,
             'n_books' => $books,
             'zone_id' => $zone->id,
